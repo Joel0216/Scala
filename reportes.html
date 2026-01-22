@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scala - Menu de Reportes</title>
+    <link rel="stylesheet" href="reportes.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-logo">
+                <img src="Scala logo.png" alt="Scala Logo">
+            </div>
+            <div class="header-text">
+                <h1>Scala - Academias de Música</h1>
+                <h2>MENU DE REPORTES</h2>
+            </div>
+            <div class="datetime" id="datetime"></div>
+        </header>
+
+        <main>
+            <div class="content-area">
+                <div class="selection-label">Seleccione el reporte deseado:</div>
+                
+                <select id="reporteSelect" size="20" class="reporte-list">
+                    <option value="alumnos_instrumento">Alumnos Por Instrumento</option>
+                    <option value="alumnos_medios">Alumnos por Medios que se entero</option>
+                    <option value="analisis_bajas">Análisis de bajas por maestro con %</option>
+                    <option value="analisis_colegiaturas">Análisis de colegiaturas p/análisis de ingresos</option>
+                    <option value="analisis_ingresos">Análisis de Ingresos por curso</option>
+                    <option value="anexo_contrato">Anexo A de contrato de maestros</option>
+                    <option value="articulos_vendidos">Artículos Vendidos (Por Pedido)</option>
+                    <option value="aviso_adeudo">aviso de adeudo</option>
+                    <option value="becas">Becas</option>
+                    <option value="becas_maestro">Becas (Por Maestro)</option>
+                    <option value="colegiaturas_cobradas">Colegiaturas Cobradas</option>
+                    <option value="colegiaturas_curso">Colegiaturas por curso</option>
+                    <option value="concentrado_examenes">Concentrado de exámenes</option>
+                    <option value="concentrado_examenes_tipo">Concentrado de exámenes por tipo</option>
+                    <option value="corte_caja_dia_resumen">Corte de Caja por día (Resumen de Operaciones)</option>
+                    <option value="corte_caja_dia_todas">Corte de Caja por día (Todas las operaciones)</option>
+                    <option value="corte_caja_periodo">Corte de Caja por periodo (Resumen de Operaciones)</option>
+                    <option value="horarios">Horarios</option>
+                </select>
+
+                <div class="button-container">
+                    <button class="action-btn" onclick="imprimirReporte()">
+                        Imprime
+                    </button>
+                    <button class="exit-btn" onclick="window.location.href='index.html'">
+                        TERMINAR
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="reportes.js"></script>
+</body>
+</html>

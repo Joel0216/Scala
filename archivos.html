@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scala - Menu de Archivos</title>
+    <link rel="stylesheet" href="archivos.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>Scala</h1>
+            <h2>MENU DE ARCHIVOS</h2>
+            <div class="datetime" id="datetime"></div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <div class="menu-grid">
+                <!-- Logo Central -->
+                <div class="logo-container">
+                    <img src="Scala logo.png" alt="Scala Logo">
+                </div>
+
+                <!-- Column 1 -->
+                <button class="menu-btn col1-row1" onclick="alert('Módulo ALUMNOS')">
+                    ALUMNOS
+                </button>
+                <button class="menu-btn col1-row2" onclick="alert('Módulo MAESTROS')">
+                    MAESTROS
+                </button>
+                <button class="menu-btn col1-row3" onclick="alert('Módulo CURSOS')">
+                    CURSOS
+                </button>
+                <button class="menu-btn col1-row4" onclick="alert('Módulo ARTICULOS')">
+                    ARTICULOS
+                </button>
+                <button class="menu-btn col1-row5" onclick="alert('Módulo MOVIMIENTOS INVENTARIOS')">
+                    MOVIMIENTOS<br>INVENTARIOS
+                </button>
+
+                <!-- Column 2 -->
+                <button class="menu-btn col2-row1" onclick="alert('Módulo BAJAS')">
+                    BAJAS
+                </button>
+                <button class="menu-btn col2-row2" onclick="alert('Módulo FACTORES')">
+                    FACTORES
+                </button>
+                <button class="menu-btn col2-row3" onclick="alert('Módulo GRUPOS')">
+                    GRUPOS
+                </button>
+                <button class="menu-btn col2-row4" onclick="alert('Módulo GRUPOS ARTICULOS')">
+                    GRUPOS<br>ARTICULOS
+                </button>
+
+                <!-- Column 3 -->
+                <button class="menu-btn col3-row1" onclick="alert('Módulo Reg Prospectos')">
+                    Reg Prospectos
+                </button>
+                <button class="menu-btn col3-row2" onclick="alert('Módulo SALONES')">
+                    SALONES
+                </button>
+                <button class="menu-btn col3-row3" onclick="alert('Módulo OTROS CATALOGOS')">
+                    OTROS<br>CATALOGOS
+                </button>
+
+                <!-- Bottom Row -->
+                <button class="menu-btn bottom-row1" onclick="alert('Módulo RFC Clientes')">
+                    RFC Clientes
+                </button>
+                <button class="menu-btn bottom-row2" onclick="alert('Módulo HORARIOS')">
+                    HORARIOS
+                </button>
+                <button class="menu-btn bottom-row3" onclick="alert('Módulo EXAMENES')">
+                    EXAMENES
+                </button>
+            </div>
+        </main>
+
+        <!-- Exit Button -->
+        <footer>
+            <button class="exit-btn" onclick="window.location.href='index.html'">
+                TERMINAR
+            </button>
+        </footer>
+    </div>
+
+    <script src="archivos.js"></script>
+</body>
+</html>

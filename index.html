@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scala - Academias de Música</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>Scala - Academias de Música</h1>
+            <h2>MENU PRINCIPAL</h2>
+            <div class="datetime" id="datetime"></div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <div class="menu-grid">
+                <!-- Archivos Button -->
+                <button class="menu-btn top-left" onclick="window.location.href='archivos.html'">
+                    ARCHIVOS
+                </button>
+
+                <!-- Reportes Button -->
+                <button class="menu-btn top-right" onclick="window.location.href='reportes.html'">
+                    REPORTES
+                </button>
+
+                <!-- Logo Central -->
+                <div class="logo-container">
+                    <img src="Scala logo.png" alt="Scala Logo">
+                </div>
+
+                <!-- Seguridad Button -->
+                <button class="menu-btn middle-left" onclick="window.location.href='seguridad.html'">
+                    SEGURIDAD
+                </button>
+
+                <!-- Mantenimiento Button -->
+                <button class="menu-btn middle-right" onclick="window.location.href='mantenimiento.html'">
+                    MANTENIMIENTO
+                </button>
+
+                <!-- Caja Button -->
+                <button class="menu-btn bottom-center" onclick="window.location.href='caja.html'">
+                    CAJA
+                </button>
+            </div>
+        </main>
+
+        <!-- Exit Button -->
+        <footer>
+            <button class="exit-btn" onclick="exitSystem()">
+                Salida del Sistema
+            </button>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

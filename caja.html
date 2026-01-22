@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scala - Menu de Procesos de Cobros</title>
+    <link rel="stylesheet" href="caja.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Scala - Academia de música</h1>
+            <h2>MENU DE PROCESOS DE COBROS</h2>
+            <div class="datetime" id="datetime"></div>
+        </header>
+
+        <main>
+            <div class="menu-grid">
+                <div class="logo-container">
+                    <img src="Scala logo.png" alt="Scala Logo">
+                </div>
+
+                <button class="menu-btn top-left" onclick="alert('Módulo COBROS')">
+                    COBROS
+                </button>
+
+                <button class="menu-btn top-right" onclick="alert('Módulo RECIBOS CANCELADOS')">
+                    RECIBOS<br>CANCELADOS
+                </button>
+
+                <button class="menu-btn center-btn" onclick="alert('Módulo CONSULTA Y BAJAS')">
+                    CONSULTA Y BAJAS
+                </button>
+
+                <div class="info-box">
+                    FAVOR DE SELECCIONAR<br>EL REPORTE DE CORTE<br>QUE DESEA
+                </div>
+
+                <button class="menu-btn bottom-left" onclick="alert('Corte 1')">
+                    CORTE 1
+                </button>
+
+                <button class="menu-btn bottom-center" onclick="alert('Corte 2')">
+                    CORTE 2
+                </button>
+
+                <button class="menu-btn bottom-right" onclick="alert('Corte 3')">
+                    CORTE 3
+                </button>
+            </div>
+        </main>
+
+        <footer>
+            <button class="exit-btn" onclick="window.location.href='index.html'">
+                TERMINAR
+            </button>
+        </footer>
+    </div>
+
+    <script src="common.js"></script>
+</body>
+</html>
