@@ -20,8 +20,7 @@ function updateDateTime() {
 
 // Exit system function
 function exitSystem() {
-    if (confirm('¿Está seguro que desea salir del sistema?')) {
-        alert('Cerrando el sistema...');
+    if (confirm('¿Deseas abandonar el sitio?\n\nEs posible que los cambios que implementaste no se puedan guardar.')) {
         window.close();
         
         // Si window.close() no funciona (por restricciones del navegador)
@@ -35,9 +34,3 @@ function exitSystem() {
 // Initialize
 updateDateTime();
 setInterval(updateDateTime, 1000);
-
-// Prevent accidental page close
-window.addEventListener('beforeunload', (e) => {
-    e.preventDefault();
-    e.returnValue = '';
-});

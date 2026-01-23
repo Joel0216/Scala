@@ -1,0 +1,189 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #c0c0c0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background: #c0c0c0;
+    border-bottom: 2px solid #000;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    color: #000;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.datetime {
+    background: white;
+    border: 2px solid #000;
+    padding: 5px 15px;
+    font-size: 14px;
+}
+
+main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background: #c0c0c0;
+}
+
+.form-section {
+    background: #c0c0c0;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 5px;
+}
+
+label {
+    font-weight: bold;
+    min-width: 140px;
+    text-align: right;
+    padding-right: 5px;
+}
+
+.label-right {
+    min-width: 120px;
+    margin-left: 10px;
+}
+
+.label-inline {
+    min-width: auto;
+    margin-left: 15px;
+}
+
+input[type="text"], select {
+    border: 2px inset #fff;
+    padding: 3px 5px;
+    background: white;
+    font-size: 14px;
+}
+
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+.input-tiny { width: 40px; }
+.input-small { width: 80px; }
+.input-medium { width: 180px; }
+.input-large { width: 400px; }
+.input-xlarge { width: 500px; }
+
+.table-section {
+    margin-bottom: 10px;
+    background: white;
+    border: 2px solid #000;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    background: #c0c0c0;
+    border: 1px solid #000;
+    padding: 5px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.data-table td {
+    border: 1px solid #808080;
+    padding: 5px;
+    font-size: 13px;
+}
+
+.table-nav {
+    background: #c0c0c0;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border-top: 2px solid #000;
+}
+
+.table-nav button {
+    padding: 2px 8px;
+    border: 2px outset #fff;
+    background: #c0c0c0;
+    cursor: pointer;
+}
+
+.nav-input {
+    width: 50px;
+    text-align: center;
+    border: 2px inset #fff;
+    padding: 2px;
+}
+
+footer {
+    background: #c0c0c0;
+    padding: 10px;
+    display: flex;
+    gap: 5px;
+    border-top: 2px solid #000;
+}
+
+.action-btn {
+    background: linear-gradient(to bottom, #f5f5f5 0%, #d0d0d0 100%);
+    border: 3px outset #fff;
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    min-width: 80px;
+}
+
+.action-btn:hover {
+    background: linear-gradient(to bottom, #fff 0%, #e0e0e0 100%);
+}
+
+.action-btn:active {
+    border-style: inset;
+}
+
+.exit-btn {
+    background: linear-gradient(to bottom, #f5f5f5 0%, #d0d0d0 100%);
+    border: 3px outset #fff;
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #cc0000;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.exit-btn:hover {
+    background: linear-gradient(to bottom, #fff 0%, #e0e0e0 100%);
+}
+
+.exit-btn:active {
+    border-style: inset;
+}

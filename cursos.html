@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursos</title>
+    <link rel="stylesheet" href="cursos.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Cursos</h1>
+            <div class="datetime" id="datetime"></div>
+        </div>
+
+        <form id="cursosForm">
+            <div class="form-group">
+                <label for="curso">Curso:</label>
+                <input type="text" id="curso" name="curso" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="costo">Costo:</label>
+                    <input type="number" id="costo" name="costo" step="0.01" value="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="cursoSiguiente">Curso Siguiente:</label>
+                    <select id="cursoSiguiente" name="cursoSiguiente">
+                        <option value="">INSCRIPCION</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="clave">Clave:</label>
+                <input type="text" id="clave" name="clave">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="iva">IVA:</label>
+                    <input type="number" id="iva" name="iva" step="0.01" value="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="recargo">Recargo:</label>
+                    <input type="number" id="recargo" name="recargo" step="0.01" value="0.00">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
+                <button type="button" class="btn" id="buscarBtn">Buscar</button>
+                <button type="button" class="btn" id="borrarBtn">Borrar</button>
+                <button type="button" class="btn" id="reporteBtn">Reporte</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+            </div>
+        </form>
+
+        <div class="navigation">
+            <button class="nav-btn" id="firstBtn">|&lt;</button>
+            <button class="nav-btn" id="prevBtn">&lt;</button>
+            <span class="record-info">Registro: <span id="currentRecord">1</span> de <span id="totalRecords">0</span></span>
+            <button class="nav-btn" id="nextBtn">&gt;</button>
+            <button class="nav-btn" id="lastBtn">&gt;|</button>
+            <button class="nav-btn" id="newRecordBtn">|&gt;*</button>
+        </div>
+    </div>
+
+    <script type="module" src="cursos.js"></script>
+</body>
+</html>

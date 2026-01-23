@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de alumnos por Credencial</title>
+    <link rel="stylesheet" href="alumnos-lista.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Listado de alumnos por Credencial</h1>
+        </header>
+
+        <main>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Creden</th>
+                            <th>Nombre</th>
+                            <th>Grupo</th>
+                            <th>Ingreso</th>
+                            <th>Grado</th>
+                            <th>Beca</th>
+                            <th>%</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaAlumnos">
+                        <!-- Los datos se cargarán aquí -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-nav">
+                <span>Registro:</span>
+                <button>|◄</button>
+                <button>◄</button>
+                <input type="text" value="1" class="nav-input">
+                <button>►</button>
+                <button>►|</button>
+                <button>►*</button>
+                <span>de 128</span>
+            </div>
+        </main>
+
+        <footer>
+            <button class="action-btn" onclick="buscar()">Buscar</button>
+            <button class="exit-btn" onclick="window.close()">Cerrar consulta</button>
+        </footer>
+    </div>
+
+    <script src="alumnos.js"></script>
+</body>
+</html>

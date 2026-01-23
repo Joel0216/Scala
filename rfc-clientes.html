@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFC Clientes</title>
+    <link rel="stylesheet" href="rfc-clientes.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>RFC Clientes</h1>
+            <div class="datetime" id="datetime"></div>
+        </div>
+
+        <form id="rfcForm">
+            <div class="form-group">
+                <label for="rfc">RFC:</label>
+                <input type="text" id="rfc" name="rfc" maxlength="13" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div>
+
+            <div class="form-group">
+                <label for="direccion1">Dirección:</label>
+                <input type="text" id="direccion1" name="direccion1">
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="direccion2" name="direccion2">
+            </div>
+
+            <div class="credenciales-section">
+                <div class="section-header">Credenciales Asociadas</div>
+                <div class="credenciales-content">
+                    <input type="text" id="rfcDisplay" name="rfcDisplay" readonly>
+                    <div class="credencial-label">Credencial</div>
+                    <table>
+                        <tbody id="credencialesTableBody">
+                            <tr>
+                                <td>▶</td>
+                                <td><input type="text" class="credencial-input" data-row="0"></td>
+                            </tr>
+                            <tr>
+                                <td>*</td>
+                                <td class="total">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="table-nav">
+                        <span>Registro: </span>
+                        <button type="button" class="nav-btn-small">|&lt;</button>
+                        <button type="button" class="nav-btn-small">&lt;</button>
+                        <input type="text" value="1" class="record-input" readonly>
+                        <button type="button" class="nav-btn-small">&gt;</button>
+                        <button type="button" class="nav-btn-small">&gt;|</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
+                <button type="button" class="btn" id="buscarBtn">Buscar</button>
+                <button type="button" class="btn" id="borrarBtn">Borrar</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal de búsqueda -->
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <h2>Teclee el R.F.C. buscado</h2>
+            <input type="text" id="searchInput" class="modal-input">
+            <div class="modal-buttons">
+                <button class="btn" id="aceptarBtn">Aceptar</button>
+                <button class="btn" id="cancelarBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="rfc-clientes.js"></script>
+</body>
+</html>

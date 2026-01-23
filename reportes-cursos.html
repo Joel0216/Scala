@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Cursos</title>
+    <link rel="stylesheet" href="reportes-cursos.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Reporte de Cursos</h1>
+        <div class="date">22/01/2026</div>
+        
+        <table id="cursosTable">
+            <thead>
+                <tr>
+                    <th>Curso</th>
+                    <th>Costo</th>
+                    <th>Clave</th>
+                    <th>IVA</th>
+                    <th>Recargo</th>
+                </tr>
+            </thead>
+            <tbody id="cursosTableBody">
+                <!-- Los datos se cargarán dinámicamente -->
+            </tbody>
+        </table>
+
+        <div class="button-group">
+            <button class="btn" onclick="window.print()">Imprimir</button>
+            <button class="btn" onclick="window.close()">Cerrar</button>
+        </div>
+    </div>
+
+    <script type="module" src="reportes-cursos.js"></script>
+</body>
+</html>

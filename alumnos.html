@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scala - Consulta de Alumnos</title>
+    <link rel="stylesheet" href="alumnos.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Consulta de Alumnos</h1>
+            <div class="datetime" id="datetime"></div>
+        </header>
+
+        <main>
+            <div class="form-section">
+                <div class="form-row">
+                    <label>Credencial:</label>
+                    <input type="text" id="credencial" class="input-small">
+                    <input type="text" id="digito" class="input-tiny">
+                    
+                    <label class="label-right">Celular:</label>
+                    <input type="text" id="celular" class="input-medium">
+                    
+                    <label class="label-right">Telefono:</label>
+                    <input type="text" id="telefono" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Nombre:</label>
+                    <input type="text" id="nombre" class="input-large">
+                    
+                    <label class="label-right">Fecha Ingreso:</label>
+                    <input type="text" id="fechaIngreso" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Direccion:</label>
+                    <input type="text" id="direccion1" class="input-large">
+                    
+                    <label class="label-right">F. de Nacimiento:</label>
+                    <input type="text" id="fechaNacimiento" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label></label>
+                    <input type="text" id="direccion2" class="input-large">
+                    
+                    <label class="label-right">Edad:</label>
+                    <input type="text" id="edad" class="input-small">
+                    
+                    <label class="label-inline">Reingreso:</label>
+                    <input type="checkbox" id="reingreso">
+                </div>
+
+                <div class="form-row">
+                    <label>Email:</label>
+                    <input type="text" id="email" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Nombre del padre:</label>
+                    <input type="text" id="nombrePadre" class="input-large">
+                    
+                    <label class="label-right">Celular padre:</label>
+                    <input type="text" id="celularPadre" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Nombre de la madre:</label>
+                    <input type="text" id="nombreMadre" class="input-large">
+                    
+                    <label class="label-right">Celular madre:</label>
+                    <input type="text" id="celularMadre" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Grupo:</label>
+                    <input type="text" id="grupo" class="input-small">
+                    <input type="text" id="cursoNombre" class="input-xlarge">
+                    
+                    <label class="label-right">Salón:</label>
+                    <input type="text" id="salon" class="input-tiny">
+                </div>
+
+                <div class="form-row">
+                    <label>Beca:</label>
+                    <input type="checkbox" id="beca">
+                    
+                    <label class="label-inline">Porcentaje:</label>
+                    <input type="text" id="porcentaje" class="input-small">
+                    
+                    <label class="label-inline">Comentario:</label>
+                    <input type="text" id="comentario" class="input-xlarge">
+                </div>
+
+                <div class="form-row">
+                    <label>Grado:</label>
+                    <input type="text" id="grado" class="input-small">
+                    
+                    <label class="label-inline">Instrumento:</label>
+                    <select id="instrumento" class="input-medium">
+                        <option>NOTI</option>
+                    </select>
+                    
+                    <label class="label-inline">Medio que se enteró:</label>
+                    <select id="medio" class="input-medium">
+                        <option>ANUN</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Tabla de Pagos -->
+            <div class="table-section">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Año</th>
+                            <th>Mes</th>
+                            <th>Descuento</th>
+                            <th>Precio</th>
+                            <th>Recibo</th>
+                            <th>Fecha:</th>
+                            <th>Grupo:</th>
+                            <th>Curso:</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaPagos">
+                        <tr><td colspan="9"></td></tr>
+                        <tr><td colspan="9"></td></tr>
+                        <tr><td colspan="9"></td></tr>
+                    </tbody>
+                </table>
+                <div class="table-nav">
+                    <span>Registro:</span>
+                    <button>|◄</button>
+                    <button>◄</button>
+                    <input type="text" value="1" class="nav-input">
+                    <button>►</button>
+                    <button>►|</button>
+                    <button>►*</button>
+                    <span>de 49</span>
+                </div>
+            </div>
+
+            <!-- Tabla de Examenes -->
+            <div class="table-section">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Credencial</th>
+                            <th>Clave Examen</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Maestro Base</th>
+                            <th>G/N</th>
+                            <th># certificado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaExamenes">
+                        <tr><td colspan="8"></td></tr>
+                        <tr><td colspan="8"></td></tr>
+                    </tbody>
+                </table>
+                <div class="table-nav">
+                    <span>Registro:</span>
+                    <button>|◄</button>
+                    <button>◄</button>
+                    <input type="text" value="1" class="nav-input">
+                    <button>►</button>
+                    <button>►|</button>
+                    <button>►*</button>
+                    <span>de 2</span>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <button class="action-btn" onclick="buscarCredencial()">Buscar<br>x Cred</button>
+            <button class="action-btn" onclick="buscarNombre()">Busca x<br>Nombre</button>
+            <button class="action-btn" onclick="window.location.href='alumnos-edicion.html'">S</button>
+            <button class="action-btn" onclick="window.location.href='alumnos-edicion.html'">Edición</button>
+            <button class="action-btn" onclick="window.location.href='alumnos-alta.html'">Alta</button>
+            <button class="action-btn" onclick="darBaja()">Baja</button>
+            <button class="action-btn" onclick="cambiarGrupo()">Cambio</button>
+            <button class="action-btn" onclick="listaCredencial()">Lista X<br>Cred</button>
+            <button class="action-btn" onclick="listaNombre()">Lista X<br>Nombre</button>
+            <button class="exit-btn" onclick="window.location.href='archivos.html'">TERMINAR</button>
+        </footer>
+    </div>
+
+    <script src="common.js"></script>
+    <script src="alumnos.js"></script>
+</body>
+</html>

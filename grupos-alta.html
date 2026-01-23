@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta de Grupos</title>
+    <link rel="stylesheet" href="grupos-alta.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Alta de Grupos</h1>
+        </div>
+
+        <form id="altaForm">
+            <div class="form-group">
+                <label for="clave">Clave:</label>
+                <input type="text" id="clave" name="clave" readonly>
+                <button type="button" class="dropdown-btn">▼</button>
+            </div>
+
+            <div class="form-group">
+                <label for="curso">Curso:</label>
+                <select id="curso" name="curso">
+                    <option value=""></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <select id="nombre" name="nombre">
+                    <option value=""></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="dia">Dia:</label>
+                <select id="dia" name="dia">
+                    <option value="LU">Lunes</option>
+                    <option value="MA">Martes</option>
+                    <option value="MI">Miércoles</option>
+                    <option value="JU">Jueves</option>
+                    <option value="VI">Viernes</option>
+                    <option value="SA">Sábado</option>
+                    <option value="DO">Domingo</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="horaEntrada">Hora entrada:</label>
+                    <input type="time" id="horaEntrada" name="horaEntrada">
+                </div>
+                <div class="form-group">
+                    <label for="horaSalida">Hora salida:</label>
+                    <input type="time" id="horaSalida" name="horaSalida">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="salon">Salón</label>
+                <select id="salon" name="salon">
+                    <option value=""></option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="cupo">Cupo:</label>
+                    <input type="number" id="cupo" name="cupo" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="alumnos">Alumnos:</label>
+                    <input type="number" id="alumnos" name="alumnos" value="0" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="inicio">Inicio:</label>
+                <input type="date" id="inicio" name="inicio">
+            </div>
+
+            <div class="form-group">
+                <label for="leccion">Leccion:</label>
+                <input type="text" id="leccion" name="leccion" value="Null">
+            </div>
+
+            <div class="form-group">
+                <label for="fechaLeccion">Fecha Leccion:</label>
+                <input type="date" id="fechaLeccion" name="fechaLeccion">
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
+                <button type="button" class="btn" id="teclaBtn">Tecla <ESC> Cancela</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+            </div>
+        </form>
+
+        <div class="navigation">
+            <button class="nav-btn">|&lt;</button>
+            <button class="nav-btn">&lt;</button>
+            <span class="record-info">Registro: <span>1</span> de <span>1</span></span>
+            <button class="nav-btn">&gt;</button>
+            <button class="nav-btn">&gt;|</button>
+            <button class="nav-btn">|&gt;*</button>
+            <span> de 1 (Filtrado)</span>
+        </div>
+    </div>
+
+    <script type="module" src="grupos-alta.js"></script>
+</body>
+</html>

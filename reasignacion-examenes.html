@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reasignación de Exámenes</title>
+    <link rel="stylesheet" href="reasignacion-examenes.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>REASIGNACION DE EXAMENES</h1>
+        </div>
+        
+        <div class="form-section">
+            <div class="form-group">
+                <label>Credencial:</label>
+                <input type="text" id="credencial">
+            </div>
+            
+            <div class="form-group">
+                <label>Clave del Examen:</label>
+                <input type="text" id="claveExamen" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label>Horario:</label>
+                <input type="text" id="horario" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label>Nombre:</label>
+                <input type="text" id="nombre">
+            </div>
+            
+            <div class="form-group">
+                <label>Grado o Nivel:</label>
+                <input type="text" id="gradoNivel" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label># de recibo de pago:</label>
+                <input type="text" id="reciboPago" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label>Fecha del pago:</label>
+                <input type="text" id="fechaPago" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label>cantidad:</label>
+                <input type="text" id="cantidad" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label>neto:</label>
+                <input type="text" id="neto" readonly>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="btnBuscar" class="btn">Buscar</button>
+            <button id="btnReasignar" class="btn">Reasignar</button>
+            <button id="btnTerminar" class="btn">Terminar</button>
+        </div>
+        
+        <div class="navigation">
+            <span>Registro: <span id="registroActual">0</span></span>
+            <button id="btnPrimero">|◄</button>
+            <button id="btnAnterior">◄</button>
+            <input type="number" id="inputRegistro" value="1" min="1">
+            <button id="btnSiguiente">►</button>
+            <button id="btnUltimo">►|</button>
+            <button id="btnBuscarRegistro">►*</button>
+            <span>de <span id="totalRegistros">0</span></span>
+        </div>
+    </div>
+
+    <!-- Modal de búsqueda -->
+    <div id="modalBusqueda" class="modal">
+        <div class="modal-content">
+            <h2>Proporcione la credencial o nombre del alumno</h2>
+            <input type="text" id="inputBusqueda" placeholder="Credencial o nombre">
+            <div class="modal-buttons">
+                <button id="btnAceptarBusqueda" class="btn">Aceptar</button>
+                <button id="btnCancelarBusqueda" class="btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de lista de resultados -->
+    <div id="modalLista" class="modal">
+        <div class="modal-content modal-lista">
+            <h2>Seleccione un alumno</h2>
+            <div class="lista-container">
+                <table id="tablaResultados">
+                    <thead>
+                        <tr>
+                            <th>Credencial</th>
+                            <th>Nombre</th>
+                            <th>Examen</th>
+                            <th>Grado/Nivel</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyResultados"></tbody>
+                </table>
+            </div>
+            <div class="modal-buttons">
+                <button id="btnSeleccionar" class="btn">Seleccionar</button>
+                <button id="btnCancelarLista" class="btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de reasignación -->
+    <div id="modalReasignar" class="modal">
+        <div class="modal-content">
+            <h2>Ingrese la nueva clave de examen</h2>
+            <input type="text" id="inputNuevaClave" placeholder="Nueva clave de examen">
+            <div class="modal-buttons">
+                <button id="btnAceptarReasignar" class="btn">Aceptar</button>
+                <button id="btnCancelarReasignar" class="btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="reasignacion-examenes.js"></script>
+</body>
+</html>

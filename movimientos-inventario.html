@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movimientos de Inventarios</title>
+    <link rel="stylesheet" href="movimientos-inventario.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Movimientos de Inventarios</h1>
+            <div class="datetime" id="datetime"></div>
+        </div>
+
+        <form id="movimientosForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="numeroMovimiento">Numero de Movimiento:</label>
+                    <input type="text" id="numeroMovimiento" name="numeroMovimiento" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="fechaMovimiento">Fecha del movimiento:</label>
+                    <input type="date" id="fechaMovimiento" name="fechaMovimiento">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="tipoMovimiento">Tipo de Movimiento:</label>
+                <select id="tipoMovimiento" name="tipoMovimiento">
+                    <option value="AD">AD</option>
+                    <option value="SA">SA</option>
+                    <option value="AJ">AJ</option>
+                </select>
+            </div>
+
+            <div class="table-section">
+                <table id="articulosTable">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Clave</th>
+                            <th>cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody id="articulosTableBody">
+                        <tr>
+                            <td>▶</td>
+                            <td><input type="text" class="clave-input" data-row="0"></td>
+                            <td><input type="number" class="cantidad-input" data-row="0" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td><input type="text" class="clave-input" data-row="1"></td>
+                            <td><input type="number" class="cantidad-input" data-row="1" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td><input type="text" class="clave-input" data-row="2"></td>
+                            <td><input type="number" class="cantidad-input" data-row="2" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td>*</td>
+                            <td></td>
+                            <td class="total">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="table-nav">
+                    <span>Registro: </span>
+                    <button type="button" class="nav-btn-small">|&lt;</button>
+                    <button type="button" class="nav-btn-small">&lt;</button>
+                    <input type="text" value="1" class="record-input" readonly>
+                    <button type="button" class="nav-btn-small">&gt;</button>
+                    <button type="button" class="nav-btn-small">&gt;|</button>
+                    <button type="button" class="nav-btn-small">|&gt;*</button>
+                    <span> de 3</span>
+                </div>
+            </div>
+
+            <div class="details-section">
+                <div class="form-group">
+                    <label for="descripcion">Descripcion:</label>
+                    <input type="text" id="descripcion" name="descripcion" readonly>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="precio">Precio:</label>
+                        <input type="number" id="precio" name="precio" value="0" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="iva">IVA:</label>
+                        <input type="number" id="iva" name="iva" value="0.00" readonly>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="stock">Stock:</label>
+                        <input type="number" id="stock" name="stock" value="0.00" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="grupo">Grupo:</label>
+                        <input type="text" id="grupo" name="grupo" readonly>
+                    </div>
+                </div>
+
+                <div class="table-nav">
+                    <span>Registro: </span>
+                    <button type="button" class="nav-btn-small">|&lt;</button>
+                    <button type="button" class="nav-btn-small">&lt;</button>
+                    <input type="text" value="2" class="record-input" readonly>
+                    <button type="button" class="nav-btn-small">&gt;</button>
+                    <button type="button" class="nav-btn-small">&gt;|</button>
+                    <button type="button" class="nav-btn-small">|&gt;*</button>
+                    <span> de 2</span>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn" id="buscarBtn">Buscar</button>
+                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
+                <button type="button" class="btn" id="borraTodoBtn">Borra Todo</button>
+                <button type="button" class="btn" id="borraOperacionBtn">Borra Operación</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+            </div>
+        </form>
+
+        <div class="navigation">
+            <button class="nav-btn" id="firstBtn">|&lt;</button>
+            <button class="nav-btn" id="prevBtn">&lt;</button>
+            <span class="record-info">Registro: <span id="currentRecord">1</span> de <span id="totalRecords">122</span></span>
+            <button class="nav-btn" id="nextBtn">&gt;</button>
+            <button class="nav-btn" id="lastBtn">&gt;|</button>
+            <button class="nav-btn" id="newRecordBtn">|&gt;*</button>
+        </div>
+    </div>
+
+    <script type="module" src="movimientos-inventario.js"></script>
+</body>
+</html>

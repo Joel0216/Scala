@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Instrumentos</title>
+    <link rel="stylesheet" href="catalogo-instrumentos.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Catálogo de Instrumentos</h1>
+        
+        <div class="form-section">
+            <div class="form-group">
+                <label>Instrumento:</label>
+                <input type="text" id="claveInstrumento" maxlength="10">
+            </div>
+            
+            <div class="form-group">
+                <label>Descripción:</label>
+                <input type="text" id="descripcionInstrumento" maxlength="100">
+            </div>
+            
+            <div class="button-group">
+                <button id="btnNuevo" class="btn">Nuevo</button>
+                <button id="btnBuscar" class="btn">Buscar</button>
+                <button id="btnBorrar" class="btn">Borrar</button>
+                <button id="btnTerminar" class="btn btn-terminar">Terminar captura</button>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <span>Registro: <span id="registroActual">0</span> de <span id="totalRegistros">0</span></span>
+            <button id="btnPrimero">|◄</button>
+            <button id="btnAnterior">◄</button>
+            <input type="number" id="inputRegistro" value="1" min="1">
+            <button id="btnSiguiente">►</button>
+            <button id="btnUltimo">►|</button>
+            <button id="btnBuscarRegistro">►*</button>
+        </div>
+    </div>
+
+    <!-- Modal de búsqueda -->
+    <div id="modalBusqueda" class="modal">
+        <div class="modal-content">
+            <h2>Proporcione la clave del Instrumento</h2>
+            <input type="text" id="inputBusqueda" placeholder="Instrumento o descripción">
+            <div class="modal-buttons">
+                <button id="btnAceptarBusqueda" class="btn">Aceptar</button>
+                <button id="btnCancelarBusqueda" class="btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de lista de resultados -->
+    <div id="modalLista" class="modal">
+        <div class="modal-content modal-lista">
+            <h2>Seleccione un instrumento</h2>
+            <div class="lista-container">
+                <table id="tablaResultados">
+                    <thead>
+                        <tr>
+                            <th>Instrumento</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyResultados"></tbody>
+                </table>
+            </div>
+            <div class="modal-buttons">
+                <button id="btnSeleccionar" class="btn">Seleccionar</button>
+                <button id="btnCancelarLista" class="btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="catalogo-instrumentos.js"></script>
+</body>
+</html>

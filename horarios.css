@@ -1,0 +1,197 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #c0c0c0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #c0c0c0;
+    border: 2px solid #808080;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+.header {
+    background: linear-gradient(to right, #000080, #1084d0);
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.datetime {
+    font-size: 14px;
+    background-color: white;
+    color: black;
+    padding: 5px 10px;
+    border: 1px solid #808080;
+}
+
+.content {
+    padding: 20px;
+}
+
+.anualidad-header {
+    background-color: blue;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.table-section {
+    border: 2px solid #808080;
+    padding: 15px;
+    background-color: #d4d0c8;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    background-color: white;
+}
+
+th {
+    background-color: #c0c0c0;
+    padding: 8px;
+    border: 1px solid #808080;
+    text-align: center;
+    font-size: 13px;
+}
+
+td {
+    padding: 6px;
+    border: 1px solid #808080;
+    text-align: center;
+    font-size: 12px;
+}
+
+.table-nav {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: center;
+}
+
+.nav-btn-small {
+    padding: 3px 10px;
+    border: 2px outset #dfdfdf;
+    background-color: #c0c0c0;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.nav-btn-small:active {
+    border-style: inset;
+}
+
+.record-input {
+    width: 50px;
+    text-align: center;
+    padding: 3px;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 10px 30px;
+    border: 2px outset #dfdfdf;
+    background-color: #c0c0c0;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.btn:active {
+    border-style: inset;
+}
+
+.btn-terminar {
+    color: red;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #c0c0c0;
+    margin: 15% auto;
+    padding: 20px;
+    border: 2px solid #808080;
+    width: 500px;
+}
+
+.modal-content-large {
+    background-color: #c0c0c0;
+    margin: 10% auto;
+    padding: 20px;
+    border: 2px solid #808080;
+    width: 600px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.modal-content h2,
+.modal-content-large h2 {
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 2px inset #dfdfdf;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+#cursosList {
+    margin-bottom: 15px;
+}
+
+.curso-item {
+    padding: 10px;
+    border: 1px solid #808080;
+    margin-bottom: 5px;
+    cursor: pointer;
+    background-color: white;
+}
+
+.curso-item:hover {
+    background-color: #e0e0e0;
+}

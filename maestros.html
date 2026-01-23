@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maestros</title>
+    <link rel="stylesheet" href="maestros.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Maestros</h1>
+            <div class="datetime" id="datetime"></div>
+        </div>
+
+        <form id="maestrosForm">
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div>
+
+            <div class="form-group">
+                <label for="direccion1">Direccion 1:</label>
+                <input type="text" id="direccion1" name="direccion1">
+            </div>
+
+            <div class="form-group">
+                <label for="direccion2"></label>
+                <input type="text" id="direccion2" name="direccion2">
+            </div>
+
+            <div class="form-group">
+                <label for="telefono">Telefono:</label>
+                <input type="text" id="telefono" name="telefono">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="clave">Clave:</label>
+                    <input type="text" id="clave" name="clave">
+                </div>
+                <div class="form-group">
+                    <label for="rfc">RFC:</label>
+                    <input type="text" id="rfc" name="rfc">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="grado">Grado:</label>
+                <input type="text" id="grado" name="grado">
+            </div>
+
+            <div class="form-group">
+                <label for="detallesGrado">Detalles Grado:</label>
+                <input type="text" id="detallesGrado" name="detallesGrado">
+            </div>
+
+            <div class="form-group">
+                <label for="fechaIngreso">Fecha de ingreso:</label>
+                <input type="date" id="fechaIngreso" name="fechaIngreso">
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
+                <button type="button" class="btn" id="buscarBtn">Buscar</button>
+                <button type="button" class="btn" id="borrarBtn">Borrar</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+            </div>
+        </form>
+
+        <div class="navigation">
+            <button class="nav-btn" id="firstBtn">|&lt;</button>
+            <button class="nav-btn" id="prevBtn">&lt;</button>
+            <span class="record-info">Registro: <span id="currentRecord">1</span> de <span id="totalRecords">0</span></span>
+            <button class="nav-btn" id="nextBtn">&gt;</button>
+            <button class="nav-btn" id="lastBtn">&gt;|</button>
+        </div>
+    </div>
+
+    <script type="module" src="maestros.js"></script>
+</body>
+</html>

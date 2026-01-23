@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scala - Edición de Datos del Alumno</title>
+    <link rel="stylesheet" href="alumnos-edicion.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EDICION DE DATOS DEL ALUMNO</h1>
+        </header>
+
+        <main>
+            <div class="form-section">
+                <div class="form-row">
+                    <label>Credencial:</label>
+                    <input type="text" id="credencial" class="input-small">
+                    
+                    <label class="label-inline">Dígito:</label>
+                    <input type="text" id="digito" class="input-tiny">
+                    
+                    <label class="label-right">Celular:</label>
+                    <input type="text" id="celular" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Nombre:</label>
+                    <input type="text" id="nombre" class="input-large">
+                    
+                    <label class="label-right">Telefono:</label>
+                    <input type="text" id="telefono" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Direccion:</label>
+                    <textarea id="direccion" class="input-textarea"></textarea>
+                    
+                    <label class="label-right">F. Nac.:</label>
+                    <input type="text" id="fechaNacimiento" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Email:</label>
+                    <input type="text" id="email" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Nombre Padre:</label>
+                    <input type="text" id="nombrePadre" class="input-large">
+                    
+                    <label class="label-right">Celular Padre:</label>
+                    <input type="text" id="celularPadre" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Nombre Madre:</label>
+                    <input type="text" id="nombreMadre" class="input-large">
+                    
+                    <label class="label-right">Celular Madre:</label>
+                    <input type="text" id="celularMadre" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Grupo:</label>
+                    <select id="grupo" class="input-medium">
+                        <option>CAASLU18</option>
+                    </select>
+                    
+                    <label class="label-inline">Grado:</label>
+                    <input type="text" id="grado" class="input-small">
+                    
+                    <label class="label-inline">Fecha Ingreso:</label>
+                    <input type="text" id="fechaIngreso" class="input-medium">
+                    
+                    <label class="label-inline">Reingreso:</label>
+                    <input type="checkbox" id="reingreso">
+                </div>
+
+                <div class="form-row">
+                    <label>Beca:</label>
+                    <input type="checkbox" id="beca">
+                    
+                    <label class="label-inline">%:</label>
+                    <input type="text" id="porcentaje" class="input-small">
+                    
+                    <label class="label-inline">Comentario:</label>
+                    <input type="text" id="comentario" class="input-xlarge">
+                </div>
+
+                <div class="form-row">
+                    <label>Instrumento:</label>
+                    <select id="instrumento" class="input-medium">
+                        <option>NOTI</option>
+                    </select>
+                    
+                    <label class="label-inline">Medio enteró:</label>
+                    <select id="medio" class="input-medium">
+                        <option>ANUN</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Tabla de Grupo -->
+            <div class="table-section">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Clave:</th>
+                            <th>Curso:</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>►</td>
+                            <td>CAASLU18</td>
+                            <td>CANTO</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="table-details">
+                    <div class="detail-row">
+                        <label>Maestro:</label>
+                        <input type="text" value="ARLETTE MARIA SIERRA ALCOCER" readonly>
+                    </div>
+                    <div class="detail-row">
+                        <label>Dia:</label>
+                        <input type="text" value="Lunes" class="input-small" readonly>
+                        
+                        <label class="label-inline">Hora entrada:</label>
+                        <input type="text" value="18:00" class="input-tiny" readonly>
+                    </div>
+                    <div class="detail-row">
+                        <label>Salon:</label>
+                        <input type="text" value="2" class="input-tiny" readonly>
+                        
+                        <label class="label-inline">Hora salida:</label>
+                        <input type="text" value="19:00" class="input-tiny" readonly>
+                    </div>
+                    <div class="detail-row">
+                        <label>Cupo:</label>
+                        <input type="text" value="0" class="input-tiny" readonly>
+                        
+                        <label class="label-inline">Alumnos:</label>
+                        <input type="text" value="3" class="input-tiny" readonly>
+                        
+                        <label class="label-inline">Leccion:</label>
+                        <input type="text" value="Null" class="input-large" readonly>
+                    </div>
+                    <div class="detail-row">
+                        <label>Inicio:</label>
+                        <input type="text" value="08/05/2023" class="input-medium" readonly>
+                        
+                        <label class="label-inline">FechaLeccion:</label>
+                        <input type="text" class="input-medium" readonly>
+                    </div>
+                </div>
+                <div class="table-nav">
+                    <span>Registro:</span>
+                    <button>|◄</button>
+                    <button>◄</button>
+                    <input type="text" value="1" class="nav-input">
+                    <button>►</button>
+                    <button>►|</button>
+                    <button>►*</button>
+                    <span>de 1</span>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <button class="action-btn" onclick="buscar()">Busca</button>
+            <button class="save-btn" onclick="guardar()">GUARDA Y TERMINA</button>
+        </footer>
+    </div>
+
+    <script src="common.js"></script>
+    <script src="alumnos.js"></script>
+</body>
+</html>

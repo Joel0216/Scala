@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Prospectos</title>
+    <link rel="stylesheet" href="prospectos.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Registro de Prospectos</h1>
+        </div>
+
+        <form id="prospectosForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="idProspecto">ID del prospecto:</label>
+                    <input type="text" id="idProspecto" name="idProspecto" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="fechaAtencion">Fecha de atención:</label>
+                    <input type="date" id="fechaAtencion" name="fechaAtencion">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="edad">Edad:</label>
+                    <input type="number" id="edad" name="edad">
+                </div>
+                <div class="form-group">
+                    <label for="curso">Curso:</label>
+                    <select id="curso" name="curso">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="apellidos">Apellidos:</label>
+                    <input type="text" id="apellidos" name="apellidos">
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Núm de telef:</label>
+                    <input type="text" id="telefono" name="telefono">
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="direccion">Dirección:</label>
+                <input type="text" id="direccion" name="direccion">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ciudad">Ciudad:</label>
+                    <input type="text" id="ciudad" name="ciudad">
+                </div>
+                <div class="form-group">
+                    <label for="codigoPostal">Código postal:</label>
+                    <input type="text" id="codigoPostal" name="codigoPostal">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="medioEntero">Medio q se enteró:</label>
+                    <select id="medioEntero" name="medioEntero">
+                        <option value="REC">RECOMENDACION</option>
+                        <option value="INT">INTERNET</option>
+                        <option value="VOL">VOLANTE</option>
+                        <option value="PER">PERIODICO</option>
+                        <option value="RAD">RADIO</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="recomienda">Q recomienda:</label>
+                    <input type="text" id="recomienda" name="recomienda">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="diaPreferente1">Día Prefe:</label>
+                    <select id="diaPreferente1" name="diaPreferente1">
+                        <option value="">Seleccione</option>
+                        <option value="LUNES">LUNES</option>
+                        <option value="MARTES">MARTES</option>
+                        <option value="MIERCOLES">MIERCOLES</option>
+                        <option value="JUEVES">JUEVES</option>
+                        <option value="VIERNES">VIERNES</option>
+                        <option value="SABADO">SABADO</option>
+                        <option value="DOMINGO">DOMINGO</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="horaPreferente1">Hora preferente 1:</label>
+                    <input type="text" id="horaPreferente1" name="horaPreferente1" placeholder="9-13">
+                </div>
+                <div class="form-group">
+                    <label for="seInscribio">Se Inscribió:</label>
+                    <select id="seInscribio" name="seInscribio">
+                        <option value="No">No</option>
+                        <option value="Si">Si</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="diaPreferente2">Día Prefe:</label>
+                    <select id="diaPreferente2" name="diaPreferente2">
+                        <option value="">Seleccione</option>
+                        <option value="LUNES">LUNES</option>
+                        <option value="MARTES">MARTES</option>
+                        <option value="MIERCOLES">MIERCOLES</option>
+                        <option value="JUEVES">JUEVES</option>
+                        <option value="VIERNES">VIERNES</option>
+                        <option value="SABADO">SABADO</option>
+                        <option value="DOMINGO">DOMINGO</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="horaPreferente2">Hora preferente 2:</label>
+                    <input type="text" id="horaPreferente2" name="horaPreferente2">
+                </div>
+                <div class="form-group">
+                    <label for="sigueInteresado">Sigue interesado:</label>
+                    <select id="sigueInteresado" name="sigueInteresado">
+                        <option value="Si">Si</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group nota-group">
+                    <label for="nota">Nota:</label>
+                    <textarea id="nota" name="nota" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="atendio">Atendió:</label>
+                    <input type="text" id="atendio" name="atendio">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
+                <button type="button" class="btn" id="buscarBtn">Buscar</button>
+                <button type="button" class="btn" id="borrarBtn">Borrar</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+            </div>
+        </form>
+    </div>
+
+    <script type="module" src="prospectos.js"></script>
+</body>
+</html>

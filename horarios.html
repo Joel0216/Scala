@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horarios</title>
+    <link rel="stylesheet" href="horarios.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HORARIOS</h1>
+            <div class="datetime" id="datetime"></div>
+        </div>
+
+        <div class="content">
+            <div class="anualidad-header">ANUALIDAD</div>
+
+            <div class="table-section">
+                <table id="horariosTable">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Día</th>
+                            <th>Hora</th>
+                            <th>Clave</th>
+                            <th>Maestro</th>
+                            <th>Sa.</th>
+                            <th>Cupo</th>
+                            <th>#</th>
+                            <th>Inicio</th>
+                            <th>Lec</th>
+                            <th>F.L.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="horariosTableBody">
+                    </tbody>
+                </table>
+
+                <div class="table-nav">
+                    <span>Registro: </span>
+                    <button type="button" class="nav-btn-small">|&lt;</button>
+                    <button type="button" class="nav-btn-small">&lt;</button>
+                    <input type="text" value="1" class="record-input" readonly>
+                    <button type="button" class="nav-btn-small">&gt;</button>
+                    <button type="button" class="nav-btn-small">&gt;|</button>
+                    <button type="button" class="nav-btn-small">|&gt;*</button>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn" id="buscarBtn">Buscar</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de búsqueda -->
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <h2>Proporcione Nombre del curso O inicio del nombre</h2>
+            <input type="text" id="searchInput" class="modal-input">
+            <div class="modal-buttons">
+                <button class="btn" id="aceptarBtn">Aceptar</button>
+                <button class="btn" id="cancelarBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de selección de cursos -->
+    <div id="selectModal" class="modal">
+        <div class="modal-content-large">
+            <h2>Seleccione un curso</h2>
+            <div id="cursosList"></div>
+            <div class="modal-buttons">
+                <button class="btn" id="cerrarSelectBtn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="horarios.js"></script>
+</body>
+</html>

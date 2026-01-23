@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relación de Exámenes</title>
+    <link rel="stylesheet" href="relacion-examenes.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Relación de Exámenes</h1>
+            <div class="fecha-hora" id="fechaHora"></div>
+        </div>
+        
+        <div class="form-section">
+            <div class="info-examen">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Clave de examen:</label>
+                        <input type="text" id="claveExamen" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Maestro Base:</label>
+                        <input type="text" id="maestroBase" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha de examen:</label>
+                        <input type="text" id="fechaExamen" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Examinador 1:</label>
+                        <input type="text" id="examinador1" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Hora de examen:</label>
+                        <input type="text" id="horaExamen" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Examinador 2:</label>
+                        <input type="text" id="examinador2" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de examen:</label>
+                        <input type="text" id="tipoExamen" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Salon de examen:</label>
+                        <input type="text" id="salonExamen" readonly>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alumnos-section">
+                <div class="alumnos-header">ALUMNOS RELACIONADOS QUE PRESENTAN EXAMEN</div>
+                <div class="tabla-container">
+                    <table id="tablaAlumnos">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Hora</th>
+                                <th>Cred</th>
+                                <th>Nombre</th>
+                                <th>G/N</th>
+                                <th>Recibo</th>
+                                <th>Fecha</th>
+                                <th>cant.</th>
+                                <th>neto:</th>
+                                <th>Presentó</th>
+                                <th>Aprobó</th>
+                                <th>H certif.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bodyAlumnos">
+                            <tr>
+                                <td>►</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td><input type="checkbox"></td>
+                                <td><input type="checkbox"></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <span>Registro: <span id="registroActual">0</span></span>
+            <button id="btnPrimero">|◄</button>
+            <button id="btnAnterior">◄</button>
+            <input type="number" id="inputRegistro" value="1" min="1">
+            <button id="btnSiguiente">►</button>
+            <button id="btnUltimo">►|</button>
+            <button id="btnBuscarRegistro">►*</button>
+            <span>de <span id="totalRegistros">0</span></span>
+        </div>
+        
+        <div class="button-group">
+            <button id="btnBuscar" class="btn">Buscar</button>
+            <button id="btnTerminar" class="btn btn-terminar">Terminar</button>
+        </div>
+    </div>
+
+    <!-- Modal de búsqueda -->
+    <div id="modalBusqueda" class="modal">
+        <div class="modal-content">
+            <h2>Proporcione la clave de búsqueda</h2>
+            <input type="text" id="inputBusqueda" placeholder="Clave de examen">
+            <div class="modal-buttons">
+                <button id="btnAceptarBusqueda" class="btn">Aceptar</button>
+                <button id="btnCancelarBusqueda" class="btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de lista de resultados -->
+    <div id="modalLista" class="modal">
+        <div class="modal-content modal-lista">
+            <h2>Seleccione un examen</h2>
+            <div class="lista-container">
+                <table id="tablaResultados">
+                    <thead>
+                        <tr>
+                            <th>Clave</th>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyResultados"></tbody>
+                </table>
+            </div>
+            <div class="modal-buttons">
+                <button id="btnSeleccionar" class="btn">Seleccionar</button>
+                <button id="btnCancelarLista" class="btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="relacion-examenes.js"></script>
+</body>
+</html>

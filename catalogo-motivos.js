@@ -1,0 +1,207 @@
+// Simulación de datos (en producción, esto vendría de una base de datos)
+let motivos = [
+    { clave: 'CAC', descripcion: 'CAMBIO DE CIUDAD' },
+    { clave: 'ECO', descripcion: 'PROBLEMAS ECONOMICOS' },
+    { clave: 'SAL', descripcion: 'PROBLEMAS DE SALUD' },
+    { clave: 'TRA', descripcion: 'PROBLEMAS DE TRABAJO' }
+];
+
+let registroActual = 0;
+let filaSeleccionada = null;
+
+// Referencias a elementos del DOM
+const claveInput = document.getElementById('claveMotivo');
+const descripcionInput = document.getElementById('descripcionMotivo');
+const registroSpan = document.getElementById('registroActual');
+const modalBusqueda = document.getElementById('modalBusqueda');
+const modalLista = document.getElementById('modalLista');
+const inputBusqueda = document.getElementById('inputBusqueda');
+const bodyResultados = document.getElementById('bodyResultados');
+
+// Inicializar
+function init() {
+    if (motivos.length > 0) {
+        mostrarRegistro(0);
+    }
+    actualizarContador();
+}
+
+// Mostrar registro actual
+function mostrarRegistro(index) {
+    if (index >= 0 && index < motivos.length) {
+        registroActual = index;
+        claveInput.value = motivos[index].clave;
+        descripcionInput.value = motivos[index].descripcion;
+        actualizarContador();
+    }
+}
+
+// Actualizar contador
+function actualizarContador() {
+    registroSpan.textContent = motivos.length > 0 ? registroActual + 1 : 0;
+    document.getElementById('inputRegistro').max = motivos.length;
+}
+
+// Botón Nuevo
+document.getElementById('btnNuevo').addEventListener('click', () => {
+    claveInput.value = '';
+    descripcionInput.value = '';
+    claveInput.focus();
+});
+
+// Botón Buscar
+document.getElementById('btnBuscar').addEventListener('click', () => {
+    inputBusqueda.value = '';
+    modalBusqueda.style.display = 'block';
+    inputBusqueda.focus();
+});
+
+// Aceptar búsqueda
+document.getElementById('btnAceptarBusqueda').addEventListener('click', () => {
+    const termino = inputBusqueda.value.trim().toLowerCase();
+    
+    if (!termino) {
+        alert('Por favor ingrese un término de búsqueda');
+        return;
+    }
+    
+    const resultados = motivos.filter(m => 
+        m.clave.toLowerCase().includes(termino) || 
+        m.descripcion.toLowerCase().includes(termino)
+    );
+    
+    modalBusqueda.style.display = 'none';
+    
+    if (resultados.length === 0) {
+        alert('No se encontraron resultados');
+    } else if (resultados.length === 1) {
+        const index = motivos.findIndex(m => m.clave === resultados[0].clave);
+        mostrarRegistro(index);
+    } else {
+        mostrarListaResultados(resultados);
+    }
+});
+
+// Cancelar búsqueda
+document.getElementById('btnCancelarBusqueda').addEventListener('click', () => {
+    modalBusqueda.style.display = 'none';
+});
+
+// Mostrar lista de resultados
+function mostrarListaResultados(resultados) {
+    bodyResultados.innerHTML = '';
+    filaSeleccionada = null;
+    
+    resultados.forEach((motivo, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${motivo.clave}</td>
+            <td>${motivo.descripcion}</td>
+        `;
+        tr.addEventListener('click', () => {
+            if (filaSeleccionada) {
+                filaSeleccionada.classList.remove('selected');
+            }
+            tr.classList.add('selected');
+            filaSeleccionada = tr;
+        });
+        tr.addEventListener('dblclick', () => {
+            seleccionarMotivo(motivo);
+        });
+        bodyResultados.appendChild(tr);
+    });
+    
+    modalLista.style.display = 'block';
+}
+
+// Seleccionar motivo
+function seleccionarMotivo(motivo) {
+    const index = motivos.findIndex(m => m.clave === motivo.clave);
+    mostrarRegistro(index);
+    modalLista.style.display = 'none';
+}
+
+// Botón Seleccionar en modal lista
+document.getElementById('btnSeleccionar').addEventListener('click', () => {
+    if (!filaSeleccionada) {
+        alert('Por favor seleccione un motivo');
+        return;
+    }
+    
+    const clave = filaSeleccionada.cells[0].textContent;
+    const motivo = motivos.find(m => m.clave === clave);
+    seleccionarMotivo(motivo);
+});
+
+// Cancelar lista
+document.getElementById('btnCancelarLista').addEventListener('click', () => {
+    modalLista.style.display = 'none';
+});
+
+// Botón Borrar
+document.getElementById('btnBorrar').addEventListener('click', () => {
+    if (motivos.length === 0) return;
+    
+    if (confirm('¿Está seguro de eliminar este registro?')) {
+        motivos.splice(registroActual, 1);
+        if (registroActual >= motivos.length) {
+            registroActual = motivos.length - 1;
+        }
+        if (motivos.length > 0) {
+            mostrarRegistro(registroActual);
+        } else {
+            claveInput.value = '';
+            descripcionInput.value = '';
+            actualizarContador();
+        }
+    }
+});
+
+// Botón Terminar
+document.getElementById('btnTerminar').addEventListener('click', () => {
+    const clave = claveInput.value.trim();
+    const descripcion = descripcionInput.value.trim();
+    
+    if (clave && descripcion) {
+        const existe = motivos.find(m => m.clave === clave);
+        if (existe) {
+            existe.descripcion = descripcion;
+            alert('Registro actualizado');
+        } else {
+            motivos.push({ clave, descripcion });
+            alert('Registro agregado');
+        }
+        mostrarRegistro(motivos.length - 1);
+    }
+});
+
+// Navegación
+document.getElementById('btnPrimero').addEventListener('click', () => {
+    mostrarRegistro(0);
+});
+
+document.getElementById('btnAnterior').addEventListener('click', () => {
+    if (registroActual > 0) {
+        mostrarRegistro(registroActual - 1);
+    }
+});
+
+document.getElementById('btnSiguiente').addEventListener('click', () => {
+    if (registroActual < motivos.length - 1) {
+        mostrarRegistro(registroActual + 1);
+    }
+});
+
+document.getElementById('btnUltimo').addEventListener('click', () => {
+    mostrarRegistro(motivos.length - 1);
+});
+
+document.getElementById('btnBuscarRegistro').addEventListener('click', () => {
+    const num = parseInt(document.getElementById('inputRegistro').value);
+    if (num > 0 && num <= motivos.length) {
+        mostrarRegistro(num - 1);
+    }
+});
+
+// Inicializar al cargar
+init();

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupos</title>
+    <link rel="stylesheet" href="grupos.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Grupos</h1>
+            <div class="datetime" id="datetime"></div>
+        </div>
+
+        <form id="gruposForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="clave">Clave:</label>
+                    <input type="text" id="clave" name="clave" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="curso">Curso:</label>
+                    <select id="curso" name="curso">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="dia">Dia:</label>
+                    <select id="dia" name="dia">
+                        <option value="LU">Lunes</option>
+                        <option value="MA">Martes</option>
+                        <option value="MI">Miércoles</option>
+                        <option value="JU">Jueves</option>
+                        <option value="VI">Viernes</option>
+                        <option value="SA">Sábado</option>
+                        <option value="DO">Domingo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="maestro">Maestro:</label>
+                    <select id="maestro" name="maestro">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="horaEntrada">Hora entrada:</label>
+                    <input type="time" id="horaEntrada" name="horaEntrada">
+                </div>
+                <div class="form-group">
+                    <label for="salon">Salón:</label>
+                    <select id="salon" name="salon">
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="cupo">Cupo:</label>
+                    <input type="number" id="cupo" name="cupo" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="alumnos">Alumnos:</label>
+                    <input type="number" id="alumnos" name="alumnos" value="-1" readonly>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="horaSalida">Hora salida:</label>
+                    <input type="time" id="horaSalida" name="horaSalida">
+                </div>
+                <div class="form-group">
+                    <label for="inicio">Inicio:</label>
+                    <input type="date" id="inicio" name="inicio">
+                </div>
+                <div class="form-group">
+                    <label for="leccion">Leccion:</label>
+                    <input type="text" id="leccion" name="leccion" value="Null">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="fechaLeccion">Fecha Leccion:</label>
+                <input type="date" id="fechaLeccion" name="fechaLeccion">
+            </div>
+
+            <!-- Tabla de alumnos -->
+            <div class="table-section">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cred</th>
+                            <th>Dig</th>
+                            <th>Nombre</th>
+                            <th>Telefono</th>
+                            <th>Grupo</th>
+                            <th>Fecha Ing</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alumnosTableBody">
+                    </tbody>
+                </table>
+                <div class="table-nav">
+                    <span>Registro: </span>
+                    <button type="button" class="nav-btn-small">|&lt;</button>
+                    <button type="button" class="nav-btn-small">&lt;</button>
+                    <input type="text" value="1" class="record-input" readonly>
+                    <button type="button" class="nav-btn-small">&gt;</button>
+                    <button type="button" class="nav-btn-small">&gt;|</button>
+                    <button type="button" class="nav-btn-small">|&gt;*</button>
+                </div>
+            </div>
+
+            <!-- Tabla de pagos -->
+            <div class="table-section">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Año</th>
+                            <th>Mes</th>
+                            <th>Descuento</th>
+                            <th>Precio</th>
+                            <th>Recibo</th>
+                            <th>Fecha</th>
+                            <th>Grupo</th>
+                            <th>Curso</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pagosTableBody">
+                    </tbody>
+                </table>
+                <div class="table-nav">
+                    <span>Registro: </span>
+                    <button type="button" class="nav-btn-small">|&lt;</button>
+                    <button type="button" class="nav-btn-small">&lt;</button>
+                    <input type="text" value="1" class="record-input" readonly>
+                    <button type="button" class="nav-btn-small">&gt;</button>
+                    <button type="button" class="nav-btn-small">&gt;|</button>
+                    <button type="button" class="nav-btn-small">|&gt;*</button>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn" id="buscarBtn">Buscar</button>
+                <button type="button" class="btn" id="borrarBtn">Borrar</button>
+                <button type="button" class="btn" id="edicionBtn">Edición</button>
+                <button type="button" class="btn" id="altasBtn">Altas</button>
+                <button type="button" class="btn" id="listadoBtn">Listado</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+            </div>
+        </form>
+    </div>
+
+    <script type="module" src="grupos.js"></script>
+</body>
+</html>

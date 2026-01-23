@@ -1,0 +1,159 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #00CED1;
+    padding: 20px;
+}
+
+.container {
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: #00CED1;
+    border: 2px solid #008B8B;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+.header {
+    background-color: #00CED1;
+    color: white;
+    padding: 15px 20px;
+    text-align: center;
+    border-bottom: 2px solid #008B8B;
+}
+
+.header h1 {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+form {
+    padding: 20px;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+label {
+    width: 220px;
+    text-align: right;
+    margin-right: 10px;
+    font-weight: bold;
+    color: #000;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    flex: 1;
+    padding: 5px;
+    border: 2px inset #dfdfdf;
+    background-color: white;
+    font-size: 14px;
+}
+
+input[readonly] {
+    background-color: #f0f0f0;
+}
+
+select {
+    cursor: pointer;
+}
+
+.table-section {
+    margin: 20px 0;
+    border: 2px solid #008B8B;
+    padding: 15px;
+    background-color: #20B2AA;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    background-color: white;
+}
+
+th {
+    background-color: #008B8B;
+    color: white;
+    padding: 8px;
+    border: 1px solid #006666;
+    text-align: center;
+}
+
+td {
+    padding: 6px;
+    border: 1px solid #008B8B;
+    text-align: center;
+}
+
+.table-nav {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.nav-btn-small {
+    padding: 3px 10px;
+    border: 2px outset #dfdfdf;
+    background-color: #00CED1;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.nav-btn-small:active {
+    border-style: inset;
+}
+
+.record-input {
+    width: 50px;
+    text-align: center;
+    padding: 3px;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 10px 25px;
+    border: 2px outset #dfdfdf;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    color: red;
+}
+
+.btn:active {
+    border-style: inset;
+}
+
+.btn-terminar {
+    background-color: #f0f0f0;
+}

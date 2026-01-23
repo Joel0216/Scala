@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Alumnos (BAJAS)</title>
+    <link rel="stylesheet" href="alumnos-bajas.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Consulta de Alumnos (BAJAS)</h1>
+            <div class="datetime" id="datetime"></div>
+        </div>
+
+        <form id="bajasForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="credencial1">Credencial:</label>
+                    <input type="text" id="credencial1" name="credencial1" style="width: 50px;">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="credencial2" name="credencial2" style="width: 50px;">
+                </div>
+                <div class="form-group">
+                    <label for="celular">Celular:</label>
+                    <input type="text" id="celular" name="celular">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Telefono:</label>
+                    <input type="text" id="telefono" name="telefono" readonly>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="direccion">Direccion:</label>
+                    <input type="text" id="direccion" name="direccion" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="fechaIngreso">Fecha Ingreso:</label>
+                    <input type="text" id="fechaIngreso" name="fechaIngreso" readonly>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <input type="text" id="direccion2" name="direccion2" readonly>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="text" id="email" name="email" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="edad">Edad:</label>
+                    <input type="text" id="edad" name="edad" readonly>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nombrePadre">Nombre del padre:</label>
+                    <input type="text" id="nombrePadre" name="nombrePadre" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="celularPadre">Celular padre:</label>
+                    <input type="text" id="celularPadre" name="celularPadre" readonly>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nombreMadre">Nombre de la madre:</label>
+                    <input type="text" id="nombreMadre" name="nombreMadre" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="celularMadre">Celular madre:</label>
+                    <input type="text" id="celularMadre" name="celularMadre" readonly>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="grupo">Grupo:</label>
+                    <input type="text" id="grupo" name="grupo" readonly>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="curso" name="curso" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="grado">Grado:</label>
+                    <input type="text" id="grado" name="grado" readonly>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="beca">Beca:</label>
+                    <input type="checkbox" id="beca" name="beca" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="porcentaje">Porcentaje:</label>
+                    <input type="text" id="porcentaje" name="porcentaje" readonly>
+                </div>
+                <div class="form-group full-width">
+                    <label for="comentario">Comentario:</label>
+                    <input type="text" id="comentario" name="comentario" readonly>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="instrumento">Instrumento:</label>
+                    <select id="instrumento" name="instrumento" disabled>
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="metodo">Metodo:</label>
+                    <select id="metodo" name="metodo" disabled>
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="motivo">Motivo:</label>
+                    <select id="motivo" name="motivo" disabled>
+                        <option value="NOV">NOV</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="fechaBaja">F. Baja:</label>
+                    <input type="text" id="fechaBaja" name="fechaBaja" readonly>
+                </div>
+                <div class="form-group full-width">
+                    <label for="observaciones">Observ.:</label>
+                    <input type="text" id="observaciones" name="observaciones" readonly>
+                </div>
+            </div>
+
+            <!-- Tabla de pagos -->
+            <div class="table-section">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Año</th>
+                            <th>Mes</th>
+                            <th>Descuento</th>
+                            <th>Precio</th>
+                            <th>Recibo</th>
+                            <th>Fecha</th>
+                            <th>Grupo</th>
+                            <th>Curso</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pagosTableBody">
+                    </tbody>
+                </table>
+                <div class="table-nav">
+                    <span>Registro: </span>
+                    <button type="button" class="nav-btn-small">|&lt;</button>
+                    <button type="button" class="nav-btn-small">&lt;</button>
+                    <input type="text" value="1" class="record-input" readonly>
+                    <button type="button" class="nav-btn-small">&gt;</button>
+                    <button type="button" class="nav-btn-small">&gt;|</button>
+                    <button type="button" class="nav-btn-small">|&gt;*</button>
+                </div>
+            </div>
+
+            <!-- Tabla de exámenes -->
+            <div class="table-section">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cred</th>
+                            <th>Clave Examen</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Maestro Baja</th>
+                            <th>G/N</th>
+                            <th># certificado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="examenesTableBody">
+                    </tbody>
+                </table>
+                <div class="table-nav">
+                    <span>Registro: </span>
+                    <button type="button" class="nav-btn-small">|&lt;</button>
+                    <button type="button" class="nav-btn-small">&lt;</button>
+                    <input type="text" value="1" class="record-input" readonly>
+                    <button type="button" class="nav-btn-small">&gt;</button>
+                    <button type="button" class="nav-btn-small">&gt;|</button>
+                    <button type="button" class="nav-btn-small">&gt;*</button>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn" id="buscarBtn">Buscar</button>
+                <button type="button" class="btn" id="buscarNombreBtn">Buscar Nombre</button>
+                <button type="button" class="btn" id="siguienteBtn">Siguiente</button>
+                <button type="button" class="btn" id="listadoBtn">Listado</button>
+                <button type="button" class="btn" id="reingresoBtn">Reingreso</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn">TERMINAR</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal de búsqueda -->
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Proporcione el numero de Credencial</h2>
+            <input type="text" id="searchInput" class="modal-input">
+            <div class="modal-buttons">
+                <button class="btn" id="aceptarBtn">Aceptar</button>
+                <button class="btn" id="cancelarBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de selección de alumnos -->
+    <div id="selectModal" class="modal">
+        <div class="modal-content-large">
+            <h2>Seleccione un alumno</h2>
+            <div id="alumnosList"></div>
+            <div class="modal-buttons">
+                <button class="btn" id="cerrarSelectBtn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="alumnos-bajas.js"></script>
+</body>
+</html>

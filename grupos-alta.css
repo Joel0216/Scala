@@ -1,0 +1,140 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #00CED1;
+    padding: 20px;
+}
+
+.container {
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: #00CED1;
+    border: 2px solid #008B8B;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+.header {
+    background-color: #00CED1;
+    color: white;
+    padding: 15px 20px;
+    text-align: center;
+    border-bottom: 2px solid #008B8B;
+}
+
+.header h1 {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+form {
+    padding: 20px;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+label {
+    width: 140px;
+    text-align: right;
+    margin-right: 10px;
+    font-weight: bold;
+    color: #000;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="time"],
+input[type="date"],
+select {
+    flex: 1;
+    padding: 5px;
+    border: 2px inset #dfdfdf;
+    background-color: white;
+    font-size: 14px;
+}
+
+input[readonly] {
+    background-color: #f0f0f0;
+}
+
+select {
+    cursor: pointer;
+}
+
+.dropdown-btn {
+    padding: 5px 10px;
+    border: 2px outset #dfdfdf;
+    background-color: #c0c0c0;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: 2px outset #dfdfdf;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.btn:active {
+    border-style: inset;
+}
+
+.btn-terminar {
+    color: red;
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    background-color: #00CED1;
+    border-top: 2px solid #008B8B;
+}
+
+.nav-btn {
+    padding: 5px 15px;
+    border: 2px outset #dfdfdf;
+    background-color: #00CED1;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.nav-btn:active {
+    border-style: inset;
+}
+
+.record-info {
+    margin: 0 10px;
+    font-size: 14px;
+}
