@@ -3,71 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Articulos</title>
+    <title>Artículos</title>
     <link rel="stylesheet" href="articulos.css">
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Articulos</h1>
+        <header>
+            <h1>Artículos</h1>
             <div class="datetime" id="datetime"></div>
-        </div>
+        </header>
 
-        <form id="articulosForm">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="clave">Clave:</label>
-                    <input type="text" id="clave" name="clave" required>
+        <main>
+            <div class="form-section">
+                <div class="form-row">
+                    <label>Clave:</label>
+                    <input type="text" id="clave" class="input-small" readonly>
+                    
+                    <label class="label-right">Descripcion:</label>
+                    <input type="text" id="descripcion" class="input-xlarge">
                 </div>
-                <div class="form-group">
-                    <label for="descripcion">Descripcion:</label>
-                    <input type="text" id="descripcion" name="descripcion" required>
+
+                <div class="form-row">
+                    <label>Grupo:</label>
+                    <select id="grupo" class="input-medium">
+                        <option value="">Seleccione...</option>
+                        <option value="Métodos">Métodos</option>
+                        <option value="Instrumentos">Instrumentos</option>
+                        <option value="Accesorios">Accesorios</option>
+                        <option value="Libros">Libros</option>
+                        <option value="Cuerdas">Cuerdas</option>
+                    </select>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="grupo">Grupo:</label>
-                <select id="grupo" name="grupo">
-                    <option value="Métodos">Métodos</option>
-                    <option value="Guitarras">Guitarras</option>
-                    <option value="Accesorios">Accesorios</option>
-                    <option value="Cuerdas">Cuerdas</option>
-                </select>
-            </div>
+                <div class="form-row">
+                    <label>Precio:</label>
+                    <input type="number" id="precio" class="input-medium" value="80" step="0.01">
+                </div>
 
-            <div class="form-group">
-                <label for="precio">Precio:</label>
-                <input type="number" id="precio" name="precio" step="0.01" value="0">
-            </div>
+                <div class="form-row">
+                    <label>IVA:</label>
+                    <input type="number" id="iva" class="input-medium" value="0.00" step="0.01">
+                </div>
 
-            <div class="form-group">
-                <label for="iva">IVA:</label>
-                <input type="number" id="iva" name="iva" step="0.01" value="0.00">
-            </div>
-
-            <div class="form-group">
-                <label for="stock">Stock:</label>
-                <input type="number" id="stock" name="stock" value="0">
+                <div class="form-row">
+                    <label>Stock:</label>
+                    <input type="number" id="stock" class="input-medium" value="10">
+                </div>
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
-                <button type="button" class="btn" id="buscarBtn">Buscar</button>
-                <button type="button" class="btn" id="borrarBtn">Borrar</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+                <button class="action-btn" onclick="nuevoArticulo()">Nuevo</button>
+                <button class="action-btn" onclick="buscarArticulo()">Buscar</button>
+                <button class="action-btn" onclick="borrarArticulo()">Borrar</button>
+                <button class="action-btn" id="btnGuardar" onclick="guardarCambios()" style="display: none;">Guardar</button>
+                <button class="btn-terminar" onclick="terminar()">Terminar</button>
             </div>
-        </form>
 
-        <div class="navigation">
-            <button class="nav-btn" id="firstBtn">|&lt;</button>
-            <button class="nav-btn" id="prevBtn">&lt;</button>
-            <span class="record-info">Registro: <span id="currentRecord">1</span> de <span id="totalRecords">282</span></span>
-            <button class="nav-btn" id="nextBtn">&gt;</button>
-            <button class="nav-btn" id="lastBtn">&gt;|</button>
-            <button class="nav-btn" id="newRecordBtn">|&gt;*</button>
+            <div class="navigation">
+                <span>Registro: <span id="registroActual">1</span></span>
+                <button onclick="navegarPrimero()">|◄</button>
+                <button onclick="navegarAnterior()">◄</button>
+                <input type="number" id="inputRegistro" value="1" min="1" class="nav-input">
+                <button onclick="navegarSiguiente()">►</button>
+                <button onclick="navegarUltimo()">►|</button>
+                <button onclick="navegarRegistro()">►*</button>
+                <span>de <span id="totalRegistros">282</span></span>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de búsqueda -->
+    <div id="modalBusqueda" class="modal">
+        <div class="modal-content">
+            <h2>Proporcione la clave del articulo</h2>
+            <input type="text" id="inputBusqueda" placeholder="Clave o grupo del artículo">
+            <div class="modal-buttons">
+                <button class="btn" onclick="aceptarBusqueda()">Aceptar</button>
+                <button class="btn" onclick="cerrarModal()">Cancelar</button>
+            </div>
         </div>
     </div>
 
-    <script type="module" src="articulos-new.js"></script>
+    <!-- Modal de lista de resultados -->
+    <div id="modalLista" class="modal">
+        <div class="modal-content modal-lista">
+            <h2>Seleccione un artículo</h2>
+            <div class="lista-container">
+                <table id="tablaResultados">
+                    <thead>
+                        <tr>
+                            <th>Clave</th>
+                            <th>Descripción</th>
+                            <th>Grupo</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyResultados"></tbody>
+                </table>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" onclick="cerrarModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="articulos.js"></script>
 </body>
 </html>

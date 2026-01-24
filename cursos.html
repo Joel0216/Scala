@@ -8,65 +8,100 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <header>
             <h1>Cursos</h1>
             <div class="datetime" id="datetime"></div>
-        </div>
+        </header>
 
-        <form id="cursosForm">
-            <div class="form-group">
-                <label for="curso">Curso:</label>
-                <input type="text" id="curso" name="curso" required>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="costo">Costo:</label>
-                    <input type="number" id="costo" name="costo" step="0.01" value="0.00">
-                </div>
-                <div class="form-group">
-                    <label for="cursoSiguiente">Curso Siguiente:</label>
-                    <select id="cursoSiguiente" name="cursoSiguiente">
-                        <option value="">INSCRIPCION</option>
+        <main>
+            <div class="form-section">
+                <div class="form-row">
+                    <label>Curso:</label>
+                    <input type="text" id="curso" class="input-large">
+                    
+                    <label class="label-right">Curso Siguiente:</label>
+                    <select id="cursoSiguiente" class="input-medium">
+                        <option value="">Seleccione...</option>
+                        <option value="INSCRIPCION">INSCRIPCION</option>
                     </select>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="clave">Clave:</label>
-                <input type="text" id="clave" name="clave">
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="iva">IVA:</label>
-                    <input type="number" id="iva" name="iva" step="0.01" value="0.00">
+                <div class="form-row">
+                    <label>Costo:</label>
+                    <input type="text" id="costo" class="input-medium" value="$300.00">
                 </div>
-                <div class="form-group">
-                    <label for="recargo">Recargo:</label>
-                    <input type="number" id="recargo" name="recargo" step="0.01" value="0.00">
+
+                <div class="form-row">
+                    <label>Clave:</label>
+                    <input type="text" id="clave" class="input-small" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>IVA:</label>
+                    <input type="text" id="iva" class="input-medium" value="0.16">
+                </div>
+
+                <div class="form-row">
+                    <label>Recargo:</label>
+                    <input type="text" id="recargo" class="input-medium" value="$0.00">
                 </div>
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
-                <button type="button" class="btn" id="buscarBtn">Buscar</button>
-                <button type="button" class="btn" id="borrarBtn">Borrar</button>
-                <button type="button" class="btn" id="reporteBtn">Reporte</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+                <button class="action-btn" onclick="nuevoCurso()">Nuevo</button>
+                <button class="action-btn" onclick="buscarCurso()">Buscar</button>
+                <button class="action-btn" onclick="borrarCurso()">Borrar</button>
+                <button class="action-btn" onclick="generarReporte()">Reporte</button>
+                <button class="btn-terminar" onclick="terminar()">Terminar</button>
             </div>
-        </form>
 
-        <div class="navigation">
-            <button class="nav-btn" id="firstBtn">|&lt;</button>
-            <button class="nav-btn" id="prevBtn">&lt;</button>
-            <span class="record-info">Registro: <span id="currentRecord">1</span> de <span id="totalRecords">0</span></span>
-            <button class="nav-btn" id="nextBtn">&gt;</button>
-            <button class="nav-btn" id="lastBtn">&gt;|</button>
-            <button class="nav-btn" id="newRecordBtn">|&gt;*</button>
+            <div class="navigation">
+                <span>Registro: <span id="registroActual">1</span></span>
+                <button onclick="navegarPrimero()">|◄</button>
+                <button onclick="navegarAnterior()">◄</button>
+                <input type="number" id="inputRegistro" value="1" min="1" class="nav-input">
+                <button onclick="navegarSiguiente()">►</button>
+                <button onclick="navegarUltimo()">►|</button>
+                <button onclick="navegarRegistro()">►*</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de búsqueda -->
+    <div id="modalBusqueda" class="modal">
+        <div class="modal-content">
+            <h2>Proporcione Nombre del curso O inicio del nombre</h2>
+            <input type="text" id="inputBusqueda" placeholder="Nombre del curso">
+            <div class="modal-buttons">
+                <button class="btn" onclick="aceptarBusqueda()">Aceptar</button>
+                <button class="btn" onclick="cerrarModal()">Cancelar</button>
+            </div>
         </div>
     </div>
 
-    <script type="module" src="cursos.js"></script>
+    <!-- Modal de lista de resultados -->
+    <div id="modalLista" class="modal">
+        <div class="modal-content modal-lista">
+            <h2>Seleccione un curso</h2>
+            <div class="lista-container">
+                <table id="tablaResultados">
+                    <thead>
+                        <tr>
+                            <th>Curso</th>
+                            <th>Clave</th>
+                            <th>Costo</th>
+                            <th>IVA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyResultados"></tbody>
+                </table>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" onclick="cerrarModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="cursos.js"></script>
 </body>
 </html>

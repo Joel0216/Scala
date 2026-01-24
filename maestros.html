@@ -8,75 +8,101 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <header>
             <h1>Maestros</h1>
             <div class="datetime" id="datetime"></div>
-        </div>
+        </header>
 
-        <form id="maestrosForm">
-            <div class="form-group">
-                <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" name="nombre" required>
-            </div>
-
-            <div class="form-group">
-                <label for="direccion1">Direccion 1:</label>
-                <input type="text" id="direccion1" name="direccion1">
-            </div>
-
-            <div class="form-group">
-                <label for="direccion2"></label>
-                <input type="text" id="direccion2" name="direccion2">
-            </div>
-
-            <div class="form-group">
-                <label for="telefono">Telefono:</label>
-                <input type="text" id="telefono" name="telefono">
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="clave">Clave:</label>
-                    <input type="text" id="clave" name="clave">
+        <main>
+            <div class="form-section">
+                <div class="form-row">
+                    <label>Nombre:</label>
+                    <input type="text" id="nombre" class="input-xlarge">
                 </div>
-                <div class="form-group">
-                    <label for="rfc">RFC:</label>
-                    <input type="text" id="rfc" name="rfc">
+
+                <div class="form-row">
+                    <label>Direccion 1:</label>
+                    <input type="text" id="direccion1" class="input-xlarge">
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="grado">Grado:</label>
-                <input type="text" id="grado" name="grado">
-            </div>
+                <div class="form-row">
+                    <label></label>
+                    <input type="text" id="direccion2" class="input-xlarge">
+                </div>
 
-            <div class="form-group">
-                <label for="detallesGrado">Detalles Grado:</label>
-                <input type="text" id="detallesGrado" name="detallesGrado">
-            </div>
+                <div class="form-row">
+                    <label>Telefono:</label>
+                    <input type="text" id="telefono" class="input-medium">
+                </div>
 
-            <div class="form-group">
-                <label for="fechaIngreso">Fecha de ingreso:</label>
-                <input type="date" id="fechaIngreso" name="fechaIngreso">
+                <div class="form-row">
+                    <label>Clave:</label>
+                    <input type="text" id="clave" class="input-small">
+                    
+                    <label class="label-inline">RFC:</label>
+                    <input type="text" id="rfc" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Grado:</label>
+                    <input type="text" id="grado" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Detalles Grado:</label>
+                    <input type="text" id="detallesGrado" class="input-large">
+                </div>
+
+                <div class="form-row">
+                    <label>Fecha de ingreso:</label>
+                    <input type="text" id="fechaIngreso" class="input-medium">
+                </div>
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
-                <button type="button" class="btn" id="buscarBtn">Buscar</button>
-                <button type="button" class="btn" id="borrarBtn">Borrar</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+                <button class="action-btn" onclick="nuevoMaestro()">Nuevo</button>
+                <button class="action-btn" onclick="buscarMaestro()">Buscar</button>
+                <button class="action-btn" onclick="borrarMaestro()">Borrar</button>
+                <button class="btn-terminar" onclick="terminar()">Terminar</button>
             </div>
-        </form>
+        </main>
+    </div>
 
-        <div class="navigation">
-            <button class="nav-btn" id="firstBtn">|&lt;</button>
-            <button class="nav-btn" id="prevBtn">&lt;</button>
-            <span class="record-info">Registro: <span id="currentRecord">1</span> de <span id="totalRecords">0</span></span>
-            <button class="nav-btn" id="nextBtn">&gt;</button>
-            <button class="nav-btn" id="lastBtn">&gt;|</button>
+    <!-- Modal de búsqueda -->
+    <div id="modalBusqueda" class="modal">
+        <div class="modal-content">
+            <h2>Proporcione el Nombre del Maestro o Inicio del Nombre</h2>
+            <input type="text" id="inputBusqueda" placeholder="Nombre del maestro">
+            <div class="modal-buttons">
+                <button class="btn" onclick="aceptarBusqueda()">Aceptar</button>
+                <button class="btn" onclick="cerrarModal()">Cancelar</button>
+            </div>
         </div>
     </div>
 
-    <script type="module" src="maestros.js"></script>
+    <!-- Modal de lista de resultados -->
+    <div id="modalLista" class="modal">
+        <div class="modal-content modal-lista">
+            <h2>Seleccione un maestro</h2>
+            <div class="lista-container">
+                <table id="tablaResultados">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Clave</th>
+                            <th>Teléfono</th>
+                            <th>Grado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyResultados"></tbody>
+                </table>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" onclick="cerrarModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="maestros.js"></script>
 </body>
 </html>

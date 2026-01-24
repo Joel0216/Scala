@@ -1,189 +1,223 @@
-import { supabase } from './supabase-config.js';
+// Datos de ejemplo de maestros
+let maestros = [
+    {
+        nombre: 'AARON GONZALEZ',
+        direccion1: 'CALLE 51 #246 X 44 Y 46 ALTOS',
+        direccion2: 'MERIDA, YUCATAN',
+        telefono: '9 19 40 39',
+        clave: 'AG',
+        rfc: '',
+        grado: '',
+        detallesGrado: 'GUITARRA ELETRICA',
+        fechaIngreso: '26-oct-2015'
+    },
+    {
+        nombre: 'ARLETTE MARIA SIERRA ALCOCER',
+        direccion1: 'CALLE 30 #200 X 25',
+        direccion2: 'MERIDA, YUCATAN',
+        telefono: '9 99 12 34 56',
+        clave: 'AS',
+        rfc: '',
+        grado: '',
+        detallesGrado: 'CANTO',
+        fechaIngreso: '15-ene-2010'
+    },
+    {
+        nombre: 'JESUS PEDROZA',
+        direccion1: 'CALLE 40 #150 X 15',
+        direccion2: 'MERIDA, YUCATAN',
+        telefono: '9 99 87 65 43',
+        clave: 'JP',
+        rfc: '',
+        grado: '',
+        detallesGrado: 'PIANO',
+        fechaIngreso: '10-mar-2012'
+    }
+];
 
-let maestros = [];
-let currentIndex = 0;
+let maestroSeleccionado = null;
 
 // Actualizar fecha y hora
-function updateDateTime() {
-    const now = new Date();
-    const formatted = now.toLocaleString('es-MX', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true
-    });
-    document.getElementById('datetime').textContent = formatted;
-}
-
-setInterval(updateDateTime, 1000);
-updateDateTime();
-
-// Cargar maestros desde Supabase
-async function loadMaestros() {
-    try {
-        const { data, error } = await supabase
-            .from('maestros')
-            .select('*')
-            .order('id', { ascending: true });
-
-        if (error) throw error;
-
-        maestros = data || [];
-        document.getElementById('totalRecords').textContent = maestros.length;
-        
-        if (maestros.length > 0) {
-            currentIndex = 0;
-            displayMaestro(currentIndex);
-        }
-    } catch (error) {
-        console.error('Error cargando maestros:', error);
-        alert('Error al cargar los datos');
+function actualizarFechaHora() {
+    const ahora = new Date();
+    const dia = String(ahora.getDate()).padStart(2, '0');
+    const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+    const anio = ahora.getFullYear();
+    let horas = ahora.getHours();
+    const minutos = String(ahora.getMinutes()).padStart(2, '0');
+    const segundos = String(ahora.getSeconds()).padStart(2, '0');
+    const ampm = horas >= 12 ? 'p. m.' : 'a. m.';
+    horas = horas % 12 || 12;
+    const horasStr = String(horas).padStart(2, '0');
+    
+    const datetime = document.getElementById('datetime');
+    if (datetime) {
+        datetime.textContent = `${dia}/${mes}/${anio} ${horasStr}:${minutos}:${segundos} ${ampm}`;
     }
 }
 
-// Mostrar maestro en el formulario
-function displayMaestro(index) {
-    if (index < 0 || index >= maestros.length) return;
+setInterval(actualizarFechaHora, 1000);
+actualizarFechaHora();
 
-    const maestro = maestros[index];
-    document.getElementById('nombre').value = maestro.nombre || '';
-    document.getElementById('direccion1').value = maestro.direccion1 || '';
-    document.getElementById('direccion2').value = maestro.direccion2 || '';
-    document.getElementById('telefono').value = maestro.telefono || '';
-    document.getElementById('clave').value = maestro.clave || '';
-    document.getElementById('rfc').value = maestro.rfc || '';
-    document.getElementById('grado').value = maestro.grado || '';
-    document.getElementById('detallesGrado').value = maestro.detalles_grado || '';
-    document.getElementById('fechaIngreso').value = maestro.fecha_ingreso || '';
-
-    document.getElementById('currentRecord').textContent = index + 1;
+// Función para limpiar formulario
+function limpiarFormulario() {
+    document.getElementById('nombre').value = '';
+    document.getElementById('direccion1').value = '';
+    document.getElementById('direccion2').value = '';
+    document.getElementById('telefono').value = '';
+    document.getElementById('clave').value = '';
+    document.getElementById('rfc').value = '';
+    document.getElementById('grado').value = '';
+    document.getElementById('detallesGrado').value = '';
+    document.getElementById('fechaIngreso').value = '';
+    maestroSeleccionado = null;
 }
 
-// Limpiar formulario
-function clearForm() {
-    document.getElementById('maestrosForm').reset();
-    currentIndex = -1;
+// Función para cargar datos del maestro
+function cargarDatosMaestro(maestro) {
+    maestroSeleccionado = maestro;
+    document.getElementById('nombre').value = maestro.nombre;
+    document.getElementById('direccion1').value = maestro.direccion1;
+    document.getElementById('direccion2').value = maestro.direccion2;
+    document.getElementById('telefono').value = maestro.telefono;
+    document.getElementById('clave').value = maestro.clave;
+    document.getElementById('rfc').value = maestro.rfc;
+    document.getElementById('grado').value = maestro.grado;
+    document.getElementById('detallesGrado').value = maestro.detallesGrado;
+    document.getElementById('fechaIngreso').value = maestro.fechaIngreso;
 }
 
-// Guardar maestro
-async function saveMaestro() {
-    const maestroData = {
-        nombre: document.getElementById('nombre').value,
-        direccion1: document.getElementById('direccion1').value,
-        direccion2: document.getElementById('direccion2').value,
-        telefono: document.getElementById('telefono').value,
-        clave: document.getElementById('clave').value,
-        rfc: document.getElementById('rfc').value,
-        grado: document.getElementById('grado').value,
-        detalles_grado: document.getElementById('detallesGrado').value,
-        fecha_ingreso: document.getElementById('fechaIngreso').value
-    };
-
-    try {
-        if (currentIndex >= 0 && maestros[currentIndex]) {
-            // Actualizar
-            const { error } = await supabase
-                .from('maestros')
-                .update(maestroData)
-                .eq('id', maestros[currentIndex].id);
-
-            if (error) throw error;
-            alert('Maestro actualizado correctamente');
-        } else {
-            // Insertar nuevo
-            const { error } = await supabase
-                .from('maestros')
-                .insert([maestroData]);
-
-            if (error) throw error;
-            alert('Maestro guardado correctamente');
-        }
-
-        await loadMaestros();
-    } catch (error) {
-        console.error('Error guardando maestro:', error);
-        alert('Error al guardar el maestro');
-    }
-}
-
-// Eliminar maestro
-async function deleteMaestro() {
-    if (currentIndex < 0 || !maestros[currentIndex]) {
-        alert('Seleccione un maestro para eliminar');
+// Botón Nuevo
+function nuevoMaestro() {
+    const nombre = document.getElementById('nombre').value.trim();
+    
+    if (!nombre) {
+        alert('Por favor ingrese el nombre del maestro');
         return;
     }
+    
+    const nuevoMaestro = {
+        nombre: nombre.toUpperCase(),
+        direccion1: document.getElementById('direccion1').value.toUpperCase(),
+        direccion2: document.getElementById('direccion2').value.toUpperCase(),
+        telefono: document.getElementById('telefono').value,
+        clave: document.getElementById('clave').value.toUpperCase(),
+        rfc: document.getElementById('rfc').value.toUpperCase(),
+        grado: document.getElementById('grado').value,
+        detallesGrado: document.getElementById('detallesGrado').value.toUpperCase(),
+        fechaIngreso: document.getElementById('fechaIngreso').value
+    };
+    
+    if (maestroSeleccionado) {
+        // Actualizar maestro existente
+        const index = maestros.findIndex(m => m.nombre === maestroSeleccionado.nombre);
+        if (index !== -1) {
+            maestros[index] = nuevoMaestro;
+            alert('Maestro actualizado correctamente');
+        }
+    } else {
+        // Agregar nuevo maestro
+        maestros.push(nuevoMaestro);
+        alert('Maestro agregado correctamente');
+    }
+    
+    limpiarFormulario();
+}
 
-    if (!confirm('¿Está seguro de eliminar este maestro?')) return;
+// Botón Buscar
+function buscarMaestro() {
+    const modal = document.getElementById('modalBusqueda');
+    modal.style.display = 'block';
+    document.getElementById('inputBusqueda').value = '';
+    document.getElementById('inputBusqueda').focus();
+}
 
-    try {
-        const { error } = await supabase
-            .from('maestros')
-            .delete()
-            .eq('id', maestros[currentIndex].id);
-
-        if (error) throw error;
-
-        alert('Maestro eliminado correctamente');
-        await loadMaestros();
-    } catch (error) {
-        console.error('Error eliminando maestro:', error);
-        alert('Error al eliminar el maestro');
+// Aceptar búsqueda
+function aceptarBusqueda() {
+    const termino = document.getElementById('inputBusqueda').value.trim().toUpperCase();
+    
+    if (!termino) {
+        alert('Por favor ingrese un nombre');
+        return;
+    }
+    
+    const resultados = maestros.filter(m => 
+        m.nombre.toUpperCase().includes(termino) ||
+        m.nombre.toUpperCase().startsWith(termino)
+    );
+    
+    cerrarModal();
+    
+    if (resultados.length === 0) {
+        alert('No se encontraron maestros con ese nombre');
+    } else if (resultados.length === 1) {
+        cargarDatosMaestro(resultados[0]);
+    } else {
+        mostrarListaMaestros(resultados);
     }
 }
 
-// Event listeners
-document.getElementById('nuevoBtn').addEventListener('click', () => {
-    clearForm();
-    saveMaestro();
-});
+// Mostrar lista de maestros
+function mostrarListaMaestros(resultados) {
+    const modal = document.getElementById('modalLista');
+    const tbody = document.getElementById('bodyResultados');
+    tbody.innerHTML = '';
+    
+    resultados.forEach((maestro, index) => {
+        const tr = document.createElement('tr');
+        tr.onclick = function() {
+            cargarDatosMaestro(maestro);
+            cerrarModal();
+        };
+        tr.innerHTML = `
+            <td>${maestro.nombre}</td>
+            <td>${maestro.clave}</td>
+            <td>${maestro.telefono}</td>
+            <td>${maestro.detallesGrado}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+    
+    modal.style.display = 'block';
+}
 
-document.getElementById('buscarBtn').addEventListener('click', () => {
-    const nombre = prompt('Ingrese el nombre a buscar:');
-    if (nombre) {
-        const index = maestros.findIndex(m => 
-            m.nombre.toLowerCase().includes(nombre.toLowerCase())
-        );
-        if (index >= 0) {
-            currentIndex = index;
-            displayMaestro(currentIndex);
-        } else {
-            alert('Maestro no encontrado');
+// Cerrar modal
+function cerrarModal() {
+    document.getElementById('modalBusqueda').style.display = 'none';
+    document.getElementById('modalLista').style.display = 'none';
+}
+
+// Botón Borrar
+function borrarMaestro() {
+    if (!maestroSeleccionado) {
+        alert('Primero debe seleccionar un maestro');
+        return;
+    }
+    
+    if (confirm('¿Está seguro de eliminar este maestro?')) {
+        const index = maestros.findIndex(m => m.nombre === maestroSeleccionado.nombre);
+        if (index !== -1) {
+            maestros.splice(index, 1);
+            alert('Maestro eliminado correctamente');
+            limpiarFormulario();
         }
     }
-});
+}
 
-document.getElementById('borrarBtn').addEventListener('click', deleteMaestro);
+// Botón Terminar
+function terminar() {
+    window.location.href = 'archivos.html';
+}
 
-document.getElementById('terminarBtn').addEventListener('click', () => {
-    window.location.href = 'index.html';
-});
-
-document.getElementById('firstBtn').addEventListener('click', () => {
-    currentIndex = 0;
-    displayMaestro(currentIndex);
-});
-
-document.getElementById('prevBtn').addEventListener('click', () => {
-    if (currentIndex > 0) {
-        currentIndex--;
-        displayMaestro(currentIndex);
+// Cerrar modales al hacer clic fuera
+window.onclick = function(event) {
+    const modalBusqueda = document.getElementById('modalBusqueda');
+    const modalLista = document.getElementById('modalLista');
+    
+    if (event.target === modalBusqueda) {
+        modalBusqueda.style.display = 'none';
     }
-});
-
-document.getElementById('nextBtn').addEventListener('click', () => {
-    if (currentIndex < maestros.length - 1) {
-        currentIndex++;
-        displayMaestro(currentIndex);
+    if (event.target === modalLista) {
+        modalLista.style.display = 'none';
     }
-});
-
-document.getElementById('lastBtn').addEventListener('click', () => {
-    currentIndex = maestros.length - 1;
-    displayMaestro(currentIndex);
-});
-
-// Cargar datos al iniciar
-loadMaestros();
+}

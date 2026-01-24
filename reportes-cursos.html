@@ -8,10 +8,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>Reporte de Cursos</h1>
-        <div class="date">22/01/2026</div>
-        
-        <table id="cursosTable">
+        <div class="header">
+            <h1>Reporte de Cursos</h1>
+            <div class="fecha" id="fecha"></div>
+            <div class="pagina">1</div>
+        </div>
+
+        <table class="tabla-reporte">
             <thead>
                 <tr>
                     <th>Curso</th>
@@ -21,17 +24,17 @@
                     <th>Recargo</th>
                 </tr>
             </thead>
-            <tbody id="cursosTableBody">
-                <!-- Los datos se cargarán dinámicamente -->
+            <tbody id="tablaCursos">
+                <!-- Los datos se cargarán aquí -->
             </tbody>
         </table>
 
-        <div class="button-group">
-            <button class="btn" onclick="window.print()">Imprimir</button>
-            <button class="btn" onclick="window.close()">Cerrar</button>
+        <div class="footer">
+            <button class="btn-imprimir" onclick="window.print()">Imprimir</button>
+            <button class="btn-cerrar" onclick="window.close()">Cerrar</button>
         </div>
     </div>
 
-    <script type="module" src="reportes-cursos.js"></script>
+    <script src="reportes-cursos.js"></script>
 </body>
 </html>

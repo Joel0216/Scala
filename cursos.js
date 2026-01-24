@@ -1,207 +1,278 @@
-import { supabase } from './supabase-config.js';
+// Datos de ejemplo de cursos
+let cursos = [
+    { curso: 'ANUALIDAD', costo: 300.00, clave: 'AN', iva: 0.16, recargo: 0.00, cursoSiguiente: 'INSCRIPCION' },
+    { curso: 'ARTES MARCIALES', costo: 400.00, clave: 'AM', iva: 0.16, recargo: 0.00, cursoSiguiente: '' },
+    { curso: 'Baby Music', costo: 770.00, clave: 'BM', iva: 0.15, recargo: 550.00, cursoSiguiente: '' },
+    { curso: 'Bajo Electrico 1', costo: 770.00, clave: 'BE', iva: 0.15, recargo: 550.00, cursoSiguiente: '' },
+    { curso: 'Bajo Electrico 2', costo: 770.00, clave: 'BE', iva: 0.15, recargo: 550.00, cursoSiguiente: '' },
+    { curso: 'Bajo Electrico 3', costo: 770.00, clave: 'BE', iva: 0.15, recargo: 550.00, cursoSiguiente: '' },
+    { curso: 'Bajo Individual 1', costo: 1280.00, clave: 'BI', iva: 0.15, recargo: 850.00, cursoSiguiente: '' },
+    { curso: 'Bajo Individual 2', costo: 1280.00, clave: 'BE', iva: 0.15, recargo: 850.00, cursoSiguiente: '' },
+    { curso: 'BALLET', costo: 400.00, clave: 'BA', iva: 0.16, recargo: 0.00, cursoSiguiente: '' },
+    { curso: 'BALLET SCALA NIÑOS', costo: 400.00, clave: 'BS', iva: 0, recargo: 0.00, cursoSiguiente: '' },
+    { curso: 'Bateria 1', costo: 770.00, clave: 'BA', iva: 0.15, recargo: 550.00, cursoSiguiente: '' },
+    { curso: 'Bateria 2', costo: 770.00, clave: 'BA', iva: 0.15, recargo: 550.00, cursoSiguiente: '' },
+    { curso: 'Bateria 3', costo: 770.00, clave: 'BA', iva: 0.15, recargo: 550.00, cursoSiguiente: '' },
+    { curso: 'CANTO', costo: 770.00, clave: 'CA', iva: 0.15, recargo: 550.00, cursoSiguiente: '' },
+    { curso: 'Canto Individual', costo: 1280.00, clave: 'CI', iva: 0.15, recargo: 850.00, cursoSiguiente: '' },
+    { curso: 'Drum Kids', costo: 770.00, clave: 'DK', iva: 0.15, recargo: 550.00, cursoSiguiente: '' },
+    { curso: 'English Music', costo: 770.00, clave: 'EM', iva: 0.15, recargo: 550.00, cursoSiguiente: '' },
+    { curso: 'Guitarra Acústica', costo: 770.00, clave: 'GA', iva: 0.15, recargo: 550.00, cursoSiguiente: '' },
+    { curso: 'Piano Infantil 1', costo: 770.00, clave: 'P1', iva: 0.15, recargo: 550.00, cursoSiguiente: '' },
+    { curso: 'Piano Infantil 2', costo: 770.00, clave: 'P2', iva: 0.15, recargo: 550.00, cursoSiguiente: '' },
+    { curso: 'Piano Preparatorio', costo: 770.00, clave: 'PP', iva: 0.15, recargo: 550.00, cursoSiguiente: '' }
+];
 
-let cursos = [];
-let currentIndex = 0;
+let registroActual = 0;
+let cursoSeleccionado = null;
 
 // Actualizar fecha y hora
-function updateDateTime() {
-    const now = new Date();
-    const formatted = now.toLocaleString('es-MX', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true
-    });
-    document.getElementById('datetime').textContent = formatted;
-}
-
-setInterval(updateDateTime, 1000);
-updateDateTime();
-
-// Cargar cursos desde Supabase
-async function loadCursos() {
-    try {
-        const { data, error } = await supabase
-            .from('cursos')
-            .select('*')
-            .order('id', { ascending: true });
-
-        if (error) throw error;
-
-        cursos = data || [];
-        document.getElementById('totalRecords').textContent = cursos.length;
-        
-        if (cursos.length > 0) {
-            currentIndex = 0;
-            displayCurso(currentIndex);
-        }
-
-        // Actualizar dropdown de curso siguiente
-        updateCursoSiguienteDropdown();
-    } catch (error) {
-        console.error('Error cargando cursos:', error);
-        alert('Error al cargar los datos');
-    }
-}
-
-// Actualizar dropdown de curso siguiente
-function updateCursoSiguienteDropdown() {
-    const select = document.getElementById('cursoSiguiente');
-    select.innerHTML = '<option value="">INSCRIPCION</option>';
+function actualizarFechaHora() {
+    const ahora = new Date();
+    const dia = String(ahora.getDate()).padStart(2, '0');
+    const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+    const anio = ahora.getFullYear();
+    let horas = ahora.getHours();
+    const minutos = String(ahora.getMinutes()).padStart(2, '0');
+    const segundos = String(ahora.getSeconds()).padStart(2, '0');
+    const ampm = horas >= 12 ? 'p. m.' : 'a. m.';
+    horas = horas % 12 || 12;
+    const horasStr = String(horas).padStart(2, '0');
     
-    cursos.forEach(curso => {
-        const option = document.createElement('option');
-        option.value = curso.id;
-        option.textContent = curso.curso;
-        select.appendChild(option);
-    });
-}
-
-// Mostrar curso en el formulario
-function displayCurso(index) {
-    if (index < 0 || index >= cursos.length) return;
-
-    const curso = cursos[index];
-    document.getElementById('curso').value = curso.curso || '';
-    document.getElementById('costo').value = curso.costo || 0;
-    document.getElementById('clave').value = curso.clave || '';
-    document.getElementById('iva').value = curso.iva || 0;
-    document.getElementById('recargo').value = curso.recargo || 0;
-    document.getElementById('cursoSiguiente').value = curso.curso_siguiente || '';
-
-    document.getElementById('currentRecord').textContent = index + 1;
-}
-
-// Limpiar formulario
-function clearForm() {
-    document.getElementById('cursosForm').reset();
-    currentIndex = -1;
-}
-
-// Guardar curso
-async function saveCurso() {
-    const cursoData = {
-        curso: document.getElementById('curso').value,
-        costo: parseFloat(document.getElementById('costo').value) || 0,
-        clave: document.getElementById('clave').value,
-        iva: parseFloat(document.getElementById('iva').value) || 0,
-        recargo: parseFloat(document.getElementById('recargo').value) || 0,
-        curso_siguiente: document.getElementById('cursoSiguiente').value || null
-    };
-
-    try {
-        if (currentIndex >= 0 && cursos[currentIndex]) {
-            // Actualizar
-            const { error } = await supabase
-                .from('cursos')
-                .update(cursoData)
-                .eq('id', cursos[currentIndex].id);
-
-            if (error) throw error;
-            alert('Curso actualizado correctamente');
-        } else {
-            // Insertar nuevo
-            const { error } = await supabase
-                .from('cursos')
-                .insert([cursoData]);
-
-            if (error) throw error;
-            alert('Curso guardado correctamente');
-        }
-
-        await loadCursos();
-    } catch (error) {
-        console.error('Error guardando curso:', error);
-        alert('Error al guardar el curso');
+    const datetime = document.getElementById('datetime');
+    if (datetime) {
+        datetime.textContent = `${dia}/${mes}/${anio} ${horasStr}:${minutos}:${segundos} ${ampm}`;
     }
 }
 
-// Eliminar curso
-async function deleteCurso() {
-    if (currentIndex < 0 || !cursos[currentIndex]) {
-        alert('Seleccione un curso para eliminar');
+setInterval(actualizarFechaHora, 1000);
+actualizarFechaHora();
+
+// Generar clave automáticamente
+function generarClave(nombreCurso) {
+    if (!nombreCurso) return '';
+    
+    const nombre = nombreCurso.trim().toUpperCase();
+    const palabras = nombre.split(' ');
+    
+    // Si tiene número al final (ej: "Piano Infantil 1")
+    const ultimaPalabra = palabras[palabras.length - 1];
+    if (!isNaN(ultimaPalabra)) {
+        // Tomar primera letra de la primera palabra + número
+        return palabras[0].charAt(0) + ultimaPalabra;
+    }
+    
+    // Si es una sola palabra, tomar las dos primeras letras
+    if (palabras.length === 1) {
+        return nombre.substring(0, 2);
+    }
+    
+    // Si son dos o más palabras, tomar iniciales
+    let clave = '';
+    for (let i = 0; i < Math.min(2, palabras.length); i++) {
+        clave += palabras[i].charAt(0);
+    }
+    
+    return clave;
+}
+
+// Actualizar clave cuando cambia el nombre del curso
+document.getElementById('curso').addEventListener('input', function() {
+    const clave = generarClave(this.value);
+    document.getElementById('clave').value = clave;
+});
+
+// Función para limpiar formulario
+function limpiarFormulario() {
+    document.getElementById('curso').value = '';
+    document.getElementById('costo').value = '$300.00';
+    document.getElementById('clave').value = '';
+    document.getElementById('iva').value = '0.16';
+    document.getElementById('recargo').value = '$0.00';
+    document.getElementById('cursoSiguiente').value = '';
+    cursoSeleccionado = null;
+}
+
+// Función para cargar datos del curso
+function cargarDatosCurso(curso) {
+    cursoSeleccionado = curso;
+    document.getElementById('curso').value = curso.curso;
+    document.getElementById('costo').value = '$' + curso.costo.toFixed(2);
+    document.getElementById('clave').value = curso.clave;
+    document.getElementById('iva').value = curso.iva.toFixed(2);
+    document.getElementById('recargo').value = '$' + curso.recargo.toFixed(2);
+    document.getElementById('cursoSiguiente').value = curso.cursoSiguiente || '';
+}
+
+// Mostrar registro actual
+function mostrarRegistro(index) {
+    if (index >= 0 && index < cursos.length) {
+        registroActual = index;
+        cargarDatosCurso(cursos[index]);
+        document.getElementById('registroActual').textContent = index + 1;
+        document.getElementById('inputRegistro').value = index + 1;
+        document.getElementById('inputRegistro').max = cursos.length;
+    }
+}
+
+// Botón Nuevo
+function nuevoCurso() {
+    const nombreCurso = document.getElementById('curso').value.trim();
+    
+    if (!nombreCurso) {
+        alert('Por favor ingrese el nombre del curso');
         return;
     }
-
-    if (!confirm('¿Está seguro de eliminar este curso?')) return;
-
-    try {
-        const { error } = await supabase
-            .from('cursos')
-            .delete()
-            .eq('id', cursos[currentIndex].id);
-
-        if (error) throw error;
-
-        alert('Curso eliminado correctamente');
-        await loadCursos();
-    } catch (error) {
-        console.error('Error eliminando curso:', error);
-        alert('Error al eliminar el curso');
+    
+    const costoStr = document.getElementById('costo').value.replace('$', '').replace(',', '');
+    const recargoStr = document.getElementById('recargo').value.replace('$', '').replace(',', '');
+    
+    const nuevoCurso = {
+        curso: nombreCurso.toUpperCase(),
+        costo: parseFloat(costoStr) || 0,
+        clave: document.getElementById('clave').value.toUpperCase(),
+        iva: parseFloat(document.getElementById('iva').value) || 0,
+        recargo: parseFloat(recargoStr) || 0,
+        cursoSiguiente: document.getElementById('cursoSiguiente').value
+    };
+    
+    if (cursoSeleccionado) {
+        // Actualizar curso existente
+        const index = cursos.findIndex(c => c.curso === cursoSeleccionado.curso);
+        if (index !== -1) {
+            cursos[index] = nuevoCurso;
+            alert('Curso actualizado correctamente');
+            mostrarRegistro(index);
+        }
+    } else {
+        // Agregar nuevo curso
+        cursos.push(nuevoCurso);
+        alert('Curso agregado correctamente');
+        mostrarRegistro(cursos.length - 1);
     }
 }
 
-// Event listeners
-document.getElementById('nuevoBtn').addEventListener('click', () => {
-    clearForm();
-    saveCurso();
-});
+// Botón Buscar
+function buscarCurso() {
+    const modal = document.getElementById('modalBusqueda');
+    modal.style.display = 'block';
+    document.getElementById('inputBusqueda').value = '';
+    document.getElementById('inputBusqueda').focus();
+}
 
-document.getElementById('buscarBtn').addEventListener('click', () => {
-    const nombre = prompt('Ingrese el nombre del curso a buscar:');
-    if (nombre) {
-        const index = cursos.findIndex(c => 
-            c.curso.toLowerCase().includes(nombre.toLowerCase())
-        );
-        if (index >= 0) {
-            currentIndex = index;
-            displayCurso(currentIndex);
-        } else {
-            alert('Curso no encontrado');
+// Aceptar búsqueda
+function aceptarBusqueda() {
+    const termino = document.getElementById('inputBusqueda').value.trim().toUpperCase();
+    
+    if (!termino) {
+        alert('Por favor ingrese un nombre');
+        return;
+    }
+    
+    const resultados = cursos.filter(c => 
+        c.curso.toUpperCase().includes(termino) ||
+        c.curso.toUpperCase().startsWith(termino)
+    );
+    
+    cerrarModal();
+    
+    if (resultados.length === 0) {
+        alert('No se encontraron cursos con ese nombre');
+    } else if (resultados.length === 1) {
+        const index = cursos.findIndex(c => c.curso === resultados[0].curso);
+        mostrarRegistro(index);
+    } else {
+        mostrarListaCursos(resultados);
+    }
+}
+
+// Mostrar lista de cursos
+function mostrarListaCursos(resultados) {
+    const modal = document.getElementById('modalLista');
+    const tbody = document.getElementById('bodyResultados');
+    tbody.innerHTML = '';
+    
+    resultados.forEach((curso) => {
+        const tr = document.createElement('tr');
+        tr.onclick = function() {
+            const index = cursos.findIndex(c => c.curso === curso.curso);
+            mostrarRegistro(index);
+            cerrarModal();
+        };
+        tr.innerHTML = `
+            <td>${curso.curso}</td>
+            <td>${curso.clave}</td>
+            <td>$${curso.costo.toFixed(2)}</td>
+            <td>${curso.iva.toFixed(2)}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+    
+    modal.style.display = 'block';
+}
+
+// Cerrar modal
+function cerrarModal() {
+    document.getElementById('modalBusqueda').style.display = 'none';
+    document.getElementById('modalLista').style.display = 'none';
+}
+
+// Botón Borrar
+function borrarCurso() {
+    if (!cursoSeleccionado) {
+        alert('Primero debe seleccionar un curso');
+        return;
+    }
+    
+    if (confirm('¿Está seguro de eliminar este curso?')) {
+        const index = cursos.findIndex(c => c.curso === cursoSeleccionado.curso);
+        if (index !== -1) {
+            cursos.splice(index, 1);
+            alert('Curso eliminado correctamente');
+            if (cursos.length > 0) {
+                mostrarRegistro(Math.min(index, cursos.length - 1));
+            } else {
+                limpiarFormulario();
+            }
         }
     }
-});
+}
 
-document.getElementById('borrarBtn').addEventListener('click', deleteCurso);
+// Generar reporte
+function generarReporte() {
+    window.open('reportes-cursos.html', 'Reporte de Cursos', 'width=900,height=700');
+}
 
-document.getElementById('reporteBtn').addEventListener('click', () => {
-    window.open('reportes-cursos.html', '_blank');
-});
+// Botón Terminar
+function terminar() {
+    window.location.href = 'archivos.html';
+}
 
-document.getElementById('terminarBtn').addEventListener('click', () => {
-    window.location.href = 'index.html';
-});
+// Navegación
+function navegarPrimero() {
+    if (cursos.length > 0) mostrarRegistro(0);
+}
 
-document.getElementById('firstBtn').addEventListener('click', () => {
-    currentIndex = 0;
-    displayCurso(currentIndex);
-});
+function navegarAnterior() {
+    if (registroActual > 0) mostrarRegistro(registroActual - 1);
+}
 
-document.getElementById('prevBtn').addEventListener('click', () => {
-    if (currentIndex > 0) {
-        currentIndex--;
-        displayCurso(currentIndex);
+function navegarSiguiente() {
+    if (registroActual < cursos.length - 1) mostrarRegistro(registroActual + 1);
+}
+
+function navegarUltimo() {
+    if (cursos.length > 0) mostrarRegistro(cursos.length - 1);
+}
+
+function navegarRegistro() {
+    const num = parseInt(document.getElementById('inputRegistro').value);
+    if (num > 0 && num <= cursos.length) {
+        mostrarRegistro(num - 1);
     }
-});
+}
 
-document.getElementById('nextBtn').addEventListener('click', () => {
-    if (currentIndex < cursos.length - 1) {
-        currentIndex++;
-        displayCurso(currentIndex);
-    }
-});
-
-document.getElementById('lastBtn').addEventListener('click', () => {
-    currentIndex = cursos.length - 1;
-    displayCurso(currentIndex);
-});
-
-document.getElementById('newRecordBtn').addEventListener('click', () => {
-    clearForm();
-});
-
-// Cargar datos al iniciar
-loadCursos();
+// Inicializar
+if (cursos.length > 0) {
+    mostrarRegistro(0);
+}
