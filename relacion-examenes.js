@@ -210,7 +210,7 @@ document.getElementById('btnCancelarLista').addEventListener('click', () => {
 
 // Botón Terminar
 document.getElementById('btnTerminar').addEventListener('click', () => {
-    window.close();
+    window.location.href = 'examenes-menu.html';
 });
 
 // Navegación

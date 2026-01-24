@@ -152,7 +152,7 @@ document.getElementById('buscarBtn').addEventListener('click', () => {
 document.getElementById('borrarBtn').addEventListener('click', deleteArticulo);
 
 document.getElementById('terminarBtn').addEventListener('click', () => {
-    window.location.href = 'index.html';
+    window.location.href = 'archivos.html';
 });
 
 document.getElementById('firstBtn').addEventListener('click', () => {

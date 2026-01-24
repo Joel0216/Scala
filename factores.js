@@ -174,7 +174,9 @@ document.getElementById('cancelarBtn').addEventListener('click', () => {
 document.getElementById('nuevoBtn').addEventListener('click', saveFactor);
 
 document.getElementById('terminarBtn').addEventListener('click', () => {
-    window.location.href = 'index.html';
+    if (confirm('¿Desea salir del módulo de Factores?')) {
+        window.location.href = 'archivos.html';
+    }
 });
 
 // Inicializar

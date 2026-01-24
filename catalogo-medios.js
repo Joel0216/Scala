@@ -177,8 +177,8 @@ document.getElementById('btnBorrar').addEventListener('click', () => {
     }
 });
 
-// Botón Terminar
-document.getElementById('btnTerminar').addEventListener('click', () => {
+// Botón Guardar
+document.getElementById('btnGuardar')?.addEventListener('click', () => {
     const clave = claveInput.value.trim().toUpperCase();
     const descripcion = descripcionInput.value.trim().toUpperCase();
     
@@ -194,6 +194,13 @@ document.getElementById('btnTerminar').addEventListener('click', () => {
         }
         const index = medios.findIndex(m => m.clave === clave);
         mostrarRegistro(index);
+    }
+});
+
+// Botón Terminar
+document.getElementById('btnTerminar').addEventListener('click', () => {
+    if (confirm('¿Desea salir del catálogo de Medios?')) {
+        window.location.href = 'otros-catalogos.html';
     }
 });
 

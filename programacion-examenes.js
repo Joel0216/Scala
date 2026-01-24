@@ -207,32 +207,7 @@ document.getElementById('btnBorrar').addEventListener('click', () => {
 
 // Botón Terminar
 document.getElementById('btnTerminar').addEventListener('click', () => {
-    const clave = claveInput.value.trim().toUpperCase();
-    
-    if (clave) {
-        const existe = examenes.find(e => e.clave === clave);
-        const examen = {
-            clave,
-            fecha: fechaInput.value,
-            hora: horaInput.value,
-            tipo: tipoSelect.value,
-            salon: salonSelect.value,
-            curso: cursoSelect.value,
-            maestroBase: maestroSelect.value,
-            examinador1: examinador1Select.value,
-            examinador2: examinador2Select.value
-        };
-        
-        if (existe) {
-            Object.assign(existe, examen);
-            alert('Examen actualizado');
-        } else {
-            examenes.push(examen);
-            alert('Examen programado');
-        }
-        const index = examenes.findIndex(e => e.clave === clave);
-        mostrarRegistro(index);
-    }
+    window.location.href = 'examenes-menu.html';
 });
 
 // Navegación

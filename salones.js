@@ -162,7 +162,9 @@ document.getElementById('cancelarBtn').addEventListener('click', () => {
 document.getElementById('borrarBtn').addEventListener('click', deleteSalon);
 
 document.getElementById('terminarBtn').addEventListener('click', () => {
-    window.location.href = 'index.html';
+    if (confirm('¿Desea salir del módulo de Salones?')) {
+        window.location.href = 'archivos.html';
+    }
 });
 
 document.getElementById('firstBtn').addEventListener('click', () => {

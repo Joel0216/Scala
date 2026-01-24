@@ -6,13 +6,32 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 let supabase = null;
 
 // Función para inicializar Supabase
+// Funciona tanto con CDN (navegador) como con npm (Electron)
 function initSupabase() {
-    if (typeof window.supabase !== 'undefined') {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('Supabase inicializado correctamente');
-        return true;
-    } else {
-        console.error('La librería de Supabase no está cargada');
+    try {
+        // Intentar usar la versión CDN primero (window.supabase)
+        if (typeof window !== 'undefined' && typeof window.supabase !== 'undefined') {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase inicializado correctamente (CDN)');
+            return true;
+        }
+        
+        // Si no está disponible, intentar con require (Electron con npm)
+        if (typeof require !== 'undefined') {
+            try {
+                const { createClient } = require('@supabase/supabase-js');
+                supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('Supabase inicializado correctamente (npm)');
+                return true;
+            } catch (e) {
+                console.warn('No se pudo cargar Supabase vía npm:', e.message);
+            }
+        }
+        
+        console.error('La librería de Supabase no está disponible');
+        return false;
+    } catch (error) {
+        console.error('Error al inicializar Supabase:', error);
         return false;
     }
 }

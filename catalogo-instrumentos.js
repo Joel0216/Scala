@@ -159,8 +159,8 @@ document.getElementById('btnBorrar').addEventListener('click', () => {
     }
 });
 
-// Botón Terminar
-document.getElementById('btnTerminar').addEventListener('click', () => {
+// Botón Guardar
+document.getElementById('btnGuardar')?.addEventListener('click', () => {
     const clave = claveInput.value.trim();
     const descripcion = descripcionInput.value.trim();
     
@@ -174,6 +174,13 @@ document.getElementById('btnTerminar').addEventListener('click', () => {
             alert('Registro agregado');
         }
         mostrarRegistro(instrumentos.length - 1);
+    }
+});
+
+// Botón Terminar
+document.getElementById('btnTerminar').addEventListener('click', () => {
+    if (confirm('¿Desea salir del catálogo de Instrumentos?')) {
+        window.location.href = 'otros-catalogos.html';
     }
 });
 

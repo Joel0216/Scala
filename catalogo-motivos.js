@@ -157,8 +157,8 @@ document.getElementById('btnBorrar').addEventListener('click', () => {
     }
 });
 
-// Botón Terminar
-document.getElementById('btnTerminar').addEventListener('click', () => {
+// Botón Guardar
+document.getElementById('btnGuardar')?.addEventListener('click', () => {
     const clave = claveInput.value.trim();
     const descripcion = descripcionInput.value.trim();
     
@@ -172,6 +172,13 @@ document.getElementById('btnTerminar').addEventListener('click', () => {
             alert('Registro agregado');
         }
         mostrarRegistro(motivos.length - 1);
+    }
+});
+
+// Botón Terminar
+document.getElementById('btnTerminar').addEventListener('click', () => {
+    if (confirm('¿Desea salir del catálogo de Motivos?')) {
+        window.location.href = 'otros-catalogos.html';
     }
 });
 

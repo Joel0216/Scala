@@ -29,10 +29,8 @@ document.getElementById('mediosBtn').addEventListener('click', () => {
     window.location.href = 'catalogo-medios.html';
 });
 
-document.getElementById('macrosBtn').addEventListener('click', () => {
-    window.location.href = 'catalogo-macros.html';
-});
-
 document.getElementById('terminarBtn').addEventListener('click', () => {
-    window.location.href = 'index.html';
+    if (confirm('¿Desea regresar al menú de Archivos?')) {
+        window.location.href = 'archivos.html';
+    }
 });

@@ -53,5 +53,7 @@ document.getElementById('borrarBtn').addEventListener('click', async () => {
 
 // Terminar
 document.getElementById('terminarBtn').addEventListener('click', () => {
-    window.location.href = 'index.html';
+    if (confirm('¿Desea salir del módulo de Grupos de Artículos?')) {
+        window.location.href = 'archivos.html';
+    }
 });

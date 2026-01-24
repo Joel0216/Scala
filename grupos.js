@@ -228,7 +228,7 @@ document.getElementById('altasBtn').addEventListener('click', () => {
 
 // Terminar
 document.getElementById('terminarBtn').addEventListener('click', () => {
-    window.location.href = 'index.html';
+    window.location.href = 'archivos.html';
 });
 
 // Cargar grupos
