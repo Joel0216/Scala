@@ -247,10 +247,118 @@ function darBaja() {
 }
 
 function cambiarGrupo() {
-    const confirmacion = confirm('Esta seguro de desear cambiar de grupo a este alumno <S/N> ?');
-    if (confirmacion) {
-        alert('Grupo cambiado');
+    if (!alumnoSeleccionado) {
+        alert('Primero debe seleccionar un alumno');
+        return;
     }
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'modalCambioGrupo';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>Cambio de Grupo</h2>
+            <p><strong>Alumno:</strong> ${alumnoSeleccionado.nombre}</p>
+            <p><strong>Grupo Actual:</strong> ${alumnoSeleccionado.grupo}</p>
+            <br>
+            <label>Nuevo Grupo:</label>
+            <select id="nuevoGrupo" class="input-medium" style="width: 300px; padding: 8px; font-size: 14px;">
+                <option value="">-- Seleccione un grupo --</option>
+            </select>
+            <div id="infoGrupo" style="margin-top: 15px; padding: 10px; background: #f0f0f0; border-radius: 4px; display: none;">
+                <p><strong>Curso:</strong> <span id="cursoInfo"></span></p>
+                <p><strong>Maestro:</strong> <span id="maestroInfo"></span></p>
+                <p><strong>Horario:</strong> <span id="horarioInfo"></span></p>
+                <p><strong>Cupo:</strong> <span id="cupoInfo"></span></p>
+            </div>
+            <div class="modal-buttons" style="margin-top: 20px;">
+                <button class="btn" onclick="confirmarCambioGrupo()">Aceptar</button>
+                <button class="btn" onclick="cerrarModal()">Cancelar</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+    
+    // Cargar grupos disponibles
+    cargarGruposDisponibles();
+}
+
+async function cargarGruposDisponibles() {
+    // Aquí cargarías los grupos desde Supabase
+    // Por ahora usamos datos de ejemplo
+    const grupos = [
+        { clave: 'CAASLU18', curso: 'Canto Adultos', maestro: 'Luis Pérez', dia: 'LU', hora: '18:00', cupo: 10, inscritos: 5 },
+        { clave: 'GAIAJU17', curso: 'Guitarra Infantil', maestro: 'Juan García', dia: 'JU', hora: '17:00', cupo: 8, inscritos: 3 },
+        { clave: 'BCASJU12', curso: 'Batería Adultos', maestro: 'Sergio Martínez', dia: 'JU', hora: '12:00', cupo: 6, inscritos: 2 },
+        { clave: 'PIASMA16', curso: 'Piano Adultos', maestro: 'María López', dia: 'MA', hora: '16:00', cupo: 10, inscritos: 7 }
+    ];
+    
+    const select = document.getElementById('nuevoGrupo');
+    if (!select) return;
+    
+    grupos.forEach(grupo => {
+        const option = document.createElement('option');
+        option.value = grupo.clave;
+        option.textContent = `${grupo.clave} - ${grupo.curso}`;
+        option.dataset.curso = grupo.curso;
+        option.dataset.maestro = grupo.maestro;
+        option.dataset.dia = grupo.dia;
+        option.dataset.hora = grupo.hora;
+        option.dataset.cupo = grupo.cupo;
+        option.dataset.inscritos = grupo.inscritos;
+        select.appendChild(option);
+    });
+    
+    // Evento para mostrar información del grupo seleccionado
+    select.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const infoDiv = document.getElementById('infoGrupo');
+        
+        if (selectedOption.value) {
+            document.getElementById('cursoInfo').textContent = selectedOption.dataset.curso;
+            document.getElementById('maestroInfo').textContent = selectedOption.dataset.maestro;
+            document.getElementById('horarioInfo').textContent = `${selectedOption.dataset.dia} ${selectedOption.dataset.hora}`;
+            document.getElementById('cupoInfo').textContent = `${selectedOption.dataset.inscritos}/${selectedOption.dataset.cupo}`;
+            infoDiv.style.display = 'block';
+        } else {
+            infoDiv.style.display = 'none';
+        }
+    });
+}
+
+function confirmarCambioGrupo() {
+    const nuevoGrupo = document.getElementById('nuevoGrupo').value;
+    
+    if (!nuevoGrupo) {
+        alert('Debe seleccionar un grupo');
+        return;
+    }
+    
+    if (!confirm(`¿Está seguro de cambiar al alumno ${alumnoSeleccionado.nombre} al grupo ${nuevoGrupo}?`)) {
+        return;
+    }
+    
+    // Aquí guardarías el cambio en Supabase
+    const grupoAnterior = alumnoSeleccionado.grupo;
+    alumnoSeleccionado.grupo = nuevoGrupo;
+    
+    // Actualizar el campo en la interfaz
+    const grupoInput = document.getElementById('grupo');
+    if (grupoInput) {
+        grupoInput.value = nuevoGrupo;
+    }
+    
+    alert(`Grupo cambiado exitosamente\n\nGrupo anterior: ${grupoAnterior}\nGrupo nuevo: ${nuevoGrupo}`);
+    cerrarModal();
+    
+    // Aquí registrarías el cambio en la tabla cambios_alumnos
+    console.log('Cambio registrado:', {
+        alumno_id: alumnoSeleccionado.credencial,
+        grupo_anterior: grupoAnterior,
+        grupo_nuevo: nuevoGrupo,
+        fecha: new Date().toISOString()
+    });
 }
 
 function listaAlumnos() {

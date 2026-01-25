@@ -16,6 +16,18 @@
         <div class="content">
             <div class="anualidad-header">ANUALIDAD</div>
 
+            <!-- Buscador Híbrido Inteligente -->
+            <div class="search-section">
+                <div class="search-container">
+                    <input type="text" 
+                           id="hybridSearch" 
+                           class="hybrid-search-input" 
+                           placeholder="Buscar por Curso o Maestro..."
+                           autocomplete="off">
+                    <div id="searchSuggestions" class="search-suggestions"></div>
+                </div>
+            </div>
+
             <div class="table-section">
                 <table id="horariosTable">
                     <thead>
@@ -24,8 +36,9 @@
                             <th>Día</th>
                             <th>Hora</th>
                             <th>Clave</th>
+                            <th>Curso</th>
                             <th>Maestro</th>
-                            <th>Sa.</th>
+                            <th>Sc.</th>
                             <th>Cupo</th>
                             <th>#</th>
                             <th>Inicio</th>
@@ -34,17 +47,20 @@
                         </tr>
                     </thead>
                     <tbody id="horariosTableBody">
+                        <tr>
+                            <td colspan="12" class="no-data">Utilice el buscador para ver horarios</td>
+                        </tr>
                     </tbody>
                 </table>
 
                 <div class="table-nav">
                     <span>Registro: </span>
-                    <button type="button" class="nav-btn-small">|&lt;</button>
-                    <button type="button" class="nav-btn-small">&lt;</button>
-                    <input type="text" value="1" class="record-input" readonly>
-                    <button type="button" class="nav-btn-small">&gt;</button>
-                    <button type="button" class="nav-btn-small">&gt;|</button>
-                    <button type="button" class="nav-btn-small">|&gt;*</button>
+                    <button type="button" class="nav-btn-small" id="firstBtn">|&lt;</button>
+                    <button type="button" class="nav-btn-small" id="prevBtn">&lt;</button>
+                    <input type="text" value="0" class="record-input" id="recordCount" readonly>
+                    <button type="button" class="nav-btn-small" id="nextBtn">&gt;</button>
+                    <button type="button" class="nav-btn-small" id="lastBtn">&gt;|</button>
+                    <button type="button" class="nav-btn-small" id="newBtn">|&gt;*</button>
                 </div>
             </div>
 
@@ -55,29 +71,7 @@
         </div>
     </div>
 
-    <!-- Modal de búsqueda -->
-    <div id="searchModal" class="modal">
-        <div class="modal-content">
-            <h2>Proporcione Nombre del curso O inicio del nombre</h2>
-            <input type="text" id="searchInput" class="modal-input">
-            <div class="modal-buttons">
-                <button class="btn" id="aceptarBtn">Aceptar</button>
-                <button class="btn" id="cancelarBtn">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de selección de cursos -->
-    <div id="selectModal" class="modal">
-        <div class="modal-content-large">
-            <h2>Seleccione un curso</h2>
-            <div id="cursosList"></div>
-            <div class="modal-buttons">
-                <button class="btn" id="cerrarSelectBtn">Cerrar</button>
-            </div>
-        </div>
-    </div>
-
-    <script type="module" src="horarios.js"></script>
+    <script src="supabase-config.js"></script>
+    <script src="horarios.js"></script>
 </body>
 </html>

@@ -275,3 +275,76 @@ select:focus {
     background-color: #000080;
     color: white;
 }
+
+
+/* Estilos para búsqueda inteligente (TypeAhead) */
+.sugerencias-container {
+    display: none;
+    position: absolute;
+    background: white;
+    border: 2px solid #000080;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.sugerencia-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: background-color 0.2s;
+}
+
+.sugerencia-item:hover {
+    background-color: #e0e0e0;
+}
+
+.sugerencia-item:last-child {
+    border-bottom: none;
+}
+
+.sugerencia-grupo {
+    background: #000080;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    min-width: 120px;
+    text-align: center;
+}
+
+.sugerencia-clave {
+    font-weight: bold;
+    color: #000080;
+    min-width: 80px;
+    font-size: 14px;
+}
+
+.sugerencia-desc {
+    flex: 1;
+    color: #333;
+    font-size: 13px;
+}
+
+.sugerencia-precio {
+    font-weight: bold;
+    color: #008000;
+    min-width: 80px;
+    text-align: right;
+    font-size: 14px;
+}
+
+/* Posicionar el contenedor de sugerencias relativo al modal */
+.modal-content {
+    position: relative;
+}
+
+#modalBusqueda .modal-content input {
+    position: relative;
+}

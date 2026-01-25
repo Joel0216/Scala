@@ -1,210 +1,429 @@
-# 📦 Guía Completa: Convertir Scala a Aplicación de Escritorio
+# 🚀 GUÍA COMPLETA: CONVERTIR SCALA A APLICACIÓN ELECTRON
 
-## ✅ Archivos Creados
+## 📋 ÍNDICE
+1. [Requisitos Previos](#requisitos-previos)
+2. [Instalación de Node.js](#instalación-de-nodejs)
+3. [Configuración del Proyecto](#configuración-del-proyecto)
+4. [Probar la Aplicación](#probar-la-aplicación)
+5. [Compilar a .EXE](#compilar-a-exe)
+6. [Distribución](#distribución)
+7. [Solución de Problemas](#solución-de-problemas)
 
-Ya he creado los siguientes archivos en tu proyecto:
-- `package.json` - Configuración del proyecto y scripts
-- `main.js` - Archivo principal de Electron
-- `.gitignore` - Archivos a ignorar
-- `supabase-config.js` - Actualizado para funcionar con Electron
+---
 
-## 🚀 Paso 1: Instalar Dependencias
+## 1. REQUISITOS PREVIOS
 
-Abre tu terminal (CMD o PowerShell) en la carpeta del proyecto y ejecuta:
+### ✅ Lo que necesitas:
+- Windows 10 o superior
+- Conexión a Internet (para instalación)
+- 500 MB de espacio libre en disco
+- Permisos de administrador (para instalación)
+
+### ✅ Archivos ya creados:
+- ✅ `main.js` - Proceso principal de Electron
+- ✅ `preload.js` - Script de precarga
+- ✅ `package.json` - Configuración del proyecto
+- ✅ `supabase-config.js` - Configuración de base de datos
+
+---
+
+## 2. INSTALACIÓN DE NODE.JS
+
+### Paso 1: Descargar Node.js
+
+1. Abre tu navegador
+2. Ve a: **https://nodejs.org/**
+3. Descarga la versión **LTS** (Long Term Support)
+   - Ejemplo: Node.js 20.x.x LTS
+4. Ejecuta el instalador descargado
+
+### Paso 2: Instalar Node.js
+
+1. Haz doble clic en el instalador
+2. Acepta los términos de licencia
+3. Deja las opciones por defecto
+4. Asegúrate de marcar: **"Automatically install the necessary tools"**
+5. Haz clic en **"Install"**
+6. Espera a que termine (puede tomar 5-10 minutos)
+
+### Paso 3: Verificar Instalación
+
+1. Abre **PowerShell** o **CMD**
+   - Presiona `Windows + R`
+   - Escribe `powershell` o `cmd`
+   - Presiona Enter
+
+2. Escribe estos comandos:
+```bash
+node --version
+```
+Debe mostrar algo como: `v20.11.0`
 
 ```bash
-npm install
+npm --version
+```
+Debe mostrar algo como: `10.2.4`
+
+Si ves los números de versión, ¡Node.js está instalado correctamente! ✅
+
+---
+
+## 3. CONFIGURACIÓN DEL PROYECTO
+
+### Paso 1: Abrir PowerShell en la carpeta del proyecto
+
+1. Abre el Explorador de Windows
+2. Navega a: `C:\Users\PC05\Downloads\Scala`
+3. Haz clic en la barra de direcciones
+4. Escribe `powershell` y presiona Enter
+
+### Paso 2: Instalar Dependencias
+
+Copia y pega estos comandos uno por uno:
+
+```bash
+npm install electron --save-dev
+```
+Espera a que termine (puede tomar 2-3 minutos)
+
+```bash
+npm install electron-builder --save-dev
+```
+Espera a que termine (puede tomar 2-3 minutos)
+
+```bash
+npm install @supabase/supabase-js --save
+```
+Espera a que termine (puede tomar 1 minuto)
+
+### Paso 3: Verificar Instalación
+
+```bash
+npm list --depth=0
 ```
 
-Esto instalará:
-- `electron` - Framework para crear la app de escritorio
-- `electron-builder` - Para empaquetar la aplicación
-- `@supabase/supabase-js` - Cliente de Supabase para npm
+Debes ver algo como:
+```
+scala-app@1.0.0
+├── @supabase/supabase-js@2.39.0
+├── electron@28.0.0
+└── electron-builder@24.9.1
+```
 
-**Tiempo estimado:** 2-5 minutos dependiendo de tu conexión.
+---
 
-## 🎯 Paso 2: Probar la Aplicación en Modo Desarrollo
+## 4. PROBAR LA APLICACIÓN
 
-Antes de empaquetar, prueba que todo funcione:
+### Ejecutar en Modo Desarrollo
 
 ```bash
 npm start
 ```
 
-Esto abrirá tu aplicación Scala en una ventana de Electron.
+Esto abrirá la aplicación SCALA en una ventana de Electron.
 
-**Verifica:**
-- ✅ La ventana se abre en 1280x800
-- ✅ No hay barra de menú visible
-- ✅ Puedes navegar por todas las secciones
-- ✅ Supabase se conecta correctamente
+### ✅ Verificar que funciona:
 
-## 📦 Paso 3: Empaquetar la Aplicación
+1. **Ventana se abre correctamente**
+   - Debe mostrar el menú principal de SCALA
+   - Logo visible
+   - Fecha y hora actualizándose
 
-### Opción A: Crear TODOS los formatos (Instalador + Portable + ZIP)
+2. **Navegación funciona**
+   - Haz clic en "ARCHIVOS"
+   - Debe abrir el menú de archivos
+   - Botón "TERMINAR" debe regresar al inicio
+
+3. **Conexión a Supabase**
+   - Abre DevTools (presiona F12)
+   - Ve a la pestaña "Console"
+   - Debe decir: "Supabase inicializado correctamente"
+
+4. **Módulos funcionan**
+   - Prueba abrir "Alumnos"
+   - Prueba abrir "Maestros"
+   - Prueba abrir "Reportes"
+
+### 🐛 Si algo no funciona:
+
+- Presiona `Ctrl + R` para recargar
+- Presiona `F12` para ver errores en la consola
+- Cierra y vuelve a ejecutar `npm start`
+
+---
+
+## 5. COMPILAR A .EXE
+
+### Opción A: Instalador Completo
 
 ```bash
-npm run build:win
+npm run build
 ```
 
-Esto generará en la carpeta `dist/`:
-- `Scala Setup 1.0.0.exe` - Instalador completo
-- `Scala-Portable-1.0.0.exe` - Versión portable (no requiere instalación)
-- `Scala-1.0.0-win.zip` - Archivo ZIP con la aplicación
+Esto creará:
+- `dist/Scala Setup 1.0.0.exe` - Instalador completo
+- Tamaño: ~150-200 MB
+- El usuario lo ejecuta y se instala en su PC
 
-### Opción B: Solo Versión Portable (Recomendado para USB)
+### Opción B: Versión Portable (Recomendado)
 
 ```bash
 npm run build:portable
 ```
 
-Genera solo: `Scala-Portable-1.0.0.exe`
+Esto creará:
+- `dist/Scala-Portable-1.0.0.exe` - Ejecutable portable
+- Tamaño: ~150-200 MB
+- El usuario lo ejecuta directamente, sin instalación
 
-**Tiempo estimado:** 3-10 minutos
+### Opción C: Archivo ZIP
 
-## 📤 Paso 4: Distribuir la Aplicación
-
-### Para USB o Correo:
-1. Ve a la carpeta `dist/`
-2. Copia `Scala-Portable-1.0.0.exe`
-3. Envía este archivo (aproximadamente 100-150 MB)
-
-### Para Instalación:
-1. Usa `Scala Setup 1.0.0.exe`
-2. Los usuarios hacen doble clic y siguen el asistente
-3. Se crea acceso directo en el escritorio
-
-## 🔧 Configuración de Supabase
-
-### ✅ Opción Recomendada: Usar CDN (Ya configurado)
-
-Tu proyecto ya está configurado para usar Supabase vía CDN. **No necesitas cambiar nada.**
-
-El archivo `supabase-config.js` ahora detecta automáticamente:
-- Si está en navegador → usa CDN
-- Si está en Electron → usa npm
-
-### Ventajas del CDN:
-- ✅ Más simple
-- ✅ Menos tamaño de la app
-- ✅ Ya funciona en tu proyecto actual
-
-### Si prefieres usar npm (Opcional):
-
-1. En tus archivos HTML, **elimina** esta línea:
-```html
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-```
-
-2. El `supabase-config.js` automáticamente usará la versión npm
-
-## 🎨 Personalización
-
-### Cambiar el Icono:
-1. Reemplaza `Scala logo.png` con tu icono (formato PNG, 256x256 o 512x512)
-2. O convierte a `.ico` y actualiza en `package.json`:
-```json
-"icon": "icon.ico"
-```
-
-### Cambiar el Tamaño de Ventana:
-Edita `main.js`, líneas 10-11:
-```javascript
-width: 1280,  // Ancho
-height: 800,  // Alto
-```
-
-### Cambiar el Nombre de la App:
-Edita `package.json`, línea 2:
-```json
-"name": "tu-nombre-app",
-```
-
-## 🐛 Solución de Problemas
-
-### Error: "npm no reconocido"
-**Solución:** Instala Node.js desde https://nodejs.org/
-
-### Error: "electron-builder failed"
-**Solución:** 
 ```bash
-npm install --save-dev electron-builder
 npm run build:win
 ```
 
-### La app no se conecta a Supabase
-**Solución:**
-1. Abre DevTools (descomenta línea 30 en `main.js`)
-2. Verifica errores en la consola
-3. Confirma que `supabase-config.js` se carga correctamente
+Esto creará:
+- `dist/Scala-1.0.0-win.zip` - Archivo comprimido
+- Tamaño: ~50-70 MB comprimido
+- El usuario descomprime y ejecuta `Scala.exe`
 
-### Ventana muy pequeña/grande
-**Solución:** Ajusta `width` y `height` en `main.js`
+### ⏱️ Tiempo de Compilación
 
-## 📋 Scripts Disponibles
+- Primera vez: 10-15 minutos
+- Compilaciones siguientes: 3-5 minutos
 
-```bash
-npm start              # Ejecutar en modo desarrollo
-npm run build          # Empaquetar (todos los formatos)
-npm run build:win      # Empaquetar para Windows
-npm run build:portable # Solo versión portable
+### 📁 Ubicación de Archivos
+
+Todos los archivos compilados estarán en:
 ```
-
-## 🔒 Seguridad
-
-### ⚠️ IMPORTANTE: Protege tus Credenciales
-
-Tu `SUPABASE_ANON_KEY` está visible en el código. Para producción:
-
-1. **Configura Row Level Security (RLS)** en Supabase
-2. **Limita permisos** de la Anon Key
-3. **Considera usar variables de entorno** para keys sensibles
-
-### Configurar Variables de Entorno (Opcional):
-
-1. Crea archivo `.env`:
+C:\Users\PC05\Downloads\Scala\dist\
 ```
-SUPABASE_URL=tu_url
-SUPABASE_KEY=tu_key
-```
-
-2. Instala dotenv:
-```bash
-npm install dotenv
-```
-
-3. En `main.js`, agrega al inicio:
-```javascript
-require('dotenv').config();
-```
-
-## 📊 Tamaños Aproximados
-
-- **Instalador:** ~120 MB
-- **Portable:** ~150 MB
-- **ZIP:** ~100 MB (comprimido)
-
-## ✅ Checklist Final
-
-Antes de distribuir, verifica:
-
-- [ ] La app abre correctamente
-- [ ] Todas las secciones funcionan
-- [ ] Supabase se conecta
-- [ ] No hay errores en consola
-- [ ] El icono se ve bien
-- [ ] La versión portable funciona sin instalación
-- [ ] Probaste en otra computadora
-
-## 🎉 ¡Listo!
-
-Tu aplicación Scala ahora es una app de escritorio profesional para Windows.
-
-**Próximos pasos:**
-- Comparte el `.exe` portable por USB o correo
-- O distribuye el instalador para instalación completa
-- Considera crear un sitio web para descargas
 
 ---
 
-**¿Necesitas ayuda?** Revisa la sección de Solución de Problemas o consulta la documentación de Electron: https://www.electronjs.org/
+## 6. DISTRIBUCIÓN
+
+### Opción 1: Versión Portable (Más Fácil)
+
+1. Compila la versión portable:
+```bash
+npm run build:portable
+```
+
+2. Encuentra el archivo:
+```
+dist/Scala-Portable-1.0.0.exe
+```
+
+3. Comparte este archivo:
+   - Súbelo a Google Drive / Dropbox / OneDrive
+   - Envíalo por correo (si es menor a 25 MB)
+   - Usa WeTransfer para archivos grandes
+
+4. El usuario:
+   - Descarga el archivo
+   - Lo ejecuta directamente
+   - ¡Listo! No necesita instalación
+
+### Opción 2: Instalador
+
+1. Compila el instalador:
+```bash
+npm run build
+```
+
+2. Encuentra el archivo:
+```
+dist/Scala Setup 1.0.0.exe
+```
+
+3. El usuario:
+   - Descarga el instalador
+   - Lo ejecuta
+   - Sigue el asistente de instalación
+   - Se crea acceso directo en el escritorio
+
+### Opción 3: Archivo ZIP
+
+1. Compila y comprime:
+```bash
+npm run build:win
+```
+
+2. Encuentra el archivo:
+```
+dist/Scala-1.0.0-win.zip
+```
+
+3. El usuario:
+   - Descarga el ZIP
+   - Lo descomprime
+   - Ejecuta `Scala.exe`
+
+---
+
+## 7. SOLUCIÓN DE PROBLEMAS
+
+### ❌ Error: "npm no se reconoce"
+
+**Causa:** Node.js no está instalado o no está en el PATH
+
+**Solución:**
+1. Reinstala Node.js desde https://nodejs.org/
+2. Reinicia PowerShell
+3. Verifica con `node --version`
+
+---
+
+### ❌ Error: "Cannot find module 'electron'"
+
+**Causa:** Las dependencias no están instaladas
+
+**Solución:**
+```bash
+npm install
+```
+
+---
+
+### ❌ Error: "ENOENT: no such file or directory"
+
+**Causa:** Estás en la carpeta incorrecta
+
+**Solución:**
+```bash
+cd C:\Users\PC05\Downloads\Scala
+```
+
+---
+
+### ❌ La aplicación no se conecta a Supabase
+
+**Causa:** Credenciales incorrectas o sin internet
+
+**Solución:**
+1. Verifica `supabase-config.js`
+2. Verifica tu conexión a Internet
+3. Abre DevTools (F12) y revisa errores
+
+---
+
+### ❌ Error al compilar: "electron-builder not found"
+
+**Causa:** electron-builder no está instalado
+
+**Solución:**
+```bash
+npm install electron-builder --save-dev
+```
+
+---
+
+### ❌ El .exe no se genera
+
+**Causa:** Puede haber errores en el código
+
+**Solución:**
+1. Primero prueba con `npm start`
+2. Si funciona, intenta compilar de nuevo
+3. Revisa los logs de error
+
+---
+
+### ❌ El .exe es muy grande (>300 MB)
+
+**Causa:** Electron incluye Chromium completo
+
+**Solución:**
+- Es normal, Electron pesa ~150-200 MB
+- Usa la versión ZIP para reducir tamaño
+- Considera usar compresión adicional (7-Zip)
+
+---
+
+### ❌ Windows Defender bloquea el .exe
+
+**Causa:** Archivos sin firma digital son marcados como sospechosos
+
+**Solución:**
+1. Haz clic en "Más información"
+2. Haz clic en "Ejecutar de todas formas"
+3. Para distribución profesional, considera firmar el código
+
+---
+
+## 📊 RESUMEN DE COMANDOS
+
+```bash
+# Instalar dependencias
+npm install
+
+# Ejecutar en modo desarrollo
+npm start
+
+# Compilar instalador
+npm run build
+
+# Compilar versión portable
+npm run build:portable
+
+# Compilar todas las versiones
+npm run build:win
+
+# Limpiar compilaciones anteriores
+rmdir /s /q dist
+```
+
+---
+
+## 🎯 CHECKLIST FINAL
+
+Antes de distribuir, verifica:
+
+- [ ] La aplicación se ejecuta con `npm start`
+- [ ] Todos los módulos funcionan correctamente
+- [ ] La conexión a Supabase funciona
+- [ ] Los botones responden correctamente
+- [ ] La navegación funciona
+- [ ] El .exe se compila sin errores
+- [ ] El .exe se ejecuta en otra PC
+- [ ] El tamaño del archivo es razonable
+- [ ] Tienes un método de distribución (Drive, etc.)
+
+---
+
+## 📞 SOPORTE ADICIONAL
+
+### Recursos Útiles:
+
+- **Documentación de Electron:** https://www.electronjs.org/docs
+- **Documentación de electron-builder:** https://www.electron.build/
+- **Supabase Docs:** https://supabase.com/docs
+
+### Logs de Error:
+
+Si encuentras errores, revisa:
+1. Console de DevTools (F12)
+2. Terminal donde ejecutaste `npm start`
+3. Archivo de logs en `%APPDATA%\Scala\logs\`
+
+---
+
+## ✅ ¡LISTO!
+
+Ahora tienes una aplicación de escritorio profesional que puedes distribuir a tus usuarios.
+
+**Ventajas de tu aplicación Electron:**
+- ✅ No necesita navegador
+- ✅ Icono personalizado
+- ✅ Menú de aplicación
+- ✅ Atajos de teclado
+- ✅ Funciona offline (excepto Supabase)
+- ✅ Fácil de distribuir
+- ✅ Profesional y nativa
+
+---
+
+**Fecha:** 24 de enero de 2026  
+**Versión:** 1.0.0  
+**Sistema:** SCALA - Academia de Música

@@ -11,7 +11,7 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     background-color: #c0c0c0;
     border: 2px solid #808080;
@@ -54,6 +54,99 @@ body {
     margin-bottom: 20px;
 }
 
+/* Sección de búsqueda híbrida */
+.search-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #d4d0c8;
+    border: 2px solid #808080;
+}
+
+.search-container {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hybrid-search-input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 2px inset #dfdfdf;
+    background-color: white;
+    font-family: Arial, sans-serif;
+}
+
+.hybrid-search-input:focus {
+    outline: none;
+    border-color: #0066cc;
+}
+
+.search-suggestions {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 2px solid #808080;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+.suggestion-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.suggestion-item:hover {
+    background-color: #0066cc;
+    color: white;
+}
+
+.suggestion-item .icon {
+    font-size: 16px;
+}
+
+.suggestion-item .label {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+.suggestion-item .value {
+    font-weight: normal;
+}
+
+.suggestion-item .separator {
+    color: #808080;
+    margin: 0 5px;
+}
+
+.suggestion-item:hover .separator {
+    color: white;
+}
+
+.suggestion-item.no-results {
+    color: #666;
+    cursor: default;
+    justify-content: center;
+}
+
+.suggestion-item.no-results:hover {
+    background-color: white;
+    color: #666;
+}
+
+/* Tabla de horarios */
 .table-section {
     border: 2px solid #808080;
     padding: 15px;
@@ -70,18 +163,43 @@ table {
 
 th {
     background-color: #c0c0c0;
-    padding: 8px;
+    padding: 8px 4px;
     border: 1px solid #808080;
     text-align: center;
     font-size: 13px;
+    font-weight: bold;
 }
 
 td {
-    padding: 6px;
+    padding: 6px 4px;
     border: 1px solid #808080;
     text-align: center;
     font-size: 12px;
 }
+
+td.no-data {
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+tr:hover {
+    background-color: #f0f0f0;
+}
+
+/* Columnas específicas */
+th:nth-child(1), td:nth-child(1) { width: 30px; } /* Selector */
+th:nth-child(2), td:nth-child(2) { width: 80px; } /* Día */
+th:nth-child(3), td:nth-child(3) { width: 100px; } /* Hora */
+th:nth-child(4), td:nth-child(4) { width: 60px; } /* Clave */
+th:nth-child(5), td:nth-child(5) { width: auto; min-width: 150px; } /* Curso */
+th:nth-child(6), td:nth-child(6) { width: auto; min-width: 120px; } /* Maestro */
+th:nth-child(7), td:nth-child(7) { width: 40px; } /* Sc. */
+th:nth-child(8), td:nth-child(8) { width: 50px; } /* Cupo */
+th:nth-child(9), td:nth-child(9) { width: 40px; } /* # */
+th:nth-child(10), td:nth-child(10) { width: 90px; } /* Inicio */
+th:nth-child(11), td:nth-child(11) { width: 50px; } /* Lec */
+th:nth-child(12), td:nth-child(12) { width: 90px; } /* F.L. */
 
 .table-nav {
     display: flex;
@@ -103,10 +221,16 @@ td {
     border-style: inset;
 }
 
+.nav-btn-small:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .record-input {
-    width: 50px;
+    width: 120px;
     text-align: center;
     padding: 3px;
+    border: 2px inset #dfdfdf;
 }
 
 .button-group {
@@ -132,66 +256,20 @@ td {
     color: red;
 }
 
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
+/* Scrollbar personalizado para sugerencias */
+.search-suggestions::-webkit-scrollbar {
+    width: 12px;
 }
 
-.modal-content {
-    background-color: #c0c0c0;
-    margin: 15% auto;
-    padding: 20px;
-    border: 2px solid #808080;
-    width: 500px;
+.search-suggestions::-webkit-scrollbar-track {
+    background: #f1f1f1;
 }
 
-.modal-content-large {
-    background-color: #c0c0c0;
-    margin: 10% auto;
-    padding: 20px;
-    border: 2px solid #808080;
-    width: 600px;
-    max-height: 70vh;
-    overflow-y: auto;
+.search-suggestions::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 6px;
 }
 
-.modal-content h2,
-.modal-content-large h2 {
-    margin-bottom: 15px;
-    font-size: 16px;
-}
-
-.modal-input {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 15px;
-    border: 2px inset #dfdfdf;
-}
-
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-#cursosList {
-    margin-bottom: 15px;
-}
-
-.curso-item {
-    padding: 10px;
-    border: 1px solid #808080;
-    margin-bottom: 5px;
-    cursor: pointer;
-    background-color: white;
-}
-
-.curso-item:hover {
-    background-color: #e0e0e0;
+.search-suggestions::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

@@ -5,27 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grupos de Artículos</title>
     <link rel="stylesheet" href="grupos-articulos.css">
+    <script src="supabase-config.js"></script>
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <header>
             <h1>Grupos de Artículos</h1>
-        </div>
+            <div class="datetime" id="datetime"></div>
+        </header>
 
-        <form id="gruposArticulosForm">
-            <div class="form-group">
-                <label for="grupo">Grupo:</label>
-                <input type="text" id="grupo" name="grupo" required>
+        <main>
+            <div class="form-section">
+                <div class="form-row">
+                    <label>Nombre del Grupo:</label>
+                    <input type="text" id="nombre" class="input-large" placeholder="Ej: Colegiaturas, Materiales, Métodos">
+                </div>
+
+                <div class="form-row">
+                    <label>Descripción:</label>
+                    <textarea id="descripcion" class="input-xlarge" rows="3" placeholder="Descripción opcional del grupo"></textarea>
+                </div>
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
-                <button type="button" class="btn" id="borrarBtn">Borrar</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+                <button class="action-btn" onclick="nuevoGrupo()">Nuevo</button>
+                <button class="action-btn" onclick="guardarGrupo()">Guardar</button>
+                <button class="action-btn" onclick="borrarGrupo()">Borrar</button>
+                <button class="btn-terminar" onclick="terminar()">Terminar</button>
             </div>
-        </form>
+
+            <div class="lista-grupos">
+                <h3>Grupos Existentes</h3>
+                <table id="tablaGrupos">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Artículos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyGrupos"></tbody>
+                </table>
+            </div>
+        </main>
     </div>
 
-    <script type="module" src="grupos-articulos.js"></script>
+    <script src="grupos-articulos.js"></script>
 </body>
 </html>

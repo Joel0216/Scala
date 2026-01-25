@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Conexión Supabase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Test de Conexión a Supabase</h1>
+        
+        <div class="test-section info">
+            <h3>📋 Información de Configuración</h3>
+            <p><strong>URL:</strong> https://vqsduyfkgdqnigzkxazk.supabase.co</p>
+            <p><strong>Estado:</strong> <span id="connectionStatus">Verificando...</span></p>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Pruebas de Conexión</h3>
+            <button onclick="testConnection()">1. Probar Conexión Básica</button>
+            <button onclick="testTables()">2. Verificar Tablas</button>
+            <button onclick="testInsert()">3. Probar Inserción</button>
+            <button onclick="testQuery()">4. Probar Consulta</button>
+            <div id="testResults" style="margin-top: 20px;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Tablas en la Base de Datos</h3>
+            <button onclick="listTables()">Listar Todas las Tablas</button>
+            <div id="tablesResults" style="margin-top: 20px;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>⚠️ Ejecutar Schema SQL</h3>
+            <p><strong>IMPORTANTE:</strong> Esto creará todas las tablas del sistema. Solo ejecutar una vez.</p>
+            <button onclick="confirmExecuteSchema()" style="background: #ff9800;">Ejecutar SUPABASE-SCHEMA.sql</button>
+            <div id="schemaResults" style="margin-top: 20px;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📝 Datos de Prueba</h3>
+            <button onclick="insertTestData()">Insertar Datos de Prueba</button>
+            <div id="testDataResults" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- Cargar Supabase desde CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://vqsduyfkgdqnigzkxazk.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxc2R1eWZrZ2Rxbmlnemt4YXprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwMzIyOTMsImV4cCI6MjA4NDYwODI5M30.l5bZubjb3PIvcFG43JTfoeguldEwwIK7wlnOnl-Ec5o';
+
+        // Inicializar cliente de Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Verificar conexión al cargar
+        window.onload = async function() {
+            try {
+                const { data, error } = await supabase.from('alumnos').select('count');
+                if (error && error.code === '42P01') {
+                    document.getElementById('connectionStatus').innerHTML = 
+                        '✅ Conectado (Tablas no creadas aún)';
+                } else if (error) {
+                    document.getElementById('connectionStatus').innerHTML = 
+                        '❌ Error: ' + error.message;
+                } else {
+                    document.getElementById('connectionStatus').innerHTML = 
+                        '✅ Conectado y funcionando';
+                }
+            } catch (e) {
+                document.getElementById('connectionStatus').innerHTML = 
+                    '❌ Error de conexión: ' + e.message;
+            }
+        };
+
+        // Test 1: Conexión básica
+        async function testConnection() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '<div class="loading"></div> Probando conexión...';
+            
+            try {
+                const { data, error } = await supabase.from('alumnos').select('count');
+                
+                if (error && error.code === '42P01') {
+                    results.innerHTML = `
+                        <div class="info">
+                            <strong>✅ Conexión exitosa</strong><br>
+                            La tabla 'alumnos' no existe aún. Necesitas ejecutar el schema SQL.
+                        </div>
+                    `;
+                } else if (error) {
+                    results.innerHTML = `
+                        <div class="error">
+                            <strong>❌ Error:</strong><br>
+                            ${error.message}
+                        </div>
+                    `;
+                } else {
+                    results.innerHTML = `
+                        <div class="success">
+                            <strong>✅ Conexión exitosa</strong><br>
+                            Base de datos funcionando correctamente.
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                results.innerHTML = `
+                    <div class="error">
+                        <strong>❌ Error de conexión:</strong><br>
+                        ${e.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Test 2: Verificar tablas
+        async function testTables() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '<div class="loading"></div> Verificando tablas...';
+            
+            const tablasEsperadas = [
+                'alumnos', 'maestros', 'cursos', 'grupos', 'salones',
+                'recibos', 'operaciones', 'colegiaturas',
+                'motivos_baja', 'instrumentos', 'medios_contacto'
+            ];
+            
+            let html = '<h4>Estado de las Tablas:</h4><ul>';
+            let todasExisten = true;
+            
+            for (const tabla of tablasEsperadas) {
+                try {
+                    const { error } = await supabase.from(tabla).select('count').limit(1);
+                    if (error && error.code === '42P01') {
+                        html += `<li>❌ ${tabla} - No existe</li>`;
+                        todasExisten = false;
+                    } else {
+                        html += `<li>✅ ${tabla} - Existe</li>`;
+                    }
+                } catch (e) {
+                    html += `<li>❌ ${tabla} - Error: ${e.message}</li>`;
+                    todasExisten = false;
+                }
+            }
+            
+            html += '</ul>';
+            
+            if (todasExisten) {
+                results.innerHTML = `<div class="success">${html}</div>`;
+            } else {
+                results.innerHTML = `<div class="error">${html}<p><strong>Necesitas ejecutar el schema SQL.</strong></p></div>`;
+            }
+        }
+
+        // Test 3: Probar inserción
+        async function testInsert() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '<div class="loading"></div> Probando inserción...';
+            
+            try {
+                const testData = {
+                    clave: 'TEST',
+                    descripcion: 'Motivo de prueba - ' + new Date().toISOString()
+                };
+                
+                const { data, error } = await supabase
+                    .from('motivos_baja')
+                    .insert([testData])
+                    .select();
+                
+                if (error) throw error;
+                
+                results.innerHTML = `
+                    <div class="success">
+                        <strong>✅ Inserción exitosa</strong><br>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (e) {
+                results.innerHTML = `
+                    <div class="error">
+                        <strong>❌ Error:</strong><br>
+                        ${e.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Test 4: Probar consulta
+        async function testQuery() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '<div class="loading"></div> Probando consulta...';
+            
+            try {
+                const { data, error } = await supabase
+                    .from('motivos_baja')
+                    .select('*')
+                    .limit(5);
+                
+                if (error) throw error;
+                
+                results.innerHTML = `
+                    <div class="success">
+                        <strong>✅ Consulta exitosa</strong><br>
+                        Registros encontrados: ${data.length}<br>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (e) {
+                results.innerHTML = `
+                    <div class="error">
+                        <strong>❌ Error:</strong><br>
+                        ${e.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Listar todas las tablas
+        async function listTables() {
+            const results = document.getElementById('tablesResults');
+            results.innerHTML = '<div class="loading"></div> Consultando tablas...';
+            
+            try {
+                // Nota: Esta consulta requiere permisos especiales
+                // Alternativa: probar cada tabla manualmente
+                const tablas = [
+                    'alumnos', 'maestros', 'cursos', 'grupos', 'salones',
+                    'recibos', 'operaciones', 'colegiaturas', 'operaciones_canceladas',
+                    'motivos_baja', 'instrumentos', 'medios_contacto',
+                    'grupos_articulos', 'articulos', 'movimientos_inventario',
+                    'programacion_examenes', 'prospectos',
+                    'usuarios', 'login_history', 'rfc_clientes', 'factores',
+                    'cambios_alumnos'
+                ];
+                
+                let html = '<h4>Tablas en la Base de Datos:</h4><table style="width:100%; border-collapse: collapse;">';
+                html += '<tr style="background:#f0f0f0;"><th style="padding:8px; border:1px solid #ddd;">Tabla</th><th style="padding:8px; border:1px solid #ddd;">Registros</th><th style="padding:8px; border:1px solid #ddd;">Estado</th></tr>';
+                
+                for (const tabla of tablas) {
+                    try {
+                        const { count, error } = await supabase
+                            .from(tabla)
+                            .select('*', { count: 'exact', head: true });
+                        
+                        if (error && error.code === '42P01') {
+                            html += `<tr><td style="padding:8px; border:1px solid #ddd;">${tabla}</td><td style="padding:8px; border:1px solid #ddd;">-</td><td style="padding:8px; border:1px solid #ddd;">❌ No existe</td></tr>`;
+                        } else if (error) {
+                            html += `<tr><td style="padding:8px; border:1px solid #ddd;">${tabla}</td><td style="padding:8px; border:1px solid #ddd;">-</td><td style="padding:8px; border:1px solid #ddd;">⚠️ Error</td></tr>`;
+                        } else {
+                            html += `<tr><td style="padding:8px; border:1px solid #ddd;">${tabla}</td><td style="padding:8px; border:1px solid #ddd;">${count || 0}</td><td style="padding:8px; border:1px solid #ddd;">✅ OK</td></tr>`;
+                        }
+                    } catch (e) {
+                        html += `<tr><td style="padding:8px; border:1px solid #ddd;">${tabla}</td><td style="padding:8px; border:1px solid #ddd;">-</td><td style="padding:8px; border:1px solid #ddd;">❌ Error</td></tr>`;
+                    }
+                }
+                
+                html += '</table>';
+                results.innerHTML = html;
+            } catch (e) {
+                results.innerHTML = `
+                    <div class="error">
+                        <strong>❌ Error:</strong><br>
+                        ${e.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Confirmar ejecución del schema
+        function confirmExecuteSchema() {
+            if (confirm('⚠️ IMPORTANTE: Esto creará todas las tablas del sistema.\n\n¿Estás seguro de continuar?')) {
+                alert('Para ejecutar el schema SQL:\n\n1. Ve a Supabase Dashboard\n2. Abre el SQL Editor\n3. Copia y pega el contenido de SUPABASE-SCHEMA.sql\n4. Ejecuta el script\n\nLuego regresa aquí y prueba la conexión.');
+            }
+        }
+
+        // Insertar datos de prueba
+        async function insertTestData() {
+            const results = document.getElementById('testDataResults');
+            results.innerHTML = '<div class="loading"></div> Insertando datos de prueba...';
+            
+            try {
+                // Insertar un curso de prueba
+                const { data: curso, error: errorCurso } = await supabase
+                    .from('cursos')
+                    .insert([{
+                        curso: 'PIANO BASICO - PRUEBA',
+                        precio_mensual: 800.00,
+                        precio_inscripcion: 200.00,
+                        nivel: 'Básico'
+                    }])
+                    .select()
+                    .single();
+                
+                if (errorCurso) throw errorCurso;
+                
+                // Insertar un maestro de prueba
+                const { data: maestro, error: errorMaestro } = await supabase
+                    .from('maestros')
+                    .insert([{
+                        nombre: 'Maestro de Prueba',
+                        telefono: '999-123-4567',
+                        status: 'activo'
+                    }])
+                    .select()
+                    .single();
+                
+                if (errorMaestro) throw errorMaestro;
+                
+                // Insertar un salón de prueba
+                const { data: salon, error: errorSalon } = await supabase
+                    .from('salones')
+                    .insert([{
+                        numero: 'S-TEST',
+                        ubicacion: 'Planta Baja',
+                        cupo: 10
+                    }])
+                    .select()
+                    .single();
+                
+                if (errorSalon) throw errorSalon;
+                
+                results.innerHTML = `
+                    <div class="success">
+                        <strong>✅ Datos de prueba insertados correctamente</strong><br>
+                        <ul>
+                            <li>Curso: ${curso.curso}</li>
+                            <li>Maestro: ${maestro.nombre}</li>
+                            <li>Salón: ${salon.numero}</li>
+                        </ul>
+                    </div>
+                `;
+            } catch (e) {
+                results.innerHTML = `
+                    <div class="error">
+                        <strong>❌ Error:</strong><br>
+                        ${e.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

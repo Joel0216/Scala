@@ -9,29 +9,32 @@ let supabase = null;
 // Funciona tanto con CDN (navegador) como con npm (Electron)
 function initSupabase() {
     try {
-        // Intentar usar la versión CDN primero (window.supabase)
-        if (typeof window !== 'undefined' && typeof window.supabase !== 'undefined') {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            console.log('Supabase inicializado correctamente (CDN)');
-            return true;
-        }
-        
-        // Si no está disponible, intentar con require (Electron con npm)
+        // En Electron, usar require
         if (typeof require !== 'undefined') {
             try {
                 const { createClient } = require('@supabase/supabase-js');
                 supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('Supabase inicializado correctamente (npm)');
+                window.supabase = supabase; // Hacer disponible globalmente
+                console.log('✓ Supabase inicializado correctamente (Electron/npm)');
                 return true;
             } catch (e) {
                 console.warn('No se pudo cargar Supabase vía npm:', e.message);
             }
         }
         
-        console.error('La librería de Supabase no está disponible');
+        // Fallback: Intentar usar la versión CDN (navegador)
+        if (typeof window !== 'undefined' && typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('✓ Supabase inicializado correctamente (CDN)');
+            return true;
+        }
+        
+        console.error('✗ La librería de Supabase no está disponible');
+        alert('Error: No se pudo conectar a la base de datos. Verifica tu conexión a Internet.');
         return false;
     } catch (error) {
-        console.error('Error al inicializar Supabase:', error);
+        console.error('✗ Error al inicializar Supabase:', error);
+        alert('Error al inicializar base de datos: ' + error.message);
         return false;
     }
 }

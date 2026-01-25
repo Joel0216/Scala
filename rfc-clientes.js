@@ -1,7 +1,34 @@
-import { supabase } from './supabase-config.js';
-
+// Inicializar Supabase
+let supabase = null;
 let clientes = [];
 let currentCliente = null;
+
+// Esperar a que se cargue la libreria de Supabase
+window.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOM cargado, inicializando rfc-clientes...');
+    
+    // Inicializar Supabase
+    if (typeof initSupabase === 'function') {
+        const success = initSupabase();
+        if (success) {
+            supabase = window.supabase;
+        } else {
+            alert('Error: No se pudo conectar a la base de datos');
+            return;
+        }
+    } else {
+        alert('Error: initSupabase no está disponible');
+        return;
+    }
+    
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+    
+    // Configurar event listeners
+    setupEventListeners();
+    
+    console.log('Inicialización de rfc-clientes completa');
+});
 
 // Actualizar fecha y hora
 function updateDateTime() {
@@ -15,19 +42,80 @@ function updateDateTime() {
         second: '2-digit',
         hour12: true
     });
-    document.getElementById('datetime').textContent = formatted;
+    const datetimeElement = document.getElementById('datetime');
+    if (datetimeElement) {
+        datetimeElement.textContent = formatted;
+    }
 }
 
-setInterval(updateDateTime, 1000);
-updateDateTime();
+// Configurar todos los event listeners
+function setupEventListeners() {
+    // Actualizar RFC display
+    const rfcInput = document.getElementById('rfc');
+    if (rfcInput) {
+        rfcInput.addEventListener('input', function() {
+            const rfcDisplay = document.getElementById('rfcDisplay');
+            if (rfcDisplay) {
+                rfcDisplay.value = this.value;
+            }
+        });
+    }
 
-// Actualizar RFC display
-document.getElementById('rfc').addEventListener('input', function() {
-    document.getElementById('rfcDisplay').value = this.value;
-});
+    // Botón Nuevo
+    const nuevoBtn = document.getElementById('nuevoBtn');
+    if (nuevoBtn) {
+        nuevoBtn.addEventListener('click', saveCliente);
+    }
+
+    // Botón Buscar
+    const buscarBtn = document.getElementById('buscarBtn');
+    if (buscarBtn) {
+        buscarBtn.addEventListener('click', () => {
+            const modal = document.getElementById('searchModal');
+            if (modal) {
+                modal.style.display = 'block';
+            }
+        });
+    }
+
+    // Botón Aceptar búsqueda
+    const aceptarBtn = document.getElementById('aceptarBtn');
+    if (aceptarBtn) {
+        aceptarBtn.addEventListener('click', buscarCliente);
+    }
+
+    // Botón Cancelar búsqueda
+    const cancelarBtn = document.getElementById('cancelarBtn');
+    if (cancelarBtn) {
+        cancelarBtn.addEventListener('click', () => {
+            const modal = document.getElementById('searchModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+
+    // Botón Borrar
+    const borrarBtn = document.getElementById('borrarBtn');
+    if (borrarBtn) {
+        borrarBtn.addEventListener('click', deleteCliente);
+    }
+
+    // Botón Terminar
+    const terminarBtn = document.getElementById('terminarBtn');
+    if (terminarBtn) {
+        terminarBtn.addEventListener('click', () => {
+            if (confirm('¿Desea salir del módulo de RFC Clientes?')) {
+                window.location.href = 'archivos.html';
+            }
+        });
+    }
+}
 
 // Cargar credenciales asociadas
 async function loadCredenciales(rfc) {
+    if (!supabase) return;
+    
     try {
         const { data, error } = await supabase
             .from('alumnos')
@@ -37,23 +125,27 @@ async function loadCredenciales(rfc) {
         if (error) throw error;
 
         const tbody = document.getElementById('credencialesTableBody');
+        if (!tbody) return;
+        
         tbody.innerHTML = '';
 
         // Agregar credenciales encontradas
-        data.forEach((alumno, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${index === 0 ? '▶' : ''}</td>
-                <td><input type="text" class="credencial-input" value="${alumno.credencial1}" readonly></td>
-            `;
-            tbody.appendChild(row);
-        });
+        if (data && data.length > 0) {
+            data.forEach((alumno, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index === 0 ? '▶' : ''}</td>
+                    <td><input type="text" class="credencial-input" value="${alumno.credencial1}" readonly></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
 
         // Agregar fila de total
         const totalRow = document.createElement('tr');
         totalRow.innerHTML = `
             <td>*</td>
-            <td class="total">${data.length}</td>
+            <td class="total">${data ? data.length : 0}</td>
         `;
         tbody.appendChild(totalRow);
     } catch (error) {
@@ -62,7 +154,11 @@ async function loadCredenciales(rfc) {
 }
 
 // Guardar cliente
-document.getElementById('nuevoBtn').addEventListener('click', async () => {
+async function saveCliente() {
+    if (!supabase) {
+        alert('Error: Base de datos no conectada');
+        return;
+    }
     const clienteData = {
         rfc: document.getElementById('rfc').value.toUpperCase(),
         nombre: document.getElementById('nombre').value,
@@ -101,23 +197,27 @@ document.getElementById('nuevoBtn').addEventListener('click', async () => {
         }
 
         alert('Cliente guardado correctamente');
-        document.getElementById('rfcForm').reset();
+        const form = document.getElementById('rfcForm');
+        if (form) form.reset();
     } catch (error) {
         console.error('Error guardando cliente:', error);
-        alert('Error al guardar el cliente');
+        alert('Error al guardar el cliente: ' + error.message);
     }
-});
+}
 
 // Buscar cliente
-document.getElementById('buscarBtn').addEventListener('click', () => {
-    document.getElementById('searchModal').style.display = 'block';
-});
+async function buscarCliente() {
+    if (!supabase) return;
+    const searchInput = document.getElementById('searchInput');
+    const modal = document.getElementById('searchModal');
+    
+    if (modal) {
+        modal.style.display = 'none';
+    }
 
-document.getElementById('aceptarBtn').addEventListener('click', async () => {
-    const rfc = document.getElementById('searchInput').value.toUpperCase();
-    document.getElementById('searchModal').style.display = 'none';
-
-    if (!rfc) return;
+    if (!searchInput || !searchInput.value) return;
+    
+    const rfc = searchInput.value.toUpperCase();
 
     try {
         const { data, error } = await supabase
@@ -144,14 +244,11 @@ document.getElementById('aceptarBtn').addEventListener('click', async () => {
         console.error('Error buscando cliente:', error);
         alert('Cliente no encontrado');
     }
-});
-
-document.getElementById('cancelarBtn').addEventListener('click', () => {
-    document.getElementById('searchModal').style.display = 'none';
-});
+}
 
 // Borrar cliente
-document.getElementById('borrarBtn').addEventListener('click', async () => {
+async function deleteCliente() {
+    if (!supabase) return;
     if (!currentCliente) {
         alert('Seleccione un cliente primero');
         return;
@@ -168,17 +265,11 @@ document.getElementById('borrarBtn').addEventListener('click', async () => {
         if (error) throw error;
 
         alert('Cliente eliminado correctamente');
-        document.getElementById('rfcForm').reset();
+        const form = document.getElementById('rfcForm');
+        if (form) form.reset();
         currentCliente = null;
     } catch (error) {
         console.error('Error eliminando cliente:', error);
-        alert('Error al eliminar el cliente');
+        alert('Error al eliminar el cliente: ' + error.message);
     }
-});
-
-// Terminar
-document.getElementById('terminarBtn').addEventListener('click', () => {
-    if (confirm('¿Desea salir del módulo de RFC Clientes?')) {
-        window.location.href = 'archivos.html';
-    }
-});
+}

@@ -1,0 +1,241 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: white;
+    border: 2px solid #808080;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.header {
+    background: linear-gradient(to right, #000080, #1084d0);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.datetime {
+    font-size: 14px;
+    background-color: white;
+    color: #000080;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.filters {
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-bottom: 2px solid #ddd;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-group label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.filter-group select {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.stats {
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    background-color: #f0f8ff;
+    border-bottom: 2px solid #ddd;
+}
+
+.stat-card {
+    background: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #000080;
+}
+
+.table-container {
+    padding: 20px;
+    overflow-x: auto;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+thead {
+    position: sticky;
+    top: 0;
+    background-color: #000080;
+    color: white;
+    z-index: 10;
+}
+
+th {
+    padding: 12px 8px;
+    text-align: left;
+    font-weight: bold;
+    border: 1px solid #ddd;
+}
+
+tbody tr {
+    transition: background-color 0.2s;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+tbody tr:hover {
+    background-color: #e6f2ff;
+}
+
+td {
+    padding: 10px 8px;
+    border: 1px solid #ddd;
+}
+
+/* Colores por disponibilidad */
+.disponible-alta {
+    background-color: #d4edda !important;
+}
+
+.disponible-media {
+    background-color: #fff3cd !important;
+}
+
+.disponible-baja {
+    background-color: #f8d7da !important;
+}
+
+.disponible-lleno {
+    background-color: #f5c6cb !important;
+    font-weight: bold;
+}
+
+.button-group {
+    padding: 20px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    border-top: 2px solid #ddd;
+}
+
+.btn {
+    padding: 10px 25px;
+    border: none;
+    background: linear-gradient(to bottom, #e0e0e0, #c0c0c0);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background: linear-gradient(to bottom, #1084d0, #000080);
+    color: white;
+}
+
+.btn-terminar {
+    background: linear-gradient(to bottom, #ff6b6b, #c92a2a);
+    color: white;
+}
+
+/* Scrollbar personalizado */
+.table-container::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Impresión */
+@media print {
+    .filters,
+    .button-group {
+        display: none;
+    }
+    
+    .container {
+        border: none;
+        box-shadow: none;
+    }
+    
+    .table-container {
+        max-height: none;
+        overflow: visible;
+    }
+    
+    thead {
+        position: static;
+    }
+}

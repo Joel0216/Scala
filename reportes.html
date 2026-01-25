@@ -24,24 +24,17 @@
                 <div class="selection-label">Seleccione el reporte deseado:</div>
                 
                 <select id="reporteSelect" size="20" class="reporte-list">
+                    <option value="">-- Seleccione un reporte --</option>
                     <option value="alumnos_instrumento">Alumnos Por Instrumento</option>
-                    <option value="alumnos_medios">Alumnos por Medios que se entero</option>
-                    <option value="analisis_bajas">Análisis de bajas por maestro con %</option>
-                    <option value="analisis_colegiaturas">Análisis de colegiaturas p/análisis de ingresos</option>
-                    <option value="analisis_ingresos">Análisis de Ingresos por curso</option>
-                    <option value="anexo_contrato">Anexo A de contrato de maestros</option>
-                    <option value="articulos_vendidos">Artículos Vendidos (Por Pedido)</option>
-                    <option value="aviso_adeudo">aviso de adeudo</option>
-                    <option value="becas">Becas</option>
-                    <option value="becas_maestro">Becas (Por Maestro)</option>
+                    <option value="alumnos_medios">Alumnos por Medios</option>
                     <option value="colegiaturas_cobradas">Colegiaturas Cobradas</option>
-                    <option value="colegiaturas_curso">Colegiaturas por curso</option>
-                    <option value="concentrado_examenes">Concentrado de exámenes</option>
-                    <option value="concentrado_examenes_tipo">Concentrado de exámenes por tipo</option>
-                    <option value="corte_caja_dia_resumen">Corte de Caja por día (Resumen de Operaciones)</option>
-                    <option value="corte_caja_dia_todas">Corte de Caja por día (Todas las operaciones)</option>
-                    <option value="corte_caja_periodo">Corte de Caja por periodo (Resumen de Operaciones)</option>
                     <option value="horarios">Horarios</option>
+                    <option value="analisis_bajas">Análisis de bajas por maestro (En desarrollo)</option>
+                    <option value="analisis_ingresos">Análisis de Ingresos por curso (En desarrollo)</option>
+                    <option value="articulos_vendidos">Artículos Vendidos (En desarrollo)</option>
+                    <option value="becas">Becas (En desarrollo)</option>
+                    <option value="concentrado_examenes">Concentrado de exámenes (En desarrollo)</option>
+                    <option value="corte_caja">Corte de Caja (En desarrollo)</option>
                 </select>
 
                 <div class="button-container">
@@ -56,6 +49,7 @@
         </main>
     </div>
 
+    <script src="supabase-config.js"></script>
     <script src="reportes.js"></script>
 </body>
 </html>

@@ -10,32 +10,41 @@
     <div class="container">
         <div class="header">
             <h1>Alta de Grupos</h1>
+            <div class="datetime" id="datetime"></div>
         </div>
 
         <form id="altaForm">
+            <!-- Clave (generada automáticamente) -->
             <div class="form-group">
                 <label for="clave">Clave:</label>
                 <input type="text" id="clave" name="clave" readonly>
-                <button type="button" class="dropdown-btn">▼</button>
             </div>
 
+            <!-- Curso con búsqueda predictiva -->
             <div class="form-group">
-                <label for="curso">Curso:</label>
-                <select id="curso" name="curso">
-                    <option value=""></option>
-                </select>
+                <label for="curso">Curso: *</label>
+                <div class="search-container">
+                    <input type="text" id="cursoSearch" placeholder="Escriba para buscar...">
+                    <div id="cursoSuggestions" class="suggestions"></div>
+                </div>
+                <input type="hidden" id="cursoId">
             </div>
 
+            <!-- Maestro con búsqueda predictiva -->
             <div class="form-group">
-                <label for="nombre">Nombre:</label>
-                <select id="nombre" name="nombre">
-                    <option value=""></option>
-                </select>
+                <label for="maestro">Nombre (Maestro): *</label>
+                <div class="search-container">
+                    <input type="text" id="maestroSearch" placeholder="Escriba para buscar...">
+                    <div id="maestroSuggestions" class="suggestions"></div>
+                </div>
+                <input type="hidden" id="maestroId">
             </div>
 
+            <!-- Día -->
             <div class="form-group">
-                <label for="dia">Dia:</label>
+                <label for="dia">Día: *</label>
                 <select id="dia" name="dia">
+                    <option value="">-- Seleccione --</option>
                     <option value="LU">Lunes</option>
                     <option value="MA">Martes</option>
                     <option value="MI">Miércoles</option>
@@ -46,28 +55,32 @@
                 </select>
             </div>
 
+            <!-- Horarios -->
             <div class="form-row">
                 <div class="form-group">
-                    <label for="horaEntrada">Hora entrada:</label>
+                    <label for="horaEntrada">Hora entrada: *</label>
                     <input type="time" id="horaEntrada" name="horaEntrada">
                 </div>
                 <div class="form-group">
-                    <label for="horaSalida">Hora salida:</label>
+                    <label for="horaSalida">Hora salida: *</label>
                     <input type="time" id="horaSalida" name="horaSalida">
                 </div>
             </div>
 
+            <!-- Salón con información de instrumentos -->
             <div class="form-group">
-                <label for="salon">Salón</label>
+                <label for="salon">Salón: *</label>
                 <select id="salon" name="salon">
-                    <option value=""></option>
+                    <option value="">-- Seleccione --</option>
                 </select>
             </div>
+            <div id="salonInfo" class="salon-info"></div>
 
+            <!-- Cupo y Alumnos -->
             <div class="form-row">
                 <div class="form-group">
-                    <label for="cupo">Cupo:</label>
-                    <input type="number" id="cupo" name="cupo" value="0">
+                    <label for="cupo">Cupo: *</label>
+                    <input type="number" id="cupo" name="cupo" value="0" min="0">
                 </div>
                 <div class="form-group">
                     <label for="alumnos">Alumnos:</label>
@@ -75,39 +88,34 @@
                 </div>
             </div>
 
+            <!-- Inicio -->
             <div class="form-group">
-                <label for="inicio">Inicio:</label>
+                <label for="inicio">Inicio: *</label>
                 <input type="date" id="inicio" name="inicio">
             </div>
 
+            <!-- Lección (opcional) -->
             <div class="form-group">
-                <label for="leccion">Leccion:</label>
+                <label for="leccion">Lección:</label>
                 <input type="text" id="leccion" name="leccion" value="Null">
             </div>
 
+            <!-- Fecha Lección (opcional) -->
             <div class="form-group">
-                <label for="fechaLeccion">Fecha Leccion:</label>
+                <label for="fechaLeccion">Fecha Lección:</label>
                 <input type="date" id="fechaLeccion" name="fechaLeccion">
             </div>
 
+            <!-- Botones -->
             <div class="button-group">
-                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
-                <button type="button" class="btn" id="teclaBtn">Tecla <ESC> Cancela</button>
+                <button type="button" class="btn btn-primary" id="nuevoBtn">Nuevo</button>
+                <button type="button" class="btn" id="cancelarBtn">Cancelar</button>
                 <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
             </div>
         </form>
-
-        <div class="navigation">
-            <button class="nav-btn">|&lt;</button>
-            <button class="nav-btn">&lt;</button>
-            <span class="record-info">Registro: <span>1</span> de <span>1</span></span>
-            <button class="nav-btn">&gt;</button>
-            <button class="nav-btn">&gt;|</button>
-            <button class="nav-btn">|&gt;*</button>
-            <span> de 1 (Filtrado)</span>
-        </div>
     </div>
 
-    <script type="module" src="grupos-alta.js"></script>
+    <script src="supabase-config.js"></script>
+    <script src="grupos-alta.js"></script>
 </body>
 </html>

@@ -1,3 +1,33 @@
+// Inicializar Supabase
+let supabase = null;
+
+// Esperar a que se cargue la librería de Supabase
+window.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOM cargado, inicializando caja...');
+    
+    // Inicializar Supabase
+    if (typeof initSupabase === 'function') {
+        const success = initSupabase();
+        if (success) {
+            supabase = window.supabase;
+        } else {
+            alert('Error: No se pudo conectar a la base de datos');
+            return;
+        }
+    } else {
+        alert('Error: initSupabase no está disponible');
+        return;
+    }
+    
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+    
+    // Configurar event listeners
+    setupEventListeners();
+    
+    console.log('Inicialización de caja completa');
+});
+
 // Actualizar fecha y hora
 function updateDateTime() {
     const now = new Date();
@@ -10,45 +40,69 @@ function updateDateTime() {
         second: '2-digit',
         hour12: true
     });
-    document.getElementById('datetime').textContent = formatted;
+    const datetimeElement = document.getElementById('datetime');
+    if (datetimeElement) {
+        datetimeElement.textContent = formatted;
+    }
 }
 
-setInterval(updateDateTime, 1000);
-updateDateTime();
-
-// Botón Cobros
-document.querySelector('.top-left').addEventListener('click', () => {
-    alert('Módulo de COBROS en desarrollo');
-});
-
-// Botón Recibos Cancelados
-document.querySelector('.top-right').addEventListener('click', () => {
-    alert('Módulo de RECIBOS CANCELADOS en desarrollo');
-});
-
-// Botón Consulta y Bajas
-document.querySelector('.center-btn').addEventListener('click', () => {
-    alert('Módulo de CONSULTA Y BAJAS en desarrollo');
-});
-
-// Botón Corte 1
-document.querySelector('.bottom-left').addEventListener('click', () => {
-    alert('Reporte CORTE 1 en desarrollo');
-});
-
-// Botón Corte 2
-document.querySelector('.bottom-center').addEventListener('click', () => {
-    alert('Reporte CORTE 2 en desarrollo');
-});
-
-// Botón Corte 3
-document.querySelector('.bottom-right').addEventListener('click', () => {
-    alert('Reporte CORTE 3 en desarrollo');
-});
-
-// Botón Terminar
-document.querySelector('.exit-btn').addEventListener('click', () => {
-    if (confirm('¿Desea salir del módulo de Caja?')) {
-        window.location.href = 'index.html';
+// Configurar todos los event listeners
+function setupEventListeners() {
+    // Botón Cobros
+    const cobrosBtn = document.querySelector('.top-left');
+    if (cobrosBtn) {
+        cobrosBtn.addEventListener('click', () => {
+            alert('Módulo de COBROS en desarrollo');
+        });
     }
-});
+
+    // Botón Recibos Cancelados
+    const recibosCanceladosBtn = document.querySelector('.top-right');
+    if (recibosCanceladosBtn) {
+        recibosCanceladosBtn.addEventListener('click', () => {
+            alert('Módulo de RECIBOS CANCELADOS en desarrollo');
+        });
+    }
+
+    // Botón Consulta y Bajas
+    const consultaBajasBtn = document.querySelector('.center-btn');
+    if (consultaBajasBtn) {
+        consultaBajasBtn.addEventListener('click', () => {
+            alert('Módulo de CONSULTA Y BAJAS en desarrollo');
+        });
+    }
+
+    // Botón Corte 1
+    const corte1Btn = document.querySelector('.bottom-left');
+    if (corte1Btn) {
+        corte1Btn.addEventListener('click', () => {
+            alert('Reporte CORTE 1 en desarrollo');
+        });
+    }
+
+    // Botón Corte 2
+    const corte2Btn = document.querySelector('.bottom-center');
+    if (corte2Btn) {
+        corte2Btn.addEventListener('click', () => {
+            alert('Reporte CORTE 2 en desarrollo');
+        });
+    }
+
+    // Botón Corte 3
+    const corte3Btn = document.querySelector('.bottom-right');
+    if (corte3Btn) {
+        corte3Btn.addEventListener('click', () => {
+            alert('Reporte CORTE 3 en desarrollo');
+        });
+    }
+
+    // Botón Terminar
+    const terminarBtn = document.querySelector('.exit-btn');
+    if (terminarBtn) {
+        terminarBtn.addEventListener('click', () => {
+            if (confirm('¿Desea salir del módulo de Caja?')) {
+                window.location.href = 'index.html';
+            }
+        });
+    }
+}

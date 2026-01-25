@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consulta de Alumnos (BAJAS)</title>
     <link rel="stylesheet" href="alumnos-bajas.css">
+    <script src="supabase-config.js"></script>
 </head>
 <body>
     <div class="container">
@@ -206,12 +207,10 @@
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn" id="buscarBtn">Buscar</button>
-                <button type="button" class="btn" id="buscarNombreBtn">Buscar Nombre</button>
-                <button type="button" class="btn" id="siguienteBtn">Siguiente</button>
-                <button type="button" class="btn" id="listadoBtn">Listado</button>
-                <button type="button" class="btn" id="reingresoBtn">Reingreso</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn">TERMINAR</button>
+                <button type="button" class="btn" onclick="buscar()">Buscar</button>
+                <button type="button" class="btn" onclick="mostrarListado()">Listado</button>
+                <button type="button" class="btn" onclick="irAReingreso()">Reingreso</button>
+                <button type="button" class="btn btn-terminar" onclick="terminar()">TERMINAR</button>
             </div>
         </form>
     </div>
@@ -239,6 +238,23 @@
         </div>
     </div>
 
-    <script type="module" src="alumnos-bajas.js"></script>
+    <!-- Modal de búsqueda inteligente -->
+    <div id="modalBusqueda" class="modal">
+        <div class="modal-content">
+            <h2>Buscar Alumno Dado de Baja</h2>
+            <p style="font-size: 13px; color: #666; margin-bottom: 10px;">
+                Escriba el nombre o número de credencial
+            </p>
+            <input type="text" id="inputBusqueda" class="modal-input" placeholder="Ej: Joel o 123">
+            <div id="sugerenciasBusqueda" class="sugerencias-container"></div>
+            <div class="modal-buttons">
+                <button class="btn" onclick="cerrarModalBusqueda()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cargar Supabase desde CDN -->
+<script src="supabase-config.js"></script>
+    <script src="alumnos-bajas.js"></script>
 </body>
 </html>

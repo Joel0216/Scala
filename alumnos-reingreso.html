@@ -5,78 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reingreso del Alumno</title>
     <link rel="stylesheet" href="alumnos-reingreso.css">
+    <script src="supabase-config.js"></script>
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <header>
             <h1>REINGRESO DEL ALUMNO</h1>
-        </div>
+            <div class="datetime" id="datetime"></div>
+        </header>
 
-        <form id="reingresoForm">
-            <div class="form-group">
-                <label for="credencial">Credencial:</label>
-                <input type="text" id="credencial" name="credencial" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" name="nombre" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="ultimoGrupo">Ultimo Grupo que pertenecio:</label>
-                <input type="text" id="ultimoGrupo" name="ultimoGrupo" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="nuevoGrupo">Nuevo Grupo:</label>
-                <select id="nuevoGrupo" name="nuevoGrupo">
-                    <option value=""></option>
-                </select>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="beca">Beca:</label>
-                    <input type="checkbox" id="beca" name="beca">
+        <main>
+            <div class="form-section">
+                <div class="form-row">
+                    <label>Credencial:</label>
+                    <input type="text" id="credencial1" class="input-small" readonly style="background: #e0e0e0;">
+                    <span style="margin: 0 5px;">-</span>
+                    <input type="text" id="credencial2" class="input-small" readonly style="background: #e0e0e0;">
                 </div>
-                <div class="form-group">
-                    <label for="porcentaje">%:</label>
-                    <input type="number" id="porcentaje" name="porcentaje" step="0.01" value="0.00">
+
+                <div class="form-row">
+                    <label>Nombre:</label>
+                    <input type="text" id="nombre" class="input-xlarge" readonly style="background: #e0e0e0;">
+                </div>
+
+                <div class="form-row">
+                    <label>Último Grupo que perteneció:</label>
+                    <input type="text" id="ultimoGrupo" class="input-medium" readonly style="background: #e0e0e0;">
+                    <span id="infoGrupo" class="info-text"></span>
+                </div>
+
+                <div class="form-row">
+                    <label>Nuevo Grupo: <span class="required">*</span></label>
+                    <select id="nuevoGrupo" class="input-xlarge">
+                        <option value="">-- Seleccione nuevo grupo --</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <label>Beca:</label>
+                    <input type="checkbox" id="beca">
+                    <label class="label-inline">%:</label>
+                    <input type="number" id="porcentajeBeca" class="input-small" min="0" max="100" step="0.01" value="0.00" disabled>
+                    <span class="info-text">Marque la casilla si el alumno tiene beca</span>
+                </div>
+
+                <div class="form-row">
+                    <label>Observaciones:</label>
+                    <textarea id="observaciones" class="input-xlarge" rows="3" placeholder="Observaciones del reingreso (opcional)"></textarea>
                 </div>
             </div>
 
-            <div class="table-section">
-                <table id="historialTable">
-                    <thead>
-                        <tr>
-                            <th>Grupo</th>
-                            <th>Fecha Ingreso</th>
-                            <th>Fecha Baja</th>
-                            <th>Motivo</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historialTableBody">
-                    </tbody>
-                </table>
-                <div class="table-nav">
-                    <span>Registro: </span>
-                    <button type="button" class="nav-btn-small">|&lt;</button>
-                    <button type="button" class="nav-btn-small">&lt;</button>
-                    <input type="text" value="1" class="record-input" readonly>
-                    <button type="button" class="nav-btn-small">&gt;</button>
-                    <button type="button" class="nav-btn-small">&gt;|</button>
-                    <button type="button" class="nav-btn-small">|&gt;*</button>
+            <!-- Información del grupo seleccionado -->
+            <div id="infoGrupoSeleccionado" class="info-grupo" style="display: none;">
+                <h3>📋 Información del Grupo Seleccionado</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Clave:</strong>
+                        <span id="infoGrupoClave"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Curso:</strong>
+                        <span id="infoGrupoCurso"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Maestro:</strong>
+                        <span id="infoGrupoMaestro"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Día:</strong>
+                        <span id="infoGrupoDia"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Horario:</strong>
+                        <span id="infoGrupoHorario"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Salón:</strong>
+                        <span id="infoGrupoSalon"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Cupo:</strong>
+                        <span id="infoGrupoCupo"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Disponibles:</strong>
+                        <span id="infoGrupoDisponibles"></span>
+                    </div>
                 </div>
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn" id="guardarBtn">GUARDA Y TERMINA</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn">TERMINAR</button>
+                <button class="btn-guardar" id="btnGuardar" onclick="guardarReingreso()" disabled>
+                    <span>💾</span> Guardar y Terminar
+                </button>
+                <button class="btn-cancelar" onclick="cancelar()">
+                    <span>❌</span> Cancelar
+                </button>
             </div>
-        </form>
+
+            <div class="info-box">
+                <p><strong>Campos obligatorios:</strong> Credencial, Nombre, Último Grupo, Nuevo Grupo</p>
+                <p><strong>Nota:</strong> El botón "Guardar" se activará cuando todos los campos obligatorios estén completos</p>
+            </div>
+        </main>
     </div>
 
-    <script type="module" src="alumnos-reingreso.js"></script>
+    <script src="alumnos-reingreso.js"></script>
 </body>
 </html>

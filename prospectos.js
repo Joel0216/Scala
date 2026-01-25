@@ -1,10 +1,78 @@
-import { supabase } from './supabase-config.js';
-
+// Inicializar Supabase
+let supabase = null;
 let prospectos = [];
 let currentIndex = 0;
 
+// Esperar a que se cargue la libreria de Supabase
+window.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOM cargado, inicializando prospectos...');
+    
+    // Inicializar Supabase
+    if (typeof initSupabase === 'function') {
+        const success = initSupabase();
+        if (success) {
+            supabase = window.supabase;
+        } else {
+            alert('Error: No se pudo conectar a la base de datos');
+            return;
+        }
+    } else {
+        alert('Error: initSupabase no está disponible');
+        return;
+    }
+    
+    // Inicializar datos
+    await loadCursos();
+    const idProspectoInput = document.getElementById('idProspecto');
+    if (idProspectoInput) {
+        idProspectoInput.value = await generateProspectoId();
+    }
+    const fechaAtencionInput = document.getElementById('fechaAtencion');
+    if (fechaAtencionInput) {
+        fechaAtencionInput.value = new Date().toISOString().split('T')[0];
+    }
+    
+    // Configurar event listeners
+    setupEventListeners();
+    
+    console.log('Inicialización de prospectos completa');
+});
+
+// Configurar todos los event listeners
+function setupEventListeners() {
+    // Botón Nuevo
+    const nuevoBtn = document.getElementById('nuevoBtn');
+    if (nuevoBtn) {
+        nuevoBtn.addEventListener('click', saveProspecto);
+    }
+
+    // Botón Buscar
+    const buscarBtn = document.getElementById('buscarBtn');
+    if (buscarBtn) {
+        buscarBtn.addEventListener('click', buscarProspecto);
+    }
+
+    // Botón Borrar
+    const borrarBtn = document.getElementById('borrarBtn');
+    if (borrarBtn) {
+        borrarBtn.addEventListener('click', deleteProspecto);
+    }
+
+    // Botón Terminar
+    const terminarBtn = document.getElementById('terminarBtn');
+    if (terminarBtn) {
+        terminarBtn.addEventListener('click', () => {
+            if (confirm('¿Desea salir del módulo de Prospectos?')) {
+                window.location.href = 'archivos.html';
+            }
+        });
+    }
+}
+
 // Generar ID de prospecto
 async function generateProspectoId() {
+    if (!supabase) return 1001;
+    
     try {
         const { data, error } = await supabase
             .from('prospectos')
@@ -24,6 +92,8 @@ async function generateProspectoId() {
 
 // Cargar cursos
 async function loadCursos() {
+    if (!supabase) return;
+    
     try {
         const { data, error } = await supabase
             .from('cursos')
@@ -33,21 +103,29 @@ async function loadCursos() {
         if (error) throw error;
 
         const select = document.getElementById('curso');
+        if (!select) return;
+        
         select.innerHTML = '<option value=""></option>';
         
-        data.forEach(curso => {
-            const option = document.createElement('option');
-            option.value = curso.id;
-            option.textContent = curso.curso;
-            select.appendChild(option);
-        });
+        if (data && data.length > 0) {
+            data.forEach(curso => {
+                const option = document.createElement('option');
+                option.value = curso.id;
+                option.textContent = curso.curso;
+                select.appendChild(option);
+            });
+        }
     } catch (error) {
         console.error('Error cargando cursos:', error);
     }
 }
 
 // Guardar prospecto
-document.getElementById('nuevoBtn').addEventListener('click', async () => {
+async function saveProspecto() {
+    if (!supabase) {
+        alert('Error: Base de datos no conectada');
+        return;
+    }
     const prospectoData = {
         id: document.getElementById('idProspecto').value || await generateProspectoId(),
         fecha_atencion: document.getElementById('fechaAtencion').value,
@@ -84,16 +162,21 @@ document.getElementById('nuevoBtn').addEventListener('click', async () => {
         if (error) throw error;
 
         alert('Prospecto guardado correctamente');
-        document.getElementById('prospectosForm').reset();
-        document.getElementById('idProspecto').value = await generateProspectoId();
+        const form = document.getElementById('prospectosForm');
+        if (form) form.reset();
+        const idProspectoInput = document.getElementById('idProspecto');
+        if (idProspectoInput) {
+            idProspectoInput.value = await generateProspectoId();
+        }
     } catch (error) {
         console.error('Error guardando prospecto:', error);
-        alert('Error al guardar el prospecto');
+        alert('Error al guardar el prospecto: ' + error.message);
     }
-});
+}
 
 // Buscar prospecto
-document.getElementById('buscarBtn').addEventListener('click', async () => {
+async function buscarProspecto() {
+    if (!supabase) return;
     const id = prompt('Ingrese el ID del prospecto:');
     if (!id) return;
 
@@ -134,10 +217,11 @@ document.getElementById('buscarBtn').addEventListener('click', async () => {
         console.error('Error buscando prospecto:', error);
         alert('Prospecto no encontrado');
     }
-});
+}
 
 // Borrar prospecto
-document.getElementById('borrarBtn').addEventListener('click', async () => {
+async function deleteProspecto() {
+    if (!supabase) return;
     const id = document.getElementById('idProspecto').value;
     
     if (!id) {
@@ -156,23 +240,10 @@ document.getElementById('borrarBtn').addEventListener('click', async () => {
         if (error) throw error;
 
         alert('Prospecto eliminado correctamente');
-        document.getElementById('prospectosForm').reset();
+        const form = document.getElementById('prospectosForm');
+        if (form) form.reset();
     } catch (error) {
         console.error('Error eliminando prospecto:', error);
-        alert('Error al eliminar el prospecto');
+        alert('Error al eliminar el prospecto: ' + error.message);
     }
-});
-
-// Terminar
-document.getElementById('terminarBtn').addEventListener('click', () => {
-    if (confirm('¿Desea salir del módulo de Prospectos?')) {
-        window.location.href = 'archivos.html';
-    }
-});
-
-// Inicializar
-(async () => {
-    await loadCursos();
-    document.getElementById('idProspecto').value = await generateProspectoId();
-    document.getElementById('fechaAtencion').value = new Date().toISOString().split('T')[0];
-})();
+}

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Movimiento de Inventario</title>
+    <link rel="stylesheet" href="movimientos-inventario-new.css">
+    <script src="supabase-config.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NUEVO MOVIMIENTO DE INVENTARIO</h1>
+            <div class="datetime" id="datetime"></div>
+        </header>
+
+        <main>
+            <!-- SECCIÓN MAESTRO (Cabecera) -->
+            <div class="seccion-maestro">
+                <h2>📋 Cabecera del Movimiento</h2>
+                
+                <div class="form-row">
+                    <label>Número de Movimiento:</label>
+                    <input type="text" id="numeroMovimiento" class="input-medium" readonly style="background: #e0e0e0; font-weight: bold; font-size: 18px;">
+                    <span class="info-text">Automático</span>
+                </div>
+
+                <div class="form-row">
+                    <label>Fecha:</label>
+                    <input type="date" id="fecha" class="input-medium">
+                    <label class="label-right">Hora:</label>
+                    <input type="time" id="hora" class="input-small">
+                </div>
+
+                <div class="form-row">
+                    <label>Tipo de Movimiento: <span class="required">*</span></label>
+                    <select id="tipoMovimiento" class="input-large">
+                        <option value="">-- Seleccione tipo --</option>
+                    </select>
+                    <span id="infoTipo" class="info-text"></span>
+                </div>
+
+                <div class="form-row">
+                    <label>Observaciones:</label>
+                    <textarea id="observaciones" class="input-xlarge" rows="2" placeholder="Observaciones opcionales"></textarea>
+                </div>
+            </div>
+
+            <!-- SECCIÓN DETALLE (Artículos) -->
+            <div class="seccion-detalle">
+                <h2>📦 Artículos del Movimiento</h2>
+                
+                <div class="toolbar-detalle">
+                    <button class="btn-agregar" onclick="agregarFila()">
+                        <span>➕</span> Agregar Artículo
+                    </button>
+                    <button class="btn-limpiar-detalle" onclick="limpiarDetalle()">
+                        <span>🗑️</span> Limpiar Todo
+                    </button>
+                </div>
+
+                <div class="tabla-detalle-container">
+                    <table id="tablaDetalle">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;">#</th>
+                                <th style="width: 150px;">Clave</th>
+                                <th style="width: 300px;">Descripción</th>
+                                <th style="width: 120px;">Cantidad</th>
+                                <th style="width: 120px;">Precio Unit.</th>
+                                <th style="width: 120px;">Total</th>
+                                <th style="width: 80px;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bodyDetalle">
+                            <!-- Las filas se agregan dinámicamente -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5" style="text-align: right; font-weight: bold;">TOTAL:</td>
+                                <td id="totalGeneral" style="font-weight: bold; font-size: 16px;">$0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- BOTONES DE ACCIÓN -->
+            <div class="button-group">
+                <button class="btn-guardar" onclick="guardarMovimiento()">
+                    <span>💾</span> Guardar Movimiento
+                </button>
+                <button class="btn-cancelar" onclick="cancelar()">
+                    <span>❌</span> Cancelar
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de búsqueda de artículos -->
+    <div id="modalBuscarArticulo" class="modal">
+        <div class="modal-content">
+            <h2>Buscar Artículo</h2>
+            <input type="text" id="inputBuscarArticulo" placeholder="Escriba clave o descripción">
+            <div id="sugerenciasArticulo" class="sugerencias-container"></div>
+            <div class="modal-buttons">
+                <button class="btn" onclick="cerrarModalArticulo()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="movimientos-inventario-new.js"></script>
+</body>
+</html>

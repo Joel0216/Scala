@@ -1,236 +1,354 @@
-import { supabase } from './supabase-config.js';
+// Inicializar Supabase
+let supabase = null;
+let bajas = [];
+let instrumentos = [];
+let medios = [];
+let motivos = [];
+let registroActual = 0;
+let bajaSeleccionada = null;
 
-let alumnosBaja = [];
-let currentAlumno = null;
-
-// Actualizar fecha y hora
-function updateDateTime() {
-    const now = new Date();
-    const formatted = now.toLocaleString('es-MX', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true
-    });
-    document.getElementById('datetime').textContent = formatted;
-}
-
-setInterval(updateDateTime, 1000);
-updateDateTime();
-
-// Cargar alumnos dados de baja
-async function loadAlumnosBaja() {
-    try {
-        const { data, error } = await supabase
-            .from('alumnos')
-            .select('*')
-            .eq('status', 'baja')
-            .order('nombre', { ascending: true });
-
-        if (error) throw error;
-
-        alumnosBaja = data || [];
-    } catch (error) {
-        console.error('Error cargando alumnos de baja:', error);
-    }
-}
-
-// Mostrar datos del alumno
-function displayAlumno(alumno) {
-    currentAlumno = alumno;
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOM cargado, inicializando módulo de bajas...');
     
-    document.getElementById('credencial1').value = alumno.credencial1 || '';
-    document.getElementById('credencial2').value = alumno.credencial2 || '';
-    document.getElementById('celular').value = alumno.celular || '';
-    document.getElementById('nombre').value = alumno.nombre || '';
-    document.getElementById('telefono').value = alumno.telefono || '';
-    document.getElementById('direccion').value = alumno.direccion1 || '';
-    document.getElementById('direccion2').value = alumno.direccion2 || '';
-    document.getElementById('fechaIngreso').value = alumno.fecha_ingreso || '';
-    document.getElementById('email').value = alumno.email || '';
-    document.getElementById('edad').value = alumno.edad || '';
-    document.getElementById('nombrePadre').value = alumno.nombre_padre || '';
-    document.getElementById('celularPadre').value = alumno.celular_padre || '';
-    document.getElementById('nombreMadre').value = alumno.nombre_madre || '';
-    document.getElementById('celularMadre').value = alumno.celular_madre || '';
-    document.getElementById('grupo').value = alumno.grupo || '';
-    document.getElementById('curso').value = alumno.curso || '';
-    document.getElementById('grado').value = alumno.grado || '';
-    document.getElementById('beca').checked = alumno.beca || false;
-    document.getElementById('porcentaje').value = alumno.porcentaje || '';
-    document.getElementById('comentario').value = alumno.comentario || '';
-    document.getElementById('fechaBaja').value = alumno.fecha_baja || '';
-    document.getElementById('observaciones').value = alumno.observaciones || '';
-
-    loadPagos(alumno.id);
-    loadExamenes(alumno.id);
-}
-
-// Cargar pagos del alumno
-async function loadPagos(alumnoId) {
-    try {
-        const { data, error } = await supabase
-            .from('pagos')
-            .select('*')
-            .eq('alumno_id', alumnoId)
-            .order('fecha', { ascending: false });
-
-        if (error) throw error;
-
-        const tbody = document.getElementById('pagosTableBody');
-        tbody.innerHTML = '';
-
-        data.forEach(pago => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${pago.anio || ''}</td>
-                <td>${pago.mes || ''}</td>
-                <td>${pago.descuento || ''}</td>
-                <td>${pago.precio || ''}</td>
-                <td>${pago.recibo || ''}</td>
-                <td>${pago.fecha || ''}</td>
-                <td>${pago.grupo || ''}</td>
-                <td>${pago.curso || ''}</td>
-            `;
-            tbody.appendChild(row);
-        });
-    } catch (error) {
-        console.error('Error cargando pagos:', error);
-    }
-}
-
-// Cargar exámenes del alumno
-async function loadExamenes(alumnoId) {
-    try {
-        const { data, error } = await supabase
-            .from('examenes')
-            .select('*')
-            .eq('alumno_id', alumnoId)
-            .order('fecha', { ascending: false });
-
-        if (error) throw error;
-
-        const tbody = document.getElementById('examenesTableBody');
-        tbody.innerHTML = '';
-
-        data.forEach(examen => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${examen.credencial || ''}</td>
-                <td>${examen.clave_examen || ''}</td>
-                <td>${examen.fecha || ''}</td>
-                <td>${examen.hora || ''}</td>
-                <td>${examen.maestro_baja || ''}</td>
-                <td>${examen.gn || ''}</td>
-                <td>${examen.certificado || ''}</td>
-            `;
-            tbody.appendChild(row);
-        });
-    } catch (error) {
-        console.error('Error cargando exámenes:', error);
-    }
-}
-
-// Buscar por credencial
-document.getElementById('buscarBtn').addEventListener('click', () => {
-    const modal = document.getElementById('searchModal');
-    document.getElementById('modalTitle').textContent = 'Proporcione el numero de Credencial';
-    document.getElementById('searchInput').value = '';
-    modal.style.display = 'block';
-});
-
-// Buscar por nombre
-document.getElementById('buscarNombreBtn').addEventListener('click', () => {
-    const modal = document.getElementById('searchModal');
-    document.getElementById('modalTitle').textContent = 'Proporcione la parte del nombre que desea buscar';
-    document.getElementById('searchInput').value = '';
-    modal.style.display = 'block';
-});
-
-// Aceptar búsqueda
-document.getElementById('aceptarBtn').addEventListener('click', async () => {
-    const searchValue = document.getElementById('searchInput').value;
-    const isCredencial = document.getElementById('modalTitle').textContent.includes('Credencial');
-    
-    document.getElementById('searchModal').style.display = 'none';
-
-    if (isCredencial) {
-        // Buscar por credencial
-        const alumno = alumnosBaja.find(a => a.credencial1 === searchValue);
-        if (alumno) {
-            displayAlumno(alumno);
+    // Inicializar Supabase
+    if (typeof initSupabase === 'function') {
+        const success = initSupabase();
+        if (success) {
+            supabase = window.supabase;
+            console.log('✓ Supabase conectado');
+            
+            // Cargar catálogos y bajas
+            await cargarCatalogos();
+            await cargarBajas();
         } else {
-            alert('Alumno no encontrado');
+            console.error('✗ Error al conectar con Supabase');
+            alert('Error: No se pudo conectar a la base de datos');
         }
+    } else {
+        console.error('✗ initSupabase no está disponible');
+        alert('Error: initSupabase no está disponible');
+    }
+    
+    // Setup event listeners
+    setupEventListeners();
+    
+    console.log('Inicialización completa');
+});
+
+// Setup event listeners
+function setupEventListeners() {
+    // Búsqueda inteligente en tiempo real
+    const inputBusqueda = document.getElementById('inputBusqueda');
+    if (inputBusqueda) {
+        inputBusqueda.addEventListener('input', function() {
+            buscarEnTiempoReal(this.value);
+        });
+    }
+    
+    // Checkbox de beca
+    const checkBeca = document.getElementById('beca');
+    const inputPorcentaje = document.getElementById('porcentajeBeca');
+    if (checkBeca && inputPorcentaje) {
+        checkBeca.addEventListener('change', function() {
+            if (this.checked) {
+                inputPorcentaje.disabled = false;
+                inputPorcentaje.focus();
+            } else {
+                inputPorcentaje.disabled = true;
+                inputPorcentaje.value = '0.00';
+            }
+        });
+    }
+}
+
+// Cargar catálogos (Instrumentos, Medios, Motivos)
+async function cargarCatalogos() {
+    if (!supabase) return;
+    
+    try {
+        // Cargar instrumentos
+        const { data: dataInstrumentos, error: errorInstrumentos } = await supabase
+            .from('instrumentos')
+            .select('*')
+            .eq('activo', true)
+            .order('clave', { ascending: true });
+        
+        if (errorInstrumentos) throw errorInstrumentos;
+        instrumentos = dataInstrumentos || [];
+        
+        // Cargar medios de contacto
+        const { data: dataMedios, error: errorMedios } = await supabase
+            .from('medios_contacto')
+            .select('*')
+            .eq('activo', true)
+            .order('clave', { ascending: true });
+        
+        if (errorMedios) throw errorMedios;
+        medios = dataMedios || [];
+        
+        // Cargar motivos de baja
+        const { data: dataMotivos, error: errorMotivos } = await supabase
+            .from('motivos_baja')
+            .select('*')
+            .eq('activo', true)
+            .order('clave', { ascending: true });
+        
+        if (errorMotivos) throw errorMotivos;
+        motivos = dataMotivos || [];
+        
+        console.log(`✓ Catálogos cargados: ${instrumentos.length} instrumentos, ${medios.length} medios, ${motivos.length} motivos`);
+        
+        // Llenar dropdowns
+        llenarDropdowns();
+    } catch (error) {
+        console.error('Error cargando catálogos:', error);
+        alert('Error al cargar catálogos: ' + error.message);
+    }
+}
+
+// Llenar dropdowns con los catálogos
+function llenarDropdowns() {
+    // Dropdown de instrumentos
+    const selectInstrumento = document.getElementById('instrumento');
+    if (selectInstrumento) {
+        selectInstrumento.innerHTML = '<option value="">-- Seleccione --</option>';
+        instrumentos.forEach(inst => {
+            const option = document.createElement('option');
+            option.value = inst.id;
+            option.textContent = `${inst.clave} - ${inst.descripcion}`;
+            selectInstrumento.appendChild(option);
+        });
+    }
+    
+    // Dropdown de medios
+    const selectMedio = document.getElementById('medio');
+    if (selectMedio) {
+        selectMedio.innerHTML = '<option value="">-- Seleccione --</option>';
+        medios.forEach(medio => {
+            const option = document.createElement('option');
+            option.value = medio.id;
+            option.textContent = `${medio.clave} - ${medio.descripcion}`;
+            selectMedio.appendChild(option);
+        });
+    }
+    
+    // Dropdown de motivos
+    const selectMotivo = document.getElementById('motivo');
+    if (selectMotivo) {
+        selectMotivo.innerHTML = '<option value="">-- Seleccione --</option>';
+        motivos.forEach(motivo => {
+            const option = document.createElement('option');
+            option.value = motivo.id;
+            option.textContent = `${motivo.clave} - ${motivo.descripcion}`;
+            selectMotivo.appendChild(option);
+        });
+    }
+}
+
+// Cargar bajas desde Supabase
+async function cargarBajas() {
+    if (!supabase) return;
+    
+    try {
+        const { data, error } = await supabase
+            .from('alumnos_bajas')
+            .select(`
+                *,
+                instrumentos (clave, descripcion),
+                medios_contacto (clave, descripcion),
+                motivos_baja (clave, descripcion)
+            `)
+            .order('fecha_baja', { ascending: false })
+            .limit(100);
+        
+        if (error) throw error;
+        
+        bajas = data || [];
+        console.log(`✓ ${bajas.length} bajas cargadas`);
+        
+        // Mostrar primer registro si hay bajas
+        if (bajas.length > 0) {
+            mostrarBaja(0);
+        }
+    } catch (error) {
+        console.error('Error cargando bajas:', error);
+        alert('Error al cargar bajas: ' + error.message);
+    }
+}
+
+// Mostrar baja
+function mostrarBaja(index) {
+    if (index < 0 || index >= bajas.length) return;
+    
+    registroActual = index;
+    bajaSeleccionada = bajas[index];
+    
+    // Actualizar campos
+    document.getElementById('credencial1').value = bajaSeleccionada.credencial1 || '';
+    document.getElementById('credencial2').value = bajaSeleccionada.credencial2 || '';
+    document.getElementById('nombre').value = bajaSeleccionada.nombre || '';
+    document.getElementById('direccion1').value = bajaSeleccionada.direccion1 || '';
+    document.getElementById('direccion2').value = bajaSeleccionada.direccion2 || '';
+    document.getElementById('telefono').value = bajaSeleccionada.telefono || '';
+    document.getElementById('celular').value = bajaSeleccionada.celular || '';
+    document.getElementById('email').value = bajaSeleccionada.email || '';
+    document.getElementById('nombrePadre').value = bajaSeleccionada.nombre_padre || '';
+    document.getElementById('celularPadre').value = bajaSeleccionada.celular_padre || '';
+    document.getElementById('nombreMadre').value = bajaSeleccionada.nombre_madre || '';
+    document.getElementById('celularMadre').value = bajaSeleccionada.celular_madre || '';
+    document.getElementById('grupo').value = bajaSeleccionada.grupo || '';
+    document.getElementById('grado').value = bajaSeleccionada.grado || '';
+    document.getElementById('fechaIngreso').value = bajaSeleccionada.fecha_ingreso || '';
+    document.getElementById('fechaBaja').value = bajaSeleccionada.fecha_baja || '';
+    document.getElementById('edad').value = bajaSeleccionada.edad || '';
+    document.getElementById('comentario').value = bajaSeleccionada.comentario || '';
+    document.getElementById('observaciones').value = bajaSeleccionada.observaciones || '';
+    
+    // Beca
+    const tieneBeca = bajaSeleccionada.beca || false;
+    document.getElementById('beca').checked = tieneBeca;
+    document.getElementById('porcentajeBeca').value = bajaSeleccionada.porcentaje_beca || '0.00';
+    document.getElementById('porcentajeBeca').disabled = !tieneBeca;
+    
+    // Dropdowns
+    document.getElementById('instrumento').value = bajaSeleccionada.instrumento_id || '';
+    document.getElementById('medio').value = bajaSeleccionada.medio_entero_id || '';
+    document.getElementById('motivo').value = bajaSeleccionada.motivo_baja_id || '';
+    
+    // Actualizar navegación
+    document.getElementById('registroActual').textContent = index + 1;
+    document.getElementById('totalRegistros').textContent = bajas.length;
+}
+
+// Búsqueda inteligente en tiempo real
+function buscarEnTiempoReal(termino) {
+    const contenedor = document.getElementById('sugerenciasBusqueda');
+    
+    if (!termino || termino.length < 1) {
+        contenedor.innerHTML = '';
+        contenedor.style.display = 'none';
+        return;
+    }
+    
+    const terminoUpper = termino.toUpperCase();
+    const esNumero = /^\d+$/.test(termino);
+    
+    let resultados = [];
+    
+    if (esNumero) {
+        // Buscar por credencial
+        resultados = bajas.filter(b =>
+            b.credencial1.includes(termino) ||
+            (b.credencial2 && b.credencial2.includes(termino))
+        );
     } else {
         // Buscar por nombre
-        const resultados = alumnosBaja.filter(a => 
-            a.nombre.toLowerCase().includes(searchValue.toLowerCase())
+        resultados = bajas.filter(b =>
+            b.nombre.toUpperCase().includes(terminoUpper)
         );
-        
-        if (resultados.length === 0) {
-            alert('No se encontraron alumnos');
-        } else if (resultados.length === 1) {
-            displayAlumno(resultados[0]);
-        } else {
-            showSelectModal(resultados);
-        }
     }
-});
-
-// Mostrar modal de selección
-function showSelectModal(alumnos) {
-    const modal = document.getElementById('selectModal');
-    const list = document.getElementById('alumnosList');
-    list.innerHTML = '';
-
-    alumnos.forEach(alumno => {
+    
+    resultados = resultados.slice(0, 10);
+    
+    contenedor.innerHTML = '';
+    
+    if (resultados.length === 0) {
+        contenedor.innerHTML = '<div class="sugerencia-item">No se encontraron resultados</div>';
+        contenedor.style.display = 'block';
+        return;
+    }
+    
+    resultados.forEach(baja => {
         const div = document.createElement('div');
-        div.className = 'alumno-item';
-        div.textContent = `${alumno.credencial1} - ${alumno.nombre}`;
-        div.onclick = () => {
-            displayAlumno(alumno);
-            modal.style.display = 'none';
+        div.className = 'sugerencia-item';
+        div.innerHTML = `
+            <div class="sugerencia-nombre">${baja.nombre}</div>
+            <div class="sugerencia-credencial">Cred: ${baja.credencial1}-${baja.credencial2 || '0'}</div>
+            <div class="sugerencia-fecha">Baja: ${baja.fecha_baja}</div>
+        `;
+        
+        div.onclick = function() {
+            const index = bajas.findIndex(b => b.id === baja.id);
+            if (index !== -1) {
+                mostrarBaja(index);
+                contenedor.style.display = 'none';
+                document.getElementById('inputBusqueda').value = '';
+            }
         };
-        list.appendChild(div);
+        
+        contenedor.appendChild(div);
     });
-
-    modal.style.display = 'block';
+    
+    contenedor.style.display = 'block';
 }
 
-// Cancelar búsqueda
-document.getElementById('cancelarBtn').addEventListener('click', () => {
-    document.getElementById('searchModal').style.display = 'none';
-});
+// Botón Buscar (abre modal)
+function buscar() {
+    const modal = document.getElementById('modalBusqueda');
+    modal.style.display = 'block';
+    document.getElementById('inputBusqueda').value = '';
+    document.getElementById('inputBusqueda').focus();
+}
 
-// Cerrar modal de selección
-document.getElementById('cerrarSelectBtn').addEventListener('click', () => {
-    document.getElementById('selectModal').style.display = 'none';
-});
+// Cerrar modal de búsqueda
+function cerrarModalBusqueda() {
+    document.getElementById('modalBusqueda').style.display = 'none';
+    document.getElementById('sugerenciasBusqueda').innerHTML = '';
+    document.getElementById('sugerenciasBusqueda').style.display = 'none';
+}
 
-// Reingreso
-document.getElementById('reingresoBtn').addEventListener('click', () => {
-    if (currentAlumno) {
-        window.location.href = `alumnos-reingreso.html?id=${currentAlumno.id}`;
-    } else {
-        alert('Seleccione un alumno primero');
+// Botón Listado (mostrar reporte de bajas)
+function mostrarListado() {
+    window.open('listado-bajas.html', 'Listado de Bajas', 'width=900,height=700');
+}
+
+// Botón Reingreso
+function irAReingreso() {
+    if (!bajaSeleccionada) {
+        alert('Primero debe seleccionar un alumno dado de baja');
+        return;
     }
-});
-
-// Listado
-document.getElementById('listadoBtn').addEventListener('click', () => {
-    window.open('listado-bajas.html', '_blank');
-});
+    
+    if (bajaSeleccionada.reingresado) {
+        alert('Este alumno ya fue reingresado anteriormente el ' + bajaSeleccionada.fecha_reingreso);
+        return;
+    }
+    
+    // Guardar ID de la baja en localStorage para usarlo en la página de reingreso
+    localStorage.setItem('bajaParaReingreso', JSON.stringify({
+        id: bajaSeleccionada.id,
+        credencial1: bajaSeleccionada.credencial1,
+        credencial2: bajaSeleccionada.credencial2,
+        nombre: bajaSeleccionada.nombre,
+        grupo: bajaSeleccionada.grupo,
+        beca: bajaSeleccionada.beca,
+        porcentaje_beca: bajaSeleccionada.porcentaje_beca
+    }));
+    
+    window.location.href = 'alumnos-reingreso.html';
+}
 
 // Terminar
-document.getElementById('terminarBtn').addEventListener('click', () => {
-    if (confirm('¿Desea salir del módulo de Bajas?')) {
-        window.location.href = 'archivos.html';
+function terminar() {
+    if (confirm('¿Desea salir del módulo de bajas?')) {
+        window.location.href = 'alumnos.html';
     }
-});
+}
 
-// Cargar datos al iniciar
-loadAlumnosBaja();
+// Navegación
+function navegarPrimero() {
+    if (bajas.length > 0) mostrarBaja(0);
+}
+
+function navegarAnterior() {
+    if (registroActual > 0) mostrarBaja(registroActual - 1);
+}
+
+function navegarSiguiente() {
+    if (registroActual < bajas.length - 1) mostrarBaja(registroActual + 1);
+}
+
+function navegarUltimo() {
+    if (bajas.length > 0) mostrarBaja(bajas.length - 1);
+}

@@ -1,4 +1,17 @@
-import { supabase } from './supabase-config.js';
+// Inicializar Supabase
+let supabase = null;
+
+// Esperar a que se cargue la librería de Supabase
+window.addEventListener('DOMContentLoaded', async () => {
+    // Inicializar Supabase
+    if (typeof initSupabase === 'function') {
+        initSupabase();
+        supabase = window.supabase;
+    }
+    
+    updateDate();
+    loadAlumnosBaja();
+});
 
 // Actualizar fecha
 function updateDate() {
@@ -11,10 +24,12 @@ function updateDate() {
     document.getElementById('date').textContent = formatted;
 }
 
-updateDate();
-
 // Cargar alumnos dados de baja
 async function loadAlumnosBaja() {
+    if (!supabase) {
+        alert('Error: Supabase no está inicializado');
+        return;
+    }
     try {
         const { data, error } = await supabase
             .from('alumnos')
@@ -137,8 +152,6 @@ async function loadAlumnosBaja() {
         });
     } catch (error) {
         console.error('Error cargando listado:', error);
-        alert('Error al cargar el listado');
+        alert('Error al cargar el listado: ' + error.message);
     }
 }
-
-loadAlumnosBaja();

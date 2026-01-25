@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Grupos - Sábana de Horarios</title>
+    <link rel="stylesheet" href="grupos-listado.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Listado de Grupos y Alumnos</h1>
+            <div class="datetime" id="datetime"></div>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="filterDia">Filtrar por Día:</label>
+                <select id="filterDia">
+                    <option value="">Todos</option>
+                    <option value="LU">Lunes</option>
+                    <option value="MA">Martes</option>
+                    <option value="MI">Miércoles</option>
+                    <option value="JU">Jueves</option>
+                    <option value="VI">Viernes</option>
+                    <option value="SA">Sábado</option>
+                    <option value="DO">Domingo</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filterMaestro">Filtrar por Maestro:</label>
+                <select id="filterMaestro">
+                    <option value="">Todos</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="sortBy">Ordenar por:</label>
+                <select id="sortBy">
+                    <option value="dia">Día</option>
+                    <option value="hora">Hora</option>
+                    <option value="salon">Salón</option>
+                    <option value="maestro">Maestro</option>
+                    <option value="curso">Curso</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary" id="aplicarFiltrosBtn">Aplicar Filtros</button>
+            <button class="btn" id="limpiarFiltrosBtn">Limpiar</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Total de Grupos:</div>
+                <div class="stat-value" id="totalGrupos">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total de Alumnos:</div>
+                <div class="stat-value" id="totalAlumnos">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total de Horas:</div>
+                <div class="stat-value" id="totalHoras">0</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="gruposTable">
+                <thead>
+                    <tr>
+                        <th>Clave</th>
+                        <th>Curso</th>
+                        <th>Maestro</th>
+                        <th>Día</th>
+                        <th>Horario</th>
+                        <th>Salón</th>
+                        <th>Cupo</th>
+                        <th>Inscritos</th>
+                        <th>Disponibles</th>
+                        <th>Inicio</th>
+                    </tr>
+                </thead>
+                <tbody id="gruposTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" id="imprimirBtn">Imprimir</button>
+            <button class="btn btn-terminar" id="cerrarBtn">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="supabase-config.js"></script>
+    <script src="grupos-listado.js"></script>
+</body>
+</html>
