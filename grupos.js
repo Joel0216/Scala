@@ -450,13 +450,14 @@ async function loadAlumnosGrupo(grupoId) {
 
         if (error) throw error;
 
+        alumnosGrupo = data || [];
         const tbody = document.getElementById('alumnosTableBody');
         if (!tbody) return;
         
         tbody.innerHTML = '';
 
-        if (data && data.length > 0) {
-            data.forEach(alumno => {
+        if (alumnosGrupo.length > 0) {
+            alumnosGrupo.forEach(alumno => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${alumno.credencial1 || ''}</td>
@@ -468,12 +469,16 @@ async function loadAlumnosGrupo(grupoId) {
                 `;
                 tbody.appendChild(row);
             });
+            
+            // Actualizar navegación
+            registroActualAlumnos = 0;
+            actualizarNavegacionAlumnos();
         }
 
         // Actualizar contador de alumnos
         const alumnosInput = document.getElementById('alumnos');
         if (alumnosInput) {
-            alumnosInput.value = data ? data.length : 0;
+            alumnosInput.value = alumnosGrupo.length;
         }
     } catch (error) {
         console.error('Error cargando alumnos:', error);
@@ -536,4 +541,100 @@ function displayGrupo(index) {
     if (fechaLeccionInput) fechaLeccionInput.value = grupo.fecha_leccion || '';
 
     loadAlumnosGrupo(grupo.id);
+}
+
+// Funciones de navegación para tabla de alumnos
+let registroActualAlumnos = 0;
+let alumnosGrupo = [];
+
+function navegarPrimeroAlumnos() {
+    if (alumnosGrupo.length > 0) {
+        registroActualAlumnos = 0;
+        actualizarNavegacionAlumnos();
+    }
+}
+
+function navegarAnteriorAlumnos() {
+    if (registroActualAlumnos > 0) {
+        registroActualAlumnos--;
+        actualizarNavegacionAlumnos();
+    }
+}
+
+function navegarSiguienteAlumnos() {
+    if (registroActualAlumnos < alumnosGrupo.length - 1) {
+        registroActualAlumnos++;
+        actualizarNavegacionAlumnos();
+    }
+}
+
+function navegarUltimoAlumnos() {
+    if (alumnosGrupo.length > 0) {
+        registroActualAlumnos = alumnosGrupo.length - 1;
+        actualizarNavegacionAlumnos();
+    }
+}
+
+function navegarRegistroAlumnos() {
+    const input = document.getElementById('inputRegistroAlumnos');
+    if (input) {
+        const num = parseInt(input.value);
+        if (num > 0 && num <= alumnosGrupo.length) {
+            registroActualAlumnos = num - 1;
+            actualizarNavegacionAlumnos();
+        }
+    }
+}
+
+function actualizarNavegacionAlumnos() {
+    const input = document.getElementById('inputRegistroAlumnos');
+    if (input) input.value = registroActualAlumnos + 1;
+}
+
+// Funciones de navegación para tabla de pagos
+let registroActualPagos = 0;
+let pagosGrupo = [];
+
+function navegarPrimeroPagos() {
+    if (pagosGrupo.length > 0) {
+        registroActualPagos = 0;
+        actualizarNavegacionPagos();
+    }
+}
+
+function navegarAnteriorPagos() {
+    if (registroActualPagos > 0) {
+        registroActualPagos--;
+        actualizarNavegacionPagos();
+    }
+}
+
+function navegarSiguientePagos() {
+    if (registroActualPagos < pagosGrupo.length - 1) {
+        registroActualPagos++;
+        actualizarNavegacionPagos();
+    }
+}
+
+function navegarUltimoPagos() {
+    if (pagosGrupo.length > 0) {
+        registroActualPagos = pagosGrupo.length - 1;
+        actualizarNavegacionPagos();
+    }
+}
+
+function navegarRegistroPagos() {
+    const input = document.getElementById('inputRegistroPagos');
+    if (input) {
+        const num = parseInt(input.value);
+        if (num > 0 && num <= pagosGrupo.length) {
+            registroActualPagos = num - 1;
+            actualizarNavegacionPagos();
+        }
+    }
+}
+
+function actualizarNavegacionPagos() {
+    const input = document.getElementById('inputRegistroPagos');
+    if (input) input.value = registroActualPagos + 1;
 }

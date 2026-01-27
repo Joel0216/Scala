@@ -217,8 +217,8 @@ function mostrarBaja(index) {
     document.getElementById('motivo').value = bajaSeleccionada.motivo_baja_id || '';
     
     // Actualizar navegación
-    document.getElementById('registroActual').textContent = index + 1;
-    document.getElementById('totalRegistros').textContent = bajas.length;
+    const inputPagos = document.getElementById('inputRegistroPagos');
+    if (inputPagos) inputPagos.value = index + 1;
 }
 
 // Búsqueda inteligente en tiempo real
@@ -351,4 +351,64 @@ function navegarSiguiente() {
 
 function navegarUltimo() {
     if (bajas.length > 0) mostrarBaja(bajas.length - 1);
+}
+
+function navegarRegistro() {
+    const input = document.getElementById('inputRegistroPagos');
+    if (input) {
+        const num = parseInt(input.value);
+        if (num > 0 && num <= bajas.length) {
+            mostrarBaja(num - 1);
+        }
+    }
+}
+
+// Funciones de navegación para tabla de exámenes (placeholder)
+let registroActualExamenes = 0;
+let examenes = [];
+
+function navegarPrimeroExamenes() {
+    if (examenes.length > 0) {
+        registroActualExamenes = 0;
+        actualizarNavegacionExamenes();
+    }
+}
+
+function navegarAnteriorExamenes() {
+    if (registroActualExamenes > 0) {
+        registroActualExamenes--;
+        actualizarNavegacionExamenes();
+    }
+}
+
+function navegarSiguienteExamenes() {
+    if (registroActualExamenes < examenes.length - 1) {
+        registroActualExamenes++;
+        actualizarNavegacionExamenes();
+    }
+}
+
+function navegarUltimoExamenes() {
+    if (examenes.length > 0) {
+        registroActualExamenes = examenes.length - 1;
+        actualizarNavegacionExamenes();
+    }
+}
+
+function navegarRegistroExamenes() {
+    const input = document.getElementById('inputRegistroExamenes');
+    if (input) {
+        const num = parseInt(input.value);
+        if (num > 0 && num <= examenes.length) {
+            registroActualExamenes = num - 1;
+            actualizarNavegacionExamenes();
+        }
+    }
+}
+
+function actualizarNavegacionExamenes() {
+    const input = document.getElementById('inputRegistroExamenes');
+    if (input) {
+        input.value = registroActualExamenes + 1;
+    }
 }

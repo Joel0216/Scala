@@ -1,5 +1,7 @@
 // Configuración de Supabase
+// URL: https://vqsduyfkgdqnigzkxazk.supabase.co
 const SUPABASE_URL = 'https://vqsduyfkgdqnigzkxazk.supabase.co';
+// Anon Public Key
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxc2R1eWZrZ2Rxbmlnemt4YXprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwMzIyOTMsImV4cCI6MjA4NDYwODI5M30.l5bZubjb3PIvcFG43JTfoeguldEwwIK7wlnOnl-Ec5o';
 
 // Cliente de Supabase (se inicializará cuando se cargue la librería)

@@ -258,6 +258,25 @@ function cargarDatosArticulo(articulo) {
     document.getElementById('precio').value = articulo.precio ? articulo.precio.toFixed(2) : '';
     document.getElementById('iva').value = '0.16'; // IVA fijo
     document.getElementById('stock').value = articulo.existencia || 0;
+    
+    // Ocultar botón guardar inicialmente
+    const btnGuardar = document.getElementById('btnGuardar');
+    if (btnGuardar) btnGuardar.style.display = 'none';
+    
+    // Agregar listeners para mostrar botón guardar cuando se modifique
+    const descripcionInput = document.getElementById('descripcion');
+    const grupoSelect = document.getElementById('grupo');
+    const precioInput = document.getElementById('precio');
+    const stockInput = document.getElementById('stock');
+    
+    const mostrarBtnGuardar = () => {
+        if (btnGuardar) btnGuardar.style.display = 'inline-block';
+    };
+    
+    if (descripcionInput) descripcionInput.addEventListener('input', mostrarBtnGuardar);
+    if (grupoSelect) grupoSelect.addEventListener('change', mostrarBtnGuardar);
+    if (precioInput) precioInput.addEventListener('input', mostrarBtnGuardar);
+    if (stockInput) stockInput.addEventListener('input', mostrarBtnGuardar);
 }
 
 // Mostrar registro actual
@@ -412,5 +431,73 @@ function navegarRegistro() {
     const num = parseInt(document.getElementById('inputRegistro').value);
     if (num > 0 && num <= articulos.length) {
         mostrarRegistro(num - 1);
+    }
+}
+
+// Guardar cambios en artículo
+async function guardarCambios() {
+    if (!articuloSeleccionado) {
+        alert('Primero debe seleccionar un artículo');
+        return;
+    }
+    
+    if (!supabase) {
+        alert('Error: Base de datos no conectada');
+        return;
+    }
+    
+    const descripcion = document.getElementById('descripcion').value.trim();
+    const grupoId = document.getElementById('grupo').value;
+    const precio = parseFloat(document.getElementById('precio').value) || 0;
+    const stock = parseInt(document.getElementById('stock').value) || 0;
+    
+    if (!descripcion) {
+        alert('La descripción es obligatoria');
+        document.getElementById('descripcion').focus();
+        return;
+    }
+    
+    if (!grupoId) {
+        alert('Debe seleccionar un grupo');
+        document.getElementById('grupo').focus();
+        return;
+    }
+    
+    if (precio <= 0) {
+        alert('El precio debe ser mayor a 0');
+        document.getElementById('precio').focus();
+        return;
+    }
+    
+    try {
+        const { error } = await supabase
+            .from('articulos')
+            .update({
+                descripcion: descripcion,
+                grupo_articulo_id: grupoId,
+                precio: precio,
+                existencia: stock
+            })
+            .eq('id', articuloSeleccionado.id);
+        
+        if (error) throw error;
+        
+        alert('Artículo actualizado correctamente');
+        
+        // Ocultar botón guardar
+        const btnGuardar = document.getElementById('btnGuardar');
+        if (btnGuardar) btnGuardar.style.display = 'none';
+        
+        // Recargar artículos
+        await cargarArticulos();
+        
+        // Mostrar el artículo actualizado
+        const index = articulos.findIndex(a => a.id === articuloSeleccionado.id);
+        if (index !== -1) {
+            mostrarRegistro(index);
+        }
+    } catch (error) {
+        console.error('Error guardando artículo:', error);
+        alert('Error al guardar artículo: ' + error.message);
     }
 }

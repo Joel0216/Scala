@@ -35,31 +35,32 @@
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
-                <button type="button" class="btn" id="buscarBtn">Buscar</button>
-                <button type="button" class="btn" id="borrarBtn">Borrar</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+                <button type="button" class="btn" id="nuevoBtn" onclick="nuevoSalon()">Nuevo</button>
+                <button type="button" class="btn" id="buscarBtn" onclick="buscarSalon()">Buscar</button>
+                <button type="button" class="btn" id="borrarBtn" onclick="deleteSalon()">Borrar</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn" onclick="terminarSalones()">Terminar</button>
             </div>
         </form>
 
         <div class="navigation">
-            <button class="nav-btn" id="firstBtn">|&lt;</button>
-            <button class="nav-btn" id="prevBtn">&lt;</button>
-            <span class="record-info">Registro: <span id="currentRecord">2</span> de <span id="totalRecords">7</span></span>
-            <button class="nav-btn" id="nextBtn">&gt;</button>
-            <button class="nav-btn" id="lastBtn">&gt;|</button>
-            <button class="nav-btn" id="newRecordBtn">|&gt;*</button>
+            <button class="nav-btn" id="firstBtn" onclick="navegarSalonPrimero()">|&lt;</button>
+            <button class="nav-btn" id="prevBtn" onclick="navegarSalonAnterior()">&lt;</button>
+            <span class="record-info">Registro: <span id="currentRecord">1</span> de <span id="totalRecords">0</span></span>
+            <input type="number" id="inputRegistro" value="1" min="1" class="nav-input" style="width: 60px; margin: 0 5px;">
+            <button class="nav-btn" id="nextBtn" onclick="navegarSalonSiguiente()">&gt;</button>
+            <button class="nav-btn" id="lastBtn" onclick="navegarSalonUltimo()">&gt;|</button>
+            <button class="nav-btn" id="newRecordBtn" onclick="navegarSalonRegistro()">|&gt;*</button>
         </div>
     </div>
 
     <!-- Modal de búsqueda -->
-    <div id="searchModal" class="modal">
+    <div id="searchModal" class="modal" style="display: none;">
         <div class="modal-content">
             <h2>Proporcione el salón</h2>
             <input type="text" id="searchInput" class="modal-input">
             <div class="modal-buttons">
-                <button class="btn" id="aceptarBtn">Aceptar</button>
-                <button class="btn" id="cancelarBtn">Cancelar</button>
+                <button class="btn" id="aceptarBtn" onclick="aceptarBusquedaSalon()">Aceptar</button>
+                <button class="btn" id="cancelarBtn" onclick="cerrarModalSalon()">Cancelar</button>
             </div>
         </div>
     </div>

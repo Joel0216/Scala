@@ -154,9 +154,89 @@ function cargarDatosMaestro(maestro) {
     }
 }
 
-// Botón Nuevo - Redirigir a página de alta
+// Botón Nuevo - Limpiar formulario
 function nuevoMaestro() {
-    window.location.href = 'maestros-alta.html';
+    limpiarFormulario();
+    document.getElementById('nombre').focus();
+}
+
+// Guardar maestro
+async function guardarMaestro() {
+    if (!supabase) {
+        alert('Error: Base de datos no conectada');
+        return;
+    }
+    
+    const nombre = document.getElementById('nombre').value.trim();
+    const direccion1 = document.getElementById('direccion1').value.trim();
+    const direccion2 = document.getElementById('direccion2').value.trim();
+    const telefono = document.getElementById('telefono').value.trim();
+    const clave = document.getElementById('clave').value.trim();
+    const rfc = document.getElementById('rfc').value.trim();
+    const grado = document.getElementById('grado').value.trim();
+    const detallesGrado = document.getElementById('detallesGrado').value.trim();
+    const fechaIngreso = document.getElementById('fechaIngreso').value.trim();
+    
+    if (!nombre) {
+        alert('El nombre es obligatorio');
+        document.getElementById('nombre').focus();
+        return;
+    }
+    
+    // Convertir fecha de formato DD-MMM-YYYY a YYYY-MM-DD
+    let fechaIngresoFormato = null;
+    if (fechaIngreso) {
+        const meses = {
+            'ene': '01', 'feb': '02', 'mar': '03', 'abr': '04',
+            'may': '05', 'jun': '06', 'jul': '07', 'ago': '08',
+            'sep': '09', 'oct': '10', 'nov': '11', 'dic': '12'
+        };
+        const partes = fechaIngreso.split('-');
+        if (partes.length === 3) {
+            const mes = meses[partes[1].toLowerCase()] || partes[1];
+            fechaIngresoFormato = `${partes[2]}-${mes}-${partes[0].padStart(2, '0')}`;
+        }
+    }
+    
+    const maestroData = {
+        nombre: nombre.toUpperCase(),
+        direccion: direccion1 + (direccion2 ? '\n' + direccion2 : ''),
+        telefono: telefono,
+        clave: clave,
+        rfc: rfc,
+        grado: grado,
+        detalles_grado: detallesGrado,
+        fecha_ingreso: fechaIngresoFormato,
+        status: 'activo'
+    };
+    
+    try {
+        if (maestroSeleccionado && maestroSeleccionado.id) {
+            // Actualizar maestro existente
+            const { error } = await supabase
+                .from('maestros')
+                .update(maestroData)
+                .eq('id', maestroSeleccionado.id);
+            
+            if (error) throw error;
+            alert('Maestro actualizado correctamente');
+        } else {
+            // Insertar nuevo maestro
+            const { error } = await supabase
+                .from('maestros')
+                .insert([maestroData]);
+            
+            if (error) throw error;
+            alert('Maestro guardado correctamente');
+        }
+        
+        // Recargar maestros
+        await cargarMaestros();
+        limpiarFormulario();
+    } catch (error) {
+        console.error('Error guardando maestro:', error);
+        alert('Error al guardar el maestro: ' + error.message);
+    }
 }
 
 // Botón Buscar

@@ -135,13 +135,13 @@
                 </table>
                 <div class="table-nav">
                     <span>Registro:</span>
-                    <button>|◄</button>
-                    <button>◄</button>
-                    <input type="text" value="1" class="nav-input">
-                    <button>►</button>
-                    <button>►|</button>
-                    <button>►*</button>
-                    <span>de 49</span>
+                    <button onclick="navegarPrimeroPagos()">|◄</button>
+                    <button onclick="navegarAnteriorPagos()">◄</button>
+                    <input type="text" value="1" class="nav-input" id="inputRegistroPagos">
+                    <button onclick="navegarSiguientePagos()">►</button>
+                    <button onclick="navegarUltimoPagos()">►|</button>
+                    <button onclick="navegarRegistroPagos()">►*</button>
+                    <span>de <span id="totalPagos">0</span></span>
                 </div>
             </div>
 
@@ -167,13 +167,13 @@
                 </table>
                 <div class="table-nav">
                     <span>Registro:</span>
-                    <button>|◄</button>
-                    <button>◄</button>
-                    <input type="text" value="1" class="nav-input">
-                    <button>►</button>
-                    <button>►|</button>
-                    <button>►*</button>
-                    <span>de 2</span>
+                    <button onclick="navegarPrimeroExamenes()">|◄</button>
+                    <button onclick="navegarAnteriorExamenes()">◄</button>
+                    <input type="text" value="1" class="nav-input" id="inputRegistroExamenes">
+                    <button onclick="navegarSiguienteExamenes()">►</button>
+                    <button onclick="navegarUltimoExamenes()">►|</button>
+                    <button onclick="navegarRegistroExamenes()">►*</button>
+                    <span>de <span id="totalExamenes">0</span></span>
                 </div>
             </div>
         </main>

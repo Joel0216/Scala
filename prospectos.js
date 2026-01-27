@@ -40,10 +40,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 // Configurar todos los event listeners
 function setupEventListeners() {
-    // Botón Nuevo
+    // Botón Nuevo - Limpiar formulario
     const nuevoBtn = document.getElementById('nuevoBtn');
     if (nuevoBtn) {
-        nuevoBtn.addEventListener('click', saveProspecto);
+        nuevoBtn.addEventListener('click', nuevoProspecto);
     }
 
     // Botón Buscar
@@ -61,11 +61,14 @@ function setupEventListeners() {
     // Botón Terminar
     const terminarBtn = document.getElementById('terminarBtn');
     if (terminarBtn) {
-        terminarBtn.addEventListener('click', () => {
-            if (confirm('¿Desea salir del módulo de Prospectos?')) {
-                window.location.href = 'archivos.html';
-            }
-        });
+        terminarBtn.addEventListener('click', terminarProspectos);
+    }
+}
+
+// Función terminar (disponible globalmente)
+function terminarProspectos() {
+    if (confirm('¿Desea salir del módulo de Prospectos?')) {
+        window.location.href = 'archivos.html';
     }
 }
 
@@ -120,6 +123,39 @@ async function loadCursos() {
     }
 }
 
+// Nuevo prospecto - Limpiar formulario
+async function nuevoProspecto() {
+    const form = document.getElementById('prospectosForm');
+    if (form) {
+        form.reset();
+    }
+    
+    // Generar nuevo ID
+    const idProspectoInput = document.getElementById('idProspecto');
+    if (idProspectoInput) {
+        idProspectoInput.value = await generateProspectoId();
+    }
+    
+    // Establecer fecha actual
+    const fechaAtencionInput = document.getElementById('fechaAtencion');
+    if (fechaAtencionInput) {
+        fechaAtencionInput.value = new Date().toISOString().split('T')[0];
+    }
+    
+    // Cambiar texto del botón a "Guardar"
+    const nuevoBtn = document.getElementById('nuevoBtn');
+    if (nuevoBtn) {
+        nuevoBtn.textContent = 'Guardar';
+        nuevoBtn.setAttribute('onclick', 'saveProspecto()');
+    }
+    
+    // Focus en nombre
+    const nombreInput = document.getElementById('nombre');
+    if (nombreInput) {
+        nombreInput.focus();
+    }
+}
+
 // Guardar prospecto
 async function saveProspecto() {
     if (!supabase) {
@@ -162,11 +198,28 @@ async function saveProspecto() {
         if (error) throw error;
 
         alert('Prospecto guardado correctamente');
+        
+        // Limpiar formulario
         const form = document.getElementById('prospectosForm');
         if (form) form.reset();
+        
+        // Generar nuevo ID
         const idProspectoInput = document.getElementById('idProspecto');
         if (idProspectoInput) {
             idProspectoInput.value = await generateProspectoId();
+        }
+        
+        // Establecer fecha actual
+        const fechaAtencionInput = document.getElementById('fechaAtencion');
+        if (fechaAtencionInput) {
+            fechaAtencionInput.value = new Date().toISOString().split('T')[0];
+        }
+        
+        // Restaurar texto del botón
+        const nuevoBtn = document.getElementById('nuevoBtn');
+        if (nuevoBtn) {
+            nuevoBtn.textContent = 'Nuevo';
+            nuevoBtn.setAttribute('onclick', 'nuevoProspecto()');
         }
     } catch (error) {
         console.error('Error guardando prospecto:', error);

@@ -169,12 +169,12 @@
                 </table>
                 <div class="table-nav">
                     <span>Registro: </span>
-                    <button type="button" class="nav-btn-small">|&lt;</button>
-                    <button type="button" class="nav-btn-small">&lt;</button>
-                    <input type="text" value="1" class="record-input" readonly>
-                    <button type="button" class="nav-btn-small">&gt;</button>
-                    <button type="button" class="nav-btn-small">&gt;|</button>
-                    <button type="button" class="nav-btn-small">|&gt;*</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarPrimero()">|&lt;</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarAnterior()">&lt;</button>
+                    <input type="text" value="1" class="record-input" id="inputRegistroPagos" readonly>
+                    <button type="button" class="nav-btn-small" onclick="navegarSiguiente()">&gt;</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarUltimo()">&gt;|</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarRegistro()">|&gt;*</button>
                 </div>
             </div>
 
@@ -197,12 +197,12 @@
                 </table>
                 <div class="table-nav">
                     <span>Registro: </span>
-                    <button type="button" class="nav-btn-small">|&lt;</button>
-                    <button type="button" class="nav-btn-small">&lt;</button>
-                    <input type="text" value="1" class="record-input" readonly>
-                    <button type="button" class="nav-btn-small">&gt;</button>
-                    <button type="button" class="nav-btn-small">&gt;|</button>
-                    <button type="button" class="nav-btn-small">&gt;*</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarPrimeroExamenes()">|&lt;</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarAnteriorExamenes()">&lt;</button>
+                    <input type="text" value="1" class="record-input" id="inputRegistroExamenes" readonly>
+                    <button type="button" class="nav-btn-small" onclick="navegarSiguienteExamenes()">&gt;</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarUltimoExamenes()">&gt;|</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarRegistroExamenes()">&gt;*</button>
                 </div>
             </div>
 

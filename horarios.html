@@ -55,18 +55,18 @@
 
                 <div class="table-nav">
                     <span>Registro: </span>
-                    <button type="button" class="nav-btn-small" id="firstBtn">|&lt;</button>
-                    <button type="button" class="nav-btn-small" id="prevBtn">&lt;</button>
+                    <button type="button" class="nav-btn-small" id="firstBtn" onclick="navegarHorariosPrimero()">|&lt;</button>
+                    <button type="button" class="nav-btn-small" id="prevBtn" onclick="navegarHorariosAnterior()">&lt;</button>
                     <input type="text" value="0" class="record-input" id="recordCount" readonly>
-                    <button type="button" class="nav-btn-small" id="nextBtn">&gt;</button>
-                    <button type="button" class="nav-btn-small" id="lastBtn">&gt;|</button>
-                    <button type="button" class="nav-btn-small" id="newBtn">|&gt;*</button>
+                    <button type="button" class="nav-btn-small" id="nextBtn" onclick="navegarHorariosSiguiente()">&gt;</button>
+                    <button type="button" class="nav-btn-small" id="lastBtn" onclick="navegarHorariosUltimo()">&gt;|</button>
+                    <button type="button" class="nav-btn-small" id="newBtn" onclick="navegarHorariosRegistro()">|&gt;*</button>
                 </div>
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn" id="buscarBtn">Buscar</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+                <button type="button" class="btn" id="buscarBtn" onclick="buscarHorarios()">Buscar</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn" onclick="terminarHorarios()">Terminar</button>
             </div>
         </div>
     </div>

@@ -62,22 +62,22 @@
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
-                <button type="button" class="btn" id="buscarBtn">Buscar</button>
-                <button type="button" class="btn" id="borrarBtn">Borrar</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+                <button type="button" class="btn" id="nuevoBtn" onclick="nuevoCliente()">Nuevo</button>
+                <button type="button" class="btn" id="buscarBtn" onclick="buscarCliente()">Buscar</button>
+                <button type="button" class="btn" id="borrarBtn" onclick="deleteCliente()">Borrar</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn" onclick="terminarRFC()">Terminar</button>
             </div>
         </form>
     </div>
 
     <!-- Modal de búsqueda -->
-    <div id="searchModal" class="modal">
+    <div id="searchModal" class="modal" style="display: none;">
         <div class="modal-content">
             <h2>Teclee el R.F.C. buscado</h2>
             <input type="text" id="searchInput" class="modal-input">
             <div class="modal-buttons">
-                <button class="btn" id="aceptarBtn">Aceptar</button>
-                <button class="btn" id="cancelarBtn">Cancelar</button>
+                <button class="btn" id="aceptarBtn" onclick="aceptarBusquedaRFC()">Aceptar</button>
+                <button class="btn" id="cancelarBtn" onclick="cerrarModalRFC()">Cancelar</button>
             </div>
         </div>
     </div>

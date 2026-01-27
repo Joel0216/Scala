@@ -75,22 +75,13 @@ function setupEventListeners() {
     // Botón Buscar (abre el buscador híbrido)
     const buscarBtn = document.getElementById('buscarBtn');
     if (buscarBtn) {
-        buscarBtn.addEventListener('click', () => {
-            const searchInput = document.getElementById('hybridSearch');
-            if (searchInput) {
-                searchInput.focus();
-            }
-        });
+        buscarBtn.addEventListener('click', buscarHorarios);
     }
 
     // Botón Terminar
     const terminarBtn = document.getElementById('terminarBtn');
     if (terminarBtn) {
-        terminarBtn.addEventListener('click', () => {
-            if (confirm('¿Desea salir del módulo de Horarios?')) {
-                window.location.href = 'archivos.html';
-            }
-        });
+        terminarBtn.addEventListener('click', terminarHorarios);
     }
 
     // Navegación de tabla
@@ -98,6 +89,41 @@ function setupEventListeners() {
     document.getElementById('prevBtn')?.addEventListener('click', () => navigateTable('prev'));
     document.getElementById('nextBtn')?.addEventListener('click', () => navigateTable('next'));
     document.getElementById('lastBtn')?.addEventListener('click', () => navigateTable('last'));
+    document.getElementById('newBtn')?.addEventListener('click', () => navigateTable('first'));
+}
+
+// Funciones disponibles globalmente
+function buscarHorarios() {
+    const searchInput = document.getElementById('hybridSearch');
+    if (searchInput) {
+        searchInput.focus();
+    }
+}
+
+function terminarHorarios() {
+    if (confirm('¿Desea salir del módulo de Horarios?')) {
+        window.location.href = 'archivos.html';
+    }
+}
+
+function navegarHorariosPrimero() {
+    navigateTable('first');
+}
+
+function navegarHorariosAnterior() {
+    navigateTable('prev');
+}
+
+function navegarHorariosSiguiente() {
+    navigateTable('next');
+}
+
+function navegarHorariosUltimo() {
+    navigateTable('last');
+}
+
+function navegarHorariosRegistro() {
+    navigateTable('first');
 }
 
 // Cargar todos los grupos al inicio

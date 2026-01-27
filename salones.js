@@ -56,56 +56,25 @@ function setupEventListeners() {
     // Botón Nuevo
     const nuevoBtn = document.getElementById('nuevoBtn');
     if (nuevoBtn) {
-        nuevoBtn.addEventListener('click', () => {
-            clearForm();
-            saveSalon();
-        });
+        nuevoBtn.addEventListener('click', nuevoSalon);
     }
 
     // Botón Buscar
     const buscarBtn = document.getElementById('buscarBtn');
     if (buscarBtn) {
-        buscarBtn.addEventListener('click', () => {
-            const modal = document.getElementById('searchModal');
-            if (modal) {
-                modal.style.display = 'block';
-            }
-        });
+        buscarBtn.addEventListener('click', buscarSalon);
     }
 
     // Botón Aceptar búsqueda
     const aceptarBtn = document.getElementById('aceptarBtn');
     if (aceptarBtn) {
-        aceptarBtn.addEventListener('click', () => {
-            const searchInput = document.getElementById('searchInput');
-            const modal = document.getElementById('searchModal');
-            
-            if (modal) {
-                modal.style.display = 'none';
-            }
-
-            if (searchInput && searchInput.value) {
-                const numero = searchInput.value;
-                const index = salones.findIndex(s => s.numero === numero);
-                if (index >= 0) {
-                    currentIndex = index;
-                    displaySalon(currentIndex);
-                } else {
-                    alert('Salón no encontrado');
-                }
-            }
-        });
+        aceptarBtn.addEventListener('click', aceptarBusquedaSalon);
     }
 
     // Botón Cancelar búsqueda
     const cancelarBtn = document.getElementById('cancelarBtn');
     if (cancelarBtn) {
-        cancelarBtn.addEventListener('click', () => {
-            const modal = document.getElementById('searchModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        });
+        cancelarBtn.addEventListener('click', cerrarModalSalon);
     }
 
     // Botón Borrar
@@ -117,12 +86,101 @@ function setupEventListeners() {
     // Botón Terminar
     const terminarBtn = document.getElementById('terminarBtn');
     if (terminarBtn) {
-        terminarBtn.addEventListener('click', () => {
-            if (confirm('¿Desea salir del módulo de Salones?')) {
-                window.location.href = 'archivos.html';
-            }
-        });
+        terminarBtn.addEventListener('click', terminarSalones);
     }
+}
+
+// Funciones disponibles globalmente
+function buscarSalon() {
+    const modal = document.getElementById('searchModal');
+    if (modal) {
+        modal.style.display = 'block';
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = '';
+            searchInput.focus();
+        }
+    }
+}
+
+function terminarSalones() {
+    if (confirm('¿Desea salir del módulo de Salones?')) {
+        window.location.href = 'archivos.html';
+    }
+}
+
+function guardarSalon() {
+    saveSalon();
+}
+
+// Funciones de navegación (disponibles globalmente)
+function navegarSalonPrimero() {
+    if (salones.length > 0) {
+        currentIndex = 0;
+        displaySalon(0);
+    }
+}
+
+function navegarSalonAnterior() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        displaySalon(currentIndex);
+    }
+}
+
+function navegarSalonSiguiente() {
+    if (currentIndex < salones.length - 1) {
+        currentIndex++;
+        displaySalon(currentIndex);
+    }
+}
+
+function navegarSalonUltimo() {
+    if (salones.length > 0) {
+        currentIndex = salones.length - 1;
+        displaySalon(currentIndex);
+    }
+}
+
+function navegarSalonRegistro() {
+    const input = document.getElementById('inputRegistro');
+    if (input) {
+        const num = parseInt(input.value);
+        if (num > 0 && num <= salones.length) {
+            currentIndex = num - 1;
+            displaySalon(currentIndex);
+        }
+    }
+}
+
+// Aceptar búsqueda salón
+function aceptarBusquedaSalon() {
+    const searchInput = document.getElementById('searchInput');
+    const modal = document.getElementById('searchModal');
+    
+    if (modal) {
+        modal.style.display = 'none';
+    }
+
+    if (searchInput && searchInput.value) {
+        const numero = searchInput.value;
+        const index = salones.findIndex(s => s.numero === numero);
+        if (index >= 0) {
+            currentIndex = index;
+            displaySalon(currentIndex);
+        } else {
+            alert('Salón no encontrado');
+        }
+    }
+}
+
+// Cerrar modal salón
+function cerrarModalSalon() {
+    const modal = document.getElementById('searchModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
 
     // Botones de navegación
     const firstBtn = document.getElementById('firstBtn');
@@ -164,7 +222,11 @@ function setupEventListeners() {
     const newRecordBtn = document.getElementById('newRecordBtn');
     if (newRecordBtn) {
         newRecordBtn.addEventListener('click', () => {
-            clearForm();
+            const num = parseInt(document.getElementById('inputRegistro')?.value || '1');
+            if (num > 0 && num <= salones.length) {
+                currentIndex = num - 1;
+                displaySalon(currentIndex);
+            }
         });
     }
 }
@@ -190,9 +252,17 @@ async function loadSalones() {
             totalElement.textContent = salones.length;
         }
         
+        // Actualizar máximo del input
+        const inputRegistro = document.getElementById('inputRegistro');
+        if (inputRegistro) {
+            inputRegistro.max = salones.length;
+        }
+        
         if (salones.length > 0) {
             currentIndex = 0;
             displaySalon(currentIndex);
+        } else {
+            clearForm();
         }
     } catch (error) {
         console.error('Error cargando salones:', error);
@@ -216,6 +286,17 @@ function displaySalon(index) {
     if (cupoInput) cupoInput.value = salon.cupo || 10;
     if (instrumentosInput) instrumentosInput.value = salon.instrumentos || '';
     if (currentRecordElement) currentRecordElement.textContent = index + 1;
+    
+    // Actualizar input de registro
+    const inputRegistro = document.getElementById('inputRegistro');
+    if (inputRegistro) {
+        inputRegistro.value = index + 1;
+        inputRegistro.max = salones.length;
+    }
+    
+    // Actualizar total
+    const totalRecords = document.getElementById('totalRecords');
+    if (totalRecords) totalRecords.textContent = salones.length;
 }
 
 // Limpiar formulario
@@ -225,6 +306,19 @@ function clearForm() {
     const cupoInput = document.getElementById('cupo');
     if (cupoInput) cupoInput.value = 10;
     currentIndex = -1;
+}
+
+// Nuevo salón - Limpiar formulario
+function nuevoSalon() {
+    clearForm();
+    document.getElementById('salon').focus();
+    
+    // Cambiar texto del botón
+    const nuevoBtn = document.getElementById('nuevoBtn');
+    if (nuevoBtn) {
+        nuevoBtn.textContent = 'Guardar';
+        nuevoBtn.setAttribute('onclick', 'guardarSalon()');
+    }
 }
 
 // Guardar salón
@@ -263,6 +357,13 @@ async function saveSalon() {
 
             if (error) throw error;
             alert('Salón guardado correctamente');
+        }
+        
+        // Restaurar texto del botón
+        const nuevoBtn = document.getElementById('nuevoBtn');
+        if (nuevoBtn) {
+            nuevoBtn.textContent = 'Nuevo';
+            nuevoBtn.setAttribute('onclick', 'nuevoSalon()');
         }
 
         await loadSalones();

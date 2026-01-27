@@ -63,43 +63,44 @@
 
                     <div class="table-nav">
                         <span>Registro: </span>
-                        <button type="button" class="nav-btn-small">|&lt;</button>
-                        <button type="button" class="nav-btn-small">&lt;</button>
-                        <input type="text" value="1" class="record-input" readonly>
-                        <button type="button" class="nav-btn-small">&gt;</button>
-                        <button type="button" class="nav-btn-small">&gt;|</button>
-                        <button type="button" class="nav-btn-small">|&gt;*</button>
-                        <span> de 1</span>
+                        <button type="button" class="nav-btn-small" onclick="navegarMaestroPrimero()">|&lt;</button>
+                        <button type="button" class="nav-btn-small" onclick="navegarMaestroAnterior()">&lt;</button>
+                        <input type="text" value="1" class="record-input" id="inputRegistroMaestro" readonly>
+                        <button type="button" class="nav-btn-small" onclick="navegarMaestroSiguiente()">&gt;</button>
+                        <button type="button" class="nav-btn-small" onclick="navegarMaestroUltimo()">&gt;|</button>
+                        <button type="button" class="nav-btn-small" onclick="navegarMaestroRegistro()">|&gt;*</button>
+                        <span> de <span id="totalMaestros">1</span></span>
                     </div>
                 </div>
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn" id="nuevoBtn">Nuevo</button>
-                <button type="button" class="btn" id="buscarMaestroBtn">Buscar X Maestro</button>
-                <button type="button" class="btn" id="borrarBtn">Borrar</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn">Terminar</button>
+                <button type="button" class="btn" id="nuevoBtn" onclick="activarModoEdicion()">Nuevo</button>
+                <button type="button" class="btn" id="buscarMaestroBtn" onclick="abrirModalBusqueda()">Buscar X Maestro</button>
+                <button type="button" class="btn" id="borrarBtn" onclick="borrarFactor()">Borrar</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn" onclick="terminarFactores()">Terminar</button>
             </div>
         </form>
 
         <div class="navigation">
-            <button class="nav-btn" id="firstBtn">|&lt;</button>
-            <button class="nav-btn" id="prevBtn">&lt;</button>
-            <span class="record-info">Registro: <span id="currentRecord">1</span> de <span id="totalRecords">832</span></span>
-            <button class="nav-btn" id="nextBtn">&gt;</button>
-            <button class="nav-btn" id="lastBtn">&gt;|</button>
-            <button class="nav-btn" id="newRecordBtn">|&gt;*</button>
+            <button class="nav-btn" id="firstBtn" onclick="mostrarFactor(0)">|&lt;</button>
+            <button class="nav-btn" id="prevBtn" onclick="mostrarFactor(currentIndex - 1)">&lt;</button>
+            <span class="record-info">Registro: <span id="currentRecord">1</span> de <span id="totalRecords">0</span></span>
+            <input type="number" id="inputRegistro" value="1" min="1" class="nav-input" style="width: 60px; margin: 0 5px;">
+            <button class="nav-btn" id="nextBtn" onclick="mostrarFactor(currentIndex + 1)">&gt;</button>
+            <button class="nav-btn" id="lastBtn" onclick="mostrarFactor(factores.length - 1)">&gt;|</button>
+            <button class="nav-btn" id="newRecordBtn" onclick="navegarFactorRegistro()">|&gt;*</button>
         </div>
     </div>
 
     <!-- Modal de búsqueda -->
-    <div id="searchModal" class="modal">
+    <div id="searchModal" class="modal" style="display: none;">
         <div class="modal-content">
             <h2>Proporcione el nombre del maestro o sus letras iniciales</h2>
             <input type="text" id="searchInput" class="modal-input">
             <div class="modal-buttons">
-                <button class="btn" id="aceptarBtn">Aceptar</button>
-                <button class="btn" id="cancelarBtn">Cancelar</button>
+                <button class="btn" id="aceptarBtn" onclick="buscarPorMaestro()">Aceptar</button>
+                <button class="btn" id="cancelarBtn" onclick="cerrarModalBusqueda()">Cancelar</button>
             </div>
         </div>
     </div>

@@ -57,7 +57,7 @@
             </div>
 
             <div class="navigation">
-                <span>Registro: <span id="registroActual">1</span></span>
+                <span>Registro: <span id="registroActual">1</span> de <span id="totalRegistros">0</span></span>
                 <button onclick="navegarPrimero()">|◄</button>
                 <button onclick="navegarAnterior()">◄</button>
                 <input type="number" id="inputRegistro" value="1" min="1" class="nav-input">
@@ -69,7 +69,7 @@
     </div>
 
     <!-- Modal de búsqueda -->
-    <div id="modalBusqueda" class="modal">
+    <div id="modalBusqueda" class="modal" style="display: none;">
         <div class="modal-content">
             <h2>Proporcione Nombre del curso O inicio del nombre</h2>
             <input type="text" id="inputBusqueda" placeholder="Nombre del curso">
@@ -81,7 +81,7 @@
     </div>
 
     <!-- Modal de lista de resultados -->
-    <div id="modalLista" class="modal">
+    <div id="modalLista" class="modal" style="display: none;">
         <div class="modal-content modal-lista">
             <h2>Seleccione un curso</h2>
             <div class="lista-container">

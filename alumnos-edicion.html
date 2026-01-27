@@ -159,13 +159,13 @@
                 </div>
                 <div class="table-nav">
                     <span>Registro:</span>
-                    <button>|◄</button>
-                    <button>◄</button>
-                    <input type="text" value="1" class="nav-input">
-                    <button>►</button>
-                    <button>►|</button>
-                    <button>►*</button>
-                    <span>de 1</span>
+                    <button onclick="navegarPrimeroGrupo()">|◄</button>
+                    <button onclick="navegarAnteriorGrupo()">◄</button>
+                    <input type="text" value="1" class="nav-input" id="inputRegistroGrupo">
+                    <button onclick="navegarSiguienteGrupo()">►</button>
+                    <button onclick="navegarUltimoGrupo()">►|</button>
+                    <button onclick="navegarRegistroGrupo()">►*</button>
+                    <span>de <span id="totalGrupos">1</span></span>
                 </div>
             </div>
         </main>

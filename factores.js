@@ -38,9 +38,22 @@ window.addEventListener('DOMContentLoaded', async () => {
     // Configurar event listeners
     setupEventListeners();
     
+    // Deshabilitar campos inicialmente (solo lectura)
+    desactivarModoEdicion();
+    
     // Mostrar primer factor si existe
     if (factores.length > 0) {
         mostrarFactor(0);
+    } else {
+        // Si no hay factores, limpiar campos
+        document.getElementById('maestro').value = '';
+        document.getElementById('curso').value = '';
+        document.getElementById('factor').value = '0';
+        document.getElementById('porcentaje').value = '0.00%';
+        document.getElementById('nombreMaestro').value = '';
+        document.getElementById('grado').value = '';
+        document.getElementById('detallesGrado').value = '';
+        document.getElementById('fechaIngreso').value = '';
     }
     
     console.log('Inicialización completa');
@@ -136,23 +149,123 @@ function setupEventListeners() {
     // Botón Terminar
     const terminarBtn = document.getElementById('terminarBtn');
     if (terminarBtn) {
-        terminarBtn.addEventListener('click', () => {
-            if (confirm('¿Desea salir del módulo de Factores?')) {
-                window.location.href = 'archivos.html';
-            }
-        });
+        terminarBtn.addEventListener('click', terminarFactores);
     }
+}
+
+// Función terminar (disponible globalmente)
+function terminarFactores() {
+    if (confirm('¿Desea salir del módulo de Factores?')) {
+        window.location.href = 'archivos.html';
+    }
+}
 
     // Navegación
     const firstBtn = document.getElementById('firstBtn');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const lastBtn = document.getElementById('lastBtn');
+    const inputRegistro = document.getElementById('inputRegistro');
 
     if (firstBtn) firstBtn.addEventListener('click', () => mostrarFactor(0));
     if (prevBtn) prevBtn.addEventListener('click', () => mostrarFactor(currentIndex - 1));
     if (nextBtn) nextBtn.addEventListener('click', () => mostrarFactor(currentIndex + 1));
     if (lastBtn) lastBtn.addEventListener('click', () => mostrarFactor(factores.length - 1));
+    
+    // Navegar a registro específico
+    if (inputRegistro) {
+        inputRegistro.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const num = parseInt(this.value);
+                if (num > 0 && num <= factores.length) {
+                    mostrarFactor(num - 1);
+                }
+            }
+        });
+    }
+    
+    // Botón nuevo registro (|>*)
+    const newRecordBtn = document.getElementById('newRecordBtn');
+    if (newRecordBtn) {
+        newRecordBtn.addEventListener('click', navegarFactorRegistro);
+    }
+}
+
+// Función para navegar a registro específico (disponible globalmente)
+function navegarFactorRegistro() {
+    const input = document.getElementById('inputRegistro');
+    if (input) {
+        const num = parseInt(input.value);
+        if (num > 0 && num <= factores.length) {
+            mostrarFactor(num - 1);
+        } else {
+            alert(`El número debe estar entre 1 y ${factores.length}`);
+        }
+    }
+}
+
+// Navegación de maestros (para la sección de detalles del maestro)
+let registroActualMaestro = 0;
+
+function navegarMaestroPrimero() {
+    if (maestros.length > 0) {
+        registroActualMaestro = 0;
+        mostrarMaestro(0);
+    }
+}
+
+function navegarMaestroAnterior() {
+    if (registroActualMaestro > 0) {
+        registroActualMaestro--;
+        mostrarMaestro(registroActualMaestro);
+    }
+}
+
+function navegarMaestroSiguiente() {
+    if (registroActualMaestro < maestros.length - 1) {
+        registroActualMaestro++;
+        mostrarMaestro(registroActualMaestro);
+    }
+}
+
+function navegarMaestroUltimo() {
+    if (maestros.length > 0) {
+        registroActualMaestro = maestros.length - 1;
+        mostrarMaestro(registroActualMaestro);
+    }
+}
+
+function navegarMaestroRegistro() {
+    const input = document.getElementById('inputRegistroMaestro');
+    if (input) {
+        const num = parseInt(input.value);
+        if (num > 0 && num <= maestros.length) {
+            registroActualMaestro = num - 1;
+            mostrarMaestro(registroActualMaestro);
+        }
+    }
+}
+
+function mostrarMaestro(index) {
+    if (index < 0 || index >= maestros.length) return;
+    
+    const maestro = maestros[index];
+    document.getElementById('nombreMaestro').value = maestro.nombre || '';
+    document.getElementById('grado').value = maestro.grado || '';
+    document.getElementById('detallesGrado').value = maestro.detalles_grado || '';
+    document.getElementById('fechaIngreso').value = maestro.fecha_ingreso || '';
+    
+    const input = document.getElementById('inputRegistroMaestro');
+    const total = document.getElementById('totalMaestros');
+    if (input) input.value = index + 1;
+    if (total) total.textContent = maestros.length;
+    
+    // Actualizar el select de maestro
+    const selectMaestro = document.getElementById('maestro');
+    if (selectMaestro) {
+        selectMaestro.value = maestro.id;
+        actualizarDetallesMaestro(maestro.id);
+    }
 }
 
 // Cargar maestros
@@ -269,6 +382,13 @@ async function loadFactores() {
         if (totalElement) {
             totalElement.textContent = factores.length;
         }
+        
+        // Actualizar máximo del input
+        const inputRegistro = document.getElementById('inputRegistro');
+        if (inputRegistro) {
+            inputRegistro.max = factores.length;
+        }
+        
         console.log(`✓ ${factores.length} factores cargados`);
     } catch (error) {
         console.error('Error cargando factores:', error);
@@ -336,15 +456,19 @@ function activarModoEdicion() {
     document.getElementById('fechaIngreso').value = '';
     
     // Habilitar campos
-    document.getElementById('maestro').disabled = false;
-    document.getElementById('curso').disabled = false;
-    document.getElementById('factor').disabled = false;
+    const maestroSelect = document.getElementById('maestro');
+    const cursoSelect = document.getElementById('curso');
+    const factorInput = document.getElementById('factor');
+    
+    if (maestroSelect) maestroSelect.disabled = false;
+    if (cursoSelect) cursoSelect.disabled = false;
+    if (factorInput) factorInput.disabled = false;
     
     // Cambiar texto del botón
     const nuevoBtn = document.getElementById('nuevoBtn');
     if (nuevoBtn) {
         nuevoBtn.textContent = 'Guardar';
-        nuevoBtn.onclick = guardarFactor;
+        nuevoBtn.setAttribute('onclick', 'guardarFactor()');
     }
     
     // Focus en maestro
@@ -368,8 +492,17 @@ function desactivarModoEdicion() {
     const nuevoBtn = document.getElementById('nuevoBtn');
     if (nuevoBtn) {
         nuevoBtn.textContent = 'Nuevo';
-        nuevoBtn.onclick = activarModoEdicion;
+        nuevoBtn.setAttribute('onclick', 'activarModoEdicion()');
     }
+    
+    // Deshabilitar campos
+    const maestroSelect = document.getElementById('maestro');
+    const cursoSelect = document.getElementById('curso');
+    const factorInput = document.getElementById('factor');
+    
+    if (maestroSelect) maestroSelect.disabled = true;
+    if (cursoSelect) cursoSelect.disabled = true;
+    if (factorInput) factorInput.disabled = true;
     
     console.log('Modo edición desactivado');
 }
@@ -467,24 +600,48 @@ function mostrarFactor(index) {
     currentIndex = index;
     factorActual = factores[index];
     
+    // Desactivar modo edición si está activo
+    if (modoEdicion) {
+        desactivarModoEdicion();
+    }
+    
     // Actualizar campos
-    document.getElementById('maestro').value = factorActual.maestros?.id || '';
-    document.getElementById('curso').value = factorActual.cursos?.id || '';
-    document.getElementById('factor').value = factorActual.factor || 0;
+    const maestroSelect = document.getElementById('maestro');
+    const cursoSelect = document.getElementById('curso');
+    const factorInput = document.getElementById('factor');
+    const porcentajeInput = document.getElementById('porcentaje');
+    
+    if (maestroSelect) maestroSelect.value = factorActual.maestros?.id || '';
+    if (cursoSelect) cursoSelect.value = factorActual.cursos?.id || '';
+    if (factorInput) factorInput.value = factorActual.factor || 0;
     
     const porcentaje = (factorActual.factor / 100).toFixed(2);
-    document.getElementById('porcentaje').value = porcentaje + '%';
+    if (porcentajeInput) porcentajeInput.value = porcentaje + '%';
     
     // Actualizar detalles del maestro
     if (factorActual.maestros) {
-        document.getElementById('nombreMaestro').value = factorActual.maestros.nombre || '';
-        document.getElementById('grado').value = factorActual.maestros.grado || '';
-        document.getElementById('detallesGrado').value = factorActual.maestros.detalles_grado || '';
-        document.getElementById('fechaIngreso').value = factorActual.maestros.fecha_ingreso || '';
+        const nombreMaestroEl = document.getElementById('nombreMaestro');
+        const gradoEl = document.getElementById('grado');
+        const detallesGradoEl = document.getElementById('detallesGrado');
+        const fechaIngresoEl = document.getElementById('fechaIngreso');
+        
+        if (nombreMaestroEl) nombreMaestroEl.value = factorActual.maestros.nombre || '';
+        if (gradoEl) gradoEl.value = factorActual.maestros.grado || '';
+        if (detallesGradoEl) detallesGradoEl.value = factorActual.maestros.detalles_grado || '';
+        if (fechaIngresoEl) fechaIngresoEl.value = factorActual.maestros.fecha_ingreso || '';
     }
     
     // Actualizar navegación
-    document.getElementById('currentRecord').textContent = index + 1;
+    const currentRecordEl = document.getElementById('currentRecord');
+    const totalRecordsEl = document.getElementById('totalRecords');
+    const inputRegistroEl = document.getElementById('inputRegistro');
+    
+    if (currentRecordEl) currentRecordEl.textContent = index + 1;
+    if (totalRecordsEl) totalRecordsEl.textContent = factores.length;
+    if (inputRegistroEl) {
+        inputRegistroEl.value = index + 1;
+        inputRegistroEl.max = factores.length;
+    }
     
     console.log(`Mostrando factor ${index + 1} de ${factores.length}`);
 }

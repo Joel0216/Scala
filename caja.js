@@ -99,10 +99,43 @@ function setupEventListeners() {
     // Botón Terminar
     const terminarBtn = document.querySelector('.exit-btn');
     if (terminarBtn) {
-        terminarBtn.addEventListener('click', () => {
-            if (confirm('¿Desea salir del módulo de Caja?')) {
-                window.location.href = 'index.html';
-            }
-        });
+        terminarBtn.addEventListener('click', terminarCaja);
+    }
+}
+
+// Funciones para botones (también disponibles como onclick)
+function irACobros() {
+    alert('Módulo de COBROS en desarrollo');
+    // window.location.href = 'cobros.html';
+}
+
+function irARecibosCancelados() {
+    alert('Módulo de RECIBOS CANCELADOS en desarrollo');
+    // window.location.href = 'recibos-cancelados.html';
+}
+
+function irAConsultaBajas() {
+    alert('Módulo de CONSULTA Y BAJAS en desarrollo');
+    // window.location.href = 'consulta-bajas.html';
+}
+
+function generarCorte1() {
+    alert('Reporte CORTE 1 en desarrollo');
+    // Aquí se generaría el reporte
+}
+
+function generarCorte2() {
+    alert('Reporte CORTE 2 en desarrollo');
+    // Aquí se generaría el reporte
+}
+
+function generarCorte3() {
+    alert('Reporte CORTE 3 en desarrollo');
+    // Aquí se generaría el reporte
+}
+
+function terminarCaja() {
+    if (confirm('¿Desea salir del módulo de Caja?')) {
+        window.location.href = 'index.html';
     }
 }

@@ -61,6 +61,7 @@
 
             <div class="button-group">
                 <button class="action-btn" onclick="nuevoMaestro()">Nuevo</button>
+                <button class="action-btn" onclick="guardarMaestro()">Guardar</button>
                 <button class="action-btn" onclick="buscarMaestro()">Buscar</button>
                 <button class="action-btn" onclick="borrarMaestro()">Borrar</button>
                 <button class="btn-terminar" onclick="terminar()">Terminar</button>
@@ -69,7 +70,7 @@
     </div>
 
     <!-- Modal de búsqueda -->
-    <div id="modalBusqueda" class="modal">
+    <div id="modalBusqueda" class="modal" style="display: none;">
         <div class="modal-content">
             <h2>Proporcione el Nombre del Maestro o Inicio del Nombre</h2>
             <input type="text" id="inputBusqueda" placeholder="Nombre del maestro">
@@ -81,7 +82,7 @@
     </div>
 
     <!-- Modal de lista de resultados -->
-    <div id="modalLista" class="modal">
+    <div id="modalLista" class="modal" style="display: none;">
         <div class="modal-content modal-lista">
             <h2>Seleccione un maestro</h2>
             <div class="lista-container">

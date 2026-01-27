@@ -64,7 +64,7 @@ function setupEventListeners() {
     // Botón Nuevo
     const nuevoBtn = document.getElementById('nuevoBtn');
     if (nuevoBtn) {
-        nuevoBtn.addEventListener('click', saveCliente);
+        nuevoBtn.addEventListener('click', nuevoCliente);
     }
 
     // Botón Buscar
@@ -81,18 +81,13 @@ function setupEventListeners() {
     // Botón Aceptar búsqueda
     const aceptarBtn = document.getElementById('aceptarBtn');
     if (aceptarBtn) {
-        aceptarBtn.addEventListener('click', buscarCliente);
+        aceptarBtn.addEventListener('click', aceptarBusquedaRFC);
     }
 
     // Botón Cancelar búsqueda
     const cancelarBtn = document.getElementById('cancelarBtn');
     if (cancelarBtn) {
-        cancelarBtn.addEventListener('click', () => {
-            const modal = document.getElementById('searchModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        });
+        cancelarBtn.addEventListener('click', cerrarModalRFC);
     }
 
     // Botón Borrar
@@ -104,11 +99,40 @@ function setupEventListeners() {
     // Botón Terminar
     const terminarBtn = document.getElementById('terminarBtn');
     if (terminarBtn) {
-        terminarBtn.addEventListener('click', () => {
-            if (confirm('¿Desea salir del módulo de RFC Clientes?')) {
-                window.location.href = 'archivos.html';
-            }
-        });
+        terminarBtn.addEventListener('click', terminarRFC);
+    }
+}
+
+// Función terminar (disponible globalmente)
+function terminarRFC() {
+    if (confirm('¿Desea salir del módulo de RFC Clientes?')) {
+        window.location.href = 'archivos.html';
+    }
+}
+
+// Función buscar (disponible globalmente)
+function buscarCliente() {
+    const modal = document.getElementById('searchModal');
+    if (modal) {
+        modal.style.display = 'block';
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = '';
+            searchInput.focus();
+        }
+    }
+}
+
+// Aceptar búsqueda RFC
+async function aceptarBusquedaRFC() {
+    await buscarCliente();
+}
+
+// Cerrar modal RFC
+function cerrarModalRFC() {
+    const modal = document.getElementById('searchModal');
+    if (modal) {
+        modal.style.display = 'none';
     }
 }
 
@@ -153,8 +177,39 @@ async function loadCredenciales(rfc) {
     }
 }
 
+// Nuevo cliente - Limpiar formulario
+function nuevoCliente() {
+    const form = document.getElementById('rfcForm');
+    if (form) form.reset();
+    currentCliente = null;
+    
+    // Limpiar tabla de credenciales
+    const tbody = document.getElementById('credencialesTableBody');
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td>▶</td>
+                <td><input type="text" class="credencial-input" data-row="0"></td>
+            </tr>
+            <tr>
+                <td>*</td>
+                <td class="total">0</td>
+            </tr>
+        `;
+    }
+    
+    // Cambiar texto del botón
+    const nuevoBtn = document.getElementById('nuevoBtn');
+    if (nuevoBtn) {
+        nuevoBtn.textContent = 'Guardar';
+        nuevoBtn.setAttribute('onclick', 'guardarCliente()');
+    }
+    
+    document.getElementById('rfc').focus();
+}
+
 // Guardar cliente
-async function saveCliente() {
+async function guardarCliente() {
     if (!supabase) {
         alert('Error: Base de datos no conectada');
         return;
@@ -197,8 +252,19 @@ async function saveCliente() {
         }
 
         alert('Cliente guardado correctamente');
+        
+        // Limpiar formulario
         const form = document.getElementById('rfcForm');
         if (form) form.reset();
+        
+        // Restaurar texto del botón
+        const nuevoBtn = document.getElementById('nuevoBtn');
+        if (nuevoBtn) {
+            nuevoBtn.textContent = 'Nuevo';
+            nuevoBtn.setAttribute('onclick', 'nuevoCliente()');
+        }
+        
+        currentCliente = null;
     } catch (error) {
         console.error('Error guardando cliente:', error);
         alert('Error al guardar el cliente: ' + error.message);

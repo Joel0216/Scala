@@ -102,13 +102,13 @@
 
                 <div class="tabla-nav">
                     <span>Registro:</span>
-                    <button>|◄</button>
-                    <button>◄</button>
-                    <input type="number" value="2" class="nav-input">
-                    <button>►</button>
-                    <button>►|</button>
-                    <button>►*</button>
-                    <span>de 2</span>
+                    <button onclick="navegarDetallesPrimero()">|◄</button>
+                    <button onclick="navegarDetallesAnterior()">◄</button>
+                    <input type="number" value="1" class="nav-input" id="inputDetalleRegistro">
+                    <button onclick="navegarDetallesSiguiente()">►</button>
+                    <button onclick="navegarDetallesUltimo()">►|</button>
+                    <button onclick="navegarDetallesRegistro()">►*</button>
+                    <span>de <span id="totalDetalles">0</span></span>
                 </div>
             </div>
 
@@ -118,7 +118,7 @@
                 <button class="action-btn" onclick="nuevoMovimiento()">Nuevo</button>
                 <button class="action-btn" onclick="borrarTodo()">Borra Todo</button>
                 <button class="action-btn" onclick="borrarOperacion()">Borra Operación</button>
-                <button class="btn-terminar" onclick="terminar()">Terminar</button>
+                <button class="btn-terminar" onclick="terminarMovimientos()">Terminar</button>
             </div>
 
             <!-- Navegación Principal -->
@@ -136,7 +136,7 @@
     </div>
 
     <!-- Modal de búsqueda -->
-    <div id="modalBusqueda" class="modal">
+    <div id="modalBusqueda" class="modal" style="display: none;">
         <div class="modal-content">
             <h2>Proporcione el Número de Movimiento deseado</h2>
             <input type="text" id="inputBusqueda" placeholder="Número de movimiento">
@@ -148,7 +148,7 @@
     </div>
 
     <!-- Modal de lista de resultados -->
-    <div id="modalLista" class="modal">
+    <div id="modalLista" class="modal" style="display: none;">
         <div class="modal-content modal-lista">
             <h2>Seleccione un movimiento</h2>
             <div class="lista-container">

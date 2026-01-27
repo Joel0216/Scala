@@ -51,9 +51,17 @@ async function cargarCursos() {
         // Cargar dropdown de curso siguiente
         await cargarDropdownCursoSiguiente();
         
+        // Actualizar total de registros
+        const totalRegistros = document.getElementById('totalRegistros');
+        if (totalRegistros) {
+            // El total se actualiza en mostrarRegistro
+        }
+        
         // Mostrar primer registro si hay cursos
         if (cursos.length > 0) {
             mostrarRegistro(0);
+        } else {
+            limpiarFormulario();
         }
     } catch (error) {
         console.error('Error cargando cursos:', error);
@@ -109,12 +117,19 @@ function limpiarFormulario() {
 // Función para cargar datos del curso
 function cargarDatosCurso(curso) {
     cursoSeleccionado = curso;
-    document.getElementById('curso').value = curso.curso || '';
-    document.getElementById('costo').value = curso.precio_mensual ? '$' + curso.precio_mensual.toFixed(2) : '';
-    document.getElementById('clave').value = curso.clave || '';
-    document.getElementById('iva').value = '0.16'; // IVA fijo
-    document.getElementById('recargo').value = curso.precio_inscripcion ? '$' + curso.precio_inscripcion.toFixed(2) : '';
-    document.getElementById('cursoSiguiente').value = curso.curso_siguiente_id || '';
+    const cursoInput = document.getElementById('curso');
+    const costoInput = document.getElementById('costo');
+    const claveInput = document.getElementById('clave');
+    const ivaInput = document.getElementById('iva');
+    const recargoInput = document.getElementById('recargo');
+    const cursoSiguienteSelect = document.getElementById('cursoSiguiente');
+    
+    if (cursoInput) cursoInput.value = curso.curso || '';
+    if (costoInput) costoInput.value = curso.precio_mensual ? '$' + curso.precio_mensual.toFixed(2) : '';
+    if (claveInput) claveInput.value = curso.clave || '';
+    if (ivaInput) ivaInput.value = '0.16'; // IVA fijo
+    if (recargoInput) recargoInput.value = curso.precio_inscripcion ? '$' + curso.precio_inscripcion.toFixed(2) : '';
+    if (cursoSiguienteSelect) cursoSiguienteSelect.value = curso.curso_siguiente_id || '';
 }
 
 // Mostrar registro actual
@@ -122,9 +137,17 @@ function mostrarRegistro(index) {
     if (index >= 0 && index < cursos.length) {
         registroActual = index;
         cargarDatosCurso(cursos[index]);
-        document.getElementById('registroActual').textContent = index + 1;
-        document.getElementById('inputRegistro').value = index + 1;
-        document.getElementById('inputRegistro').max = cursos.length;
+        
+        const registroActualEl = document.getElementById('registroActual');
+        const inputRegistroEl = document.getElementById('inputRegistro');
+        const totalRegistrosEl = document.getElementById('totalRegistros');
+        
+        if (registroActualEl) registroActualEl.textContent = index + 1;
+        if (inputRegistroEl) {
+            inputRegistroEl.value = index + 1;
+            inputRegistroEl.max = cursos.length;
+        }
+        if (totalRegistrosEl) totalRegistrosEl.textContent = cursos.length;
     }
 }
 

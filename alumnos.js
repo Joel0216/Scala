@@ -1,3 +1,108 @@
+// Inicializar Supabase para alumnos-alta
+let supabaseAlumnos = null;
+
+// Inicializar cuando se carga alumnos-alta.html
+window.addEventListener('DOMContentLoaded', async () => {
+    // Verificar si estamos en alumnos-alta.html
+    const esAlta = document.getElementById('grupo') && 
+                   document.getElementById('instrumento') && 
+                   document.getElementById('medio') &&
+                   !document.getElementById('credencial')?.readOnly === false;
+    
+    if (esAlta || window.location.pathname.includes('alumnos-alta') || 
+        window.location.href.includes('alumnos-alta')) {
+        console.log('Inicializando alumnos-alta...');
+        
+        // Inicializar Supabase
+        if (typeof initSupabase === 'function') {
+            const success = initSupabase();
+            if (success) {
+                supabaseAlumnos = window.supabase;
+                await cargarSelectsAlta();
+            } else {
+                console.error('Error al conectar con Supabase');
+            }
+        } else if (window.supabase) {
+            // Si ya está inicializado
+            supabaseAlumnos = window.supabase;
+            await cargarSelectsAlta();
+        }
+    }
+});
+
+// Cargar selects para alumnos-alta
+async function cargarSelectsAlta() {
+    if (!supabaseAlumnos) return;
+    
+    try {
+        // Cargar grupos
+        const { data: gruposData, error: gruposError } = await supabaseAlumnos
+            .from('grupos')
+            .select('id, clave, cursos(curso)')
+            .eq('status', 'activo')
+            .order('clave', { ascending: true });
+        
+        if (!gruposError && gruposData) {
+            const selectGrupo = document.getElementById('grupo');
+            if (selectGrupo) {
+                selectGrupo.innerHTML = '<option value="">-- Seleccione un grupo --</option>';
+                gruposData.forEach(grupo => {
+                    const option = document.createElement('option');
+                    option.value = grupo.id;
+                    const cursoNombre = grupo.cursos?.curso || '';
+                    option.textContent = `${grupo.clave} - ${cursoNombre}`;
+                    selectGrupo.appendChild(option);
+                });
+                gruposDisponibles = gruposData;
+            }
+        }
+        
+        // Cargar instrumentos
+        const { data: instrumentosData, error: instrumentosError } = await supabaseAlumnos
+            .from('instrumentos')
+            .select('id, clave, descripcion')
+            .eq('activo', true)
+            .order('clave', { ascending: true });
+        
+        if (!instrumentosError && instrumentosData) {
+            const selectInstrumento = document.getElementById('instrumento');
+            if (selectInstrumento) {
+                selectInstrumento.innerHTML = '<option value="">-- Seleccione --</option>';
+                instrumentosData.forEach(inst => {
+                    const option = document.createElement('option');
+                    option.value = inst.id;
+                    option.textContent = `${inst.clave} - ${inst.descripcion}`;
+                    selectInstrumento.appendChild(option);
+                });
+            }
+        }
+        
+        // Cargar medios de contacto
+        const { data: mediosData, error: mediosError } = await supabaseAlumnos
+            .from('medios_contacto')
+            .select('id, clave, descripcion')
+            .eq('activo', true)
+            .order('clave', { ascending: true });
+        
+        if (!mediosError && mediosData) {
+            const selectMedio = document.getElementById('medio');
+            if (selectMedio) {
+                selectMedio.innerHTML = '<option value="">-- Seleccione --</option>';
+                mediosData.forEach(medio => {
+                    const option = document.createElement('option');
+                    option.value = medio.id;
+                    option.textContent = `${medio.clave} - ${medio.descripcion}`;
+                    selectMedio.appendChild(option);
+                });
+            }
+        }
+        
+        console.log('✓ Selects cargados para alumnos-alta');
+    } catch (error) {
+        console.error('Error cargando selects:', error);
+    }
+}
+
 // Datos de ejemplo de alumnos
 let alumnos = [
     {
@@ -403,4 +508,167 @@ function nuevoAlumno() {
     
     const reingresoCheck = document.getElementById('reingreso');
     if (reingresoCheck) reingresoCheck.checked = false;
+}
+
+// Funciones de navegación para tabla de pagos
+let registroActualPagos = 0;
+let pagos = [];
+
+function navegarPrimeroPagos() {
+    if (pagos.length > 0) {
+        registroActualPagos = 0;
+        actualizarNavegacionPagos();
+    }
+}
+
+function navegarAnteriorPagos() {
+    if (registroActualPagos > 0) {
+        registroActualPagos--;
+        actualizarNavegacionPagos();
+    }
+}
+
+function navegarSiguientePagos() {
+    if (registroActualPagos < pagos.length - 1) {
+        registroActualPagos++;
+        actualizarNavegacionPagos();
+    }
+}
+
+function navegarUltimoPagos() {
+    if (pagos.length > 0) {
+        registroActualPagos = pagos.length - 1;
+        actualizarNavegacionPagos();
+    }
+}
+
+function navegarRegistroPagos() {
+    const input = document.getElementById('inputRegistroPagos');
+    if (input) {
+        const num = parseInt(input.value);
+        if (num > 0 && num <= pagos.length) {
+            registroActualPagos = num - 1;
+            actualizarNavegacionPagos();
+        }
+    }
+}
+
+function actualizarNavegacionPagos() {
+    const input = document.getElementById('inputRegistroPagos');
+    const total = document.getElementById('totalPagos');
+    if (input) input.value = registroActualPagos + 1;
+    if (total) total.textContent = pagos.length;
+}
+
+// Funciones de navegación para tabla de exámenes
+let registroActualExamenes = 0;
+let examenes = [];
+
+function navegarPrimeroExamenes() {
+    if (examenes.length > 0) {
+        registroActualExamenes = 0;
+        actualizarNavegacionExamenes();
+    }
+}
+
+function navegarAnteriorExamenes() {
+    if (registroActualExamenes > 0) {
+        registroActualExamenes--;
+        actualizarNavegacionExamenes();
+    }
+}
+
+function navegarSiguienteExamenes() {
+    if (registroActualExamenes < examenes.length - 1) {
+        registroActualExamenes++;
+        actualizarNavegacionExamenes();
+    }
+}
+
+function navegarUltimoExamenes() {
+    if (examenes.length > 0) {
+        registroActualExamenes = examenes.length - 1;
+        actualizarNavegacionExamenes();
+    }
+}
+
+function navegarRegistroExamenes() {
+    const input = document.getElementById('inputRegistroExamenes');
+    if (input) {
+        const num = parseInt(input.value);
+        if (num > 0 && num <= examenes.length) {
+            registroActualExamenes = num - 1;
+            actualizarNavegacionExamenes();
+        }
+    }
+}
+
+function actualizarNavegacionExamenes() {
+    const input = document.getElementById('inputRegistroExamenes');
+    const total = document.getElementById('totalExamenes');
+    if (input) input.value = registroActualExamenes + 1;
+    if (total) total.textContent = examenes.length;
+}
+
+// Funciones de navegación para grupos (usado en alumnos-alta.html)
+let registroActualGrupo = 0;
+let gruposDisponibles = [];
+
+function navegarPrimeroGrupo() {
+    if (gruposDisponibles.length > 0) {
+        registroActualGrupo = 0;
+        actualizarNavegacionGrupo();
+        mostrarGrupoSeleccionado();
+    }
+}
+
+function navegarAnteriorGrupo() {
+    if (registroActualGrupo > 0) {
+        registroActualGrupo--;
+        actualizarNavegacionGrupo();
+        mostrarGrupoSeleccionado();
+    }
+}
+
+function navegarSiguienteGrupo() {
+    if (registroActualGrupo < gruposDisponibles.length - 1) {
+        registroActualGrupo++;
+        actualizarNavegacionGrupo();
+        mostrarGrupoSeleccionado();
+    }
+}
+
+function navegarUltimoGrupo() {
+    if (gruposDisponibles.length > 0) {
+        registroActualGrupo = gruposDisponibles.length - 1;
+        actualizarNavegacionGrupo();
+        mostrarGrupoSeleccionado();
+    }
+}
+
+function navegarRegistroGrupo() {
+    const input = document.getElementById('inputRegistroGrupo');
+    if (input) {
+        const num = parseInt(input.value);
+        if (num > 0 && num <= gruposDisponibles.length) {
+            registroActualGrupo = num - 1;
+            actualizarNavegacionGrupo();
+            mostrarGrupoSeleccionado();
+        }
+    }
+}
+
+function actualizarNavegacionGrupo() {
+    const input = document.getElementById('inputRegistroGrupo');
+    if (input) input.value = registroActualGrupo + 1;
+}
+
+function mostrarGrupoSeleccionado() {
+    if (registroActualGrupo >= 0 && registroActualGrupo < gruposDisponibles.length) {
+        const grupo = gruposDisponibles[registroActualGrupo];
+        const selectGrupo = document.getElementById('grupo');
+        if (selectGrupo) {
+            selectGrupo.value = grupo.id || grupo.clave || '';
+        }
+    }
 }

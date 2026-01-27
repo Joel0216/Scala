@@ -107,12 +107,12 @@
                 </table>
                 <div class="table-nav">
                     <span>Registro: </span>
-                    <button type="button" class="nav-btn-small">|&lt;</button>
-                    <button type="button" class="nav-btn-small">&lt;</button>
-                    <input type="text" value="1" class="record-input" readonly>
-                    <button type="button" class="nav-btn-small">&gt;</button>
-                    <button type="button" class="nav-btn-small">&gt;|</button>
-                    <button type="button" class="nav-btn-small">|&gt;*</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarPrimeroAlumnos()">|&lt;</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarAnteriorAlumnos()">&lt;</button>
+                    <input type="text" value="1" class="record-input" id="inputRegistroAlumnos" readonly>
+                    <button type="button" class="nav-btn-small" onclick="navegarSiguienteAlumnos()">&gt;</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarUltimoAlumnos()">&gt;|</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarRegistroAlumnos()">|&gt;*</button>
                 </div>
             </div>
 
@@ -136,12 +136,12 @@
                 </table>
                 <div class="table-nav">
                     <span>Registro: </span>
-                    <button type="button" class="nav-btn-small">|&lt;</button>
-                    <button type="button" class="nav-btn-small">&lt;</button>
-                    <input type="text" value="1" class="record-input" readonly>
-                    <button type="button" class="nav-btn-small">&gt;</button>
-                    <button type="button" class="nav-btn-small">&gt;|</button>
-                    <button type="button" class="nav-btn-small">|&gt;*</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarPrimeroPagos()">|&lt;</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarAnteriorPagos()">&lt;</button>
+                    <input type="text" value="1" class="record-input" id="inputRegistroPagos" readonly>
+                    <button type="button" class="nav-btn-small" onclick="navegarSiguientePagos()">&gt;</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarUltimoPagos()">&gt;|</button>
+                    <button type="button" class="nav-btn-small" onclick="navegarRegistroPagos()">|&gt;*</button>
                 </div>
             </div>
 
