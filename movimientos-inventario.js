@@ -1,5 +1,5 @@
 // Inicializar Supabase
-let supabase = null;
+
 let movimientos = [];
 let registroActual = 0;
 let detalleActual = 0;
@@ -9,14 +9,14 @@ let detallesActuales = [];
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando módulo de movimientos de inventario...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
         if (success) {
             supabase = window.supabase;
             console.log('✓ Supabase conectado');
-            
+
             // Cargar movimientos desde la base de datos
             await cargarMovimientos();
         } else {
@@ -27,29 +27,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('✗ initSupabase no está disponible');
         alert('Error: initSupabase no está disponible');
     }
-    
+
     // Actualizar fecha
     actualizarFecha();
-    
+
     // Cargar tipos de movimiento en el select
     await cargarTiposMovimiento();
-    
+
     console.log('Inicialización completa');
 });
 
 // Cargar tipos de movimiento
 async function cargarTiposMovimiento() {
     if (!supabase) return;
-    
+
     try {
         const { data, error } = await supabase
             .from('tipos_movimiento')
             .select('*')
             .eq('activo', true)
             .order('clave', { ascending: true });
-        
+
         if (error) throw error;
-        
+
         const select = document.getElementById('tipoMovimiento');
         if (select && data && data.length > 0) {
             // Mantener la opción "Seleccione..." y agregar las opciones desde BD
@@ -79,7 +79,7 @@ function actualizarFecha() {
 // Cargar movimientos desde Supabase
 async function cargarMovimientos() {
     if (!supabase) return;
-    
+
     try {
         const { data, error } = await supabase
             .from('movimientos_inventario_maestro')
@@ -94,16 +94,16 @@ async function cargarMovimientos() {
             `)
             .order('numero', { ascending: false })
             .limit(100);
-        
+
         if (error) throw error;
-        
+
         movimientos = data || [];
         console.log(`✓ ${movimientos.length} movimientos cargados`);
-        
+
         // Actualizar total de registros
         const totalRegistrosEl = document.getElementById('totalRegistros');
         if (totalRegistrosEl) totalRegistrosEl.textContent = movimientos.length;
-        
+
         // Mostrar primer registro si hay movimientos
         if (movimientos.length > 0) {
             await mostrarMovimiento(0);
@@ -125,11 +125,11 @@ function limpiarMovimiento() {
     const numeroMovimientoEl = document.getElementById('numeroMovimiento');
     const fechaMovimientoEl = document.getElementById('fechaMovimiento');
     const tipoMovimientoEl = document.getElementById('tipoMovimiento');
-    
+
     if (numeroMovimientoEl) numeroMovimientoEl.value = '';
     if (fechaMovimientoEl) fechaMovimientoEl.value = new Date().toISOString().split('T')[0];
     if (tipoMovimientoEl) tipoMovimientoEl.value = '';
-    
+
     limpiarDetalle();
     detallesActuales = [];
     movimientoSeleccionado = null;
@@ -138,7 +138,7 @@ function limpiarMovimiento() {
 // Cargar detalles de un movimiento
 async function cargarDetalles(movimientoId) {
     if (!supabase) return [];
-    
+
     try {
         const { data, error } = await supabase
             .from('movimientos_inventario_detalle')
@@ -154,9 +154,9 @@ async function cargarDetalles(movimientoId) {
             `)
             .eq('movimiento_id', movimientoId)
             .order('created_at', { ascending: true });
-        
+
         if (error) throw error;
-        
+
         return data || [];
     } catch (error) {
         console.error('Error cargando detalles:', error);
@@ -167,18 +167,18 @@ async function cargarDetalles(movimientoId) {
 // Mostrar movimiento
 async function mostrarMovimiento(index) {
     if (index < 0 || index >= movimientos.length) return;
-    
+
     registroActual = index;
     movimientoSeleccionado = movimientos[index];
-    
+
     // Actualizar cabecera
     const numeroMovimientoEl = document.getElementById('numeroMovimiento');
     const fechaMovimientoEl = document.getElementById('fechaMovimiento');
     const tipoMovimientoEl = document.getElementById('tipoMovimiento');
-    
+
     if (numeroMovimientoEl) numeroMovimientoEl.value = movimientoSeleccionado.numero || '';
     if (fechaMovimientoEl) fechaMovimientoEl.value = movimientoSeleccionado.fecha || '';
-    
+
     // Obtener clave del tipo de movimiento
     let tipoTexto = '';
     if (movimientoSeleccionado.tipos_movimiento) {
@@ -191,7 +191,7 @@ async function mostrarMovimiento(index) {
                 .select('clave')
                 .eq('id', movimientoSeleccionado.tipo_movimiento_id)
                 .single();
-            
+
             if (!tipoError && tipoData) {
                 tipoTexto = tipoData.clave;
             }
@@ -199,15 +199,15 @@ async function mostrarMovimiento(index) {
             console.error('Error obteniendo tipo de movimiento:', e);
         }
     }
-    
+
     if (tipoMovimientoEl) tipoMovimientoEl.value = tipoTexto;
-    
+
     // Cargar detalles
     detallesActuales = await cargarDetalles(movimientoSeleccionado.id);
-    
+
     // Actualizar tabla de detalles
     actualizarTablaDetalles();
-    
+
     // Mostrar primer detalle si existe
     if (detallesActuales.length > 0) {
         detalleActual = 0;
@@ -215,13 +215,13 @@ async function mostrarMovimiento(index) {
     } else {
         limpiarDetalle();
     }
-    
+
     // Actualizar navegación
     const registroActualEl = document.getElementById('registroActual');
     const totalRegistrosEl = document.getElementById('totalRegistros');
     if (registroActualEl) registroActualEl.textContent = index + 1;
     if (totalRegistrosEl) totalRegistrosEl.textContent = movimientos.length;
-    
+
     // Actualizar tabla de detalles
     actualizarTablaDetalles();
 }
@@ -230,10 +230,10 @@ async function mostrarMovimiento(index) {
 function actualizarTablaDetalles() {
     const tbody = document.getElementById('tablaDetalles');
     if (!tbody) return;
-    
+
     // Limpiar tabla
     tbody.innerHTML = '';
-    
+
     if (detallesActuales.length === 0) {
         // Agregar filas vacías
         for (let i = 0; i < 3; i++) {
@@ -245,13 +245,13 @@ function actualizarTablaDetalles() {
             `;
             tbody.appendChild(tr);
         }
-        
+
         // Actualizar total
         const totalDetallesEl = document.getElementById('totalDetalles');
         if (totalDetallesEl) totalDetallesEl.textContent = '0';
         return;
     }
-    
+
     // Mostrar detalles
     detallesActuales.forEach((detalle, index) => {
         const tr = document.createElement('tr');
@@ -261,15 +261,15 @@ function actualizarTablaDetalles() {
             <td><input type="text" class="input-clave" value="${detalle.articulos?.clave || ''}" readonly></td>
             <td><input type="number" class="input-cantidad" value="${detalle.cantidad || 0}" readonly></td>
         `;
-        
+
         // Resaltar fila seleccionada
         if (esSeleccionado) {
             tr.style.backgroundColor = '#E6F2FF';
         }
-        
+
         tbody.appendChild(tr);
     });
-    
+
     // Agregar fila de totales si hay detalles
     if (detallesActuales.length > 0) {
         const tr = document.createElement('tr');
@@ -282,7 +282,7 @@ function actualizarTablaDetalles() {
         tr.style.fontWeight = 'bold';
         tbody.appendChild(tr);
     }
-    
+
     // Actualizar total
     const totalDetallesEl = document.getElementById('totalDetalles');
     if (totalDetallesEl) totalDetallesEl.textContent = detallesActuales.length;
@@ -296,14 +296,14 @@ function limpiarDetalle() {
     const stockEl = document.getElementById('stockArticulo');
     const grupoEl = document.getElementById('grupoArticulo');
     const totalDetallesEl = document.getElementById('totalDetalles');
-    
+
     if (descripcionEl) descripcionEl.value = '';
     if (precioEl) precioEl.value = '';
     if (ivaEl) ivaEl.value = '';
     if (stockEl) stockEl.value = '';
     if (grupoEl) grupoEl.value = '';
     if (totalDetallesEl) totalDetallesEl.textContent = '0';
-    
+
     // Limpiar tabla
     actualizarTablaDetalles();
 }
@@ -330,17 +330,17 @@ function buscarMovimiento() {
 async function aceptarBusqueda() {
     const inputBusqueda = document.getElementById('inputBusqueda');
     if (!inputBusqueda) return;
-    
+
     const numero = inputBusqueda.value.trim();
     cerrarModal();
-    
+
     if (!numero) {
         alert('Debe ingresar un número de movimiento');
         return;
     }
-    
+
     const index = movimientos.findIndex(m => m.numero === parseInt(numero));
-    
+
     if (index !== -1) {
         await mostrarMovimiento(index);
     } else {
@@ -362,23 +362,23 @@ async function borrarMovimiento() {
         alert('Primero debe seleccionar un movimiento');
         return;
     }
-    
+
     if (!supabase) {
         alert('Error: Base de datos no conectada');
         return;
     }
-    
+
     if (confirm(`¿Está seguro de eliminar el movimiento ${movimientoSeleccionado.numero}?\n\nEsta acción eliminará también todos los detalles y revertirá los cambios en el inventario.\n\nEsta acción no se puede deshacer.`)) {
         try {
             const { error } = await supabase
                 .from('movimientos_inventario_maestro')
                 .delete()
                 .eq('id', movimientoSeleccionado.id);
-            
+
             if (error) throw error;
-            
+
             alert('Movimiento eliminado correctamente');
-            
+
             // Recargar movimientos
             await cargarMovimientos();
         } catch (error) {
@@ -394,12 +394,12 @@ async function borrarTodo() {
         alert('Primero debe seleccionar un movimiento');
         return;
     }
-    
+
     if (!supabase) {
         alert('Error: Base de datos no conectada');
         return;
     }
-    
+
     if (confirm(`¿Está seguro de eliminar TODO el movimiento ${movimientoSeleccionado.numero}?\n\nEsta acción eliminará:\n- El movimiento completo\n- Todos los detalles asociados\n- Revertirá todos los cambios en el inventario\n\nEsta acción NO se puede deshacer.`)) {
         try {
             // Primero eliminar los detalles
@@ -407,19 +407,19 @@ async function borrarTodo() {
                 .from('movimientos_inventario_detalle')
                 .delete()
                 .eq('movimiento_id', movimientoSeleccionado.id);
-            
+
             if (errorDetalles) throw errorDetalles;
-            
+
             // Luego eliminar el movimiento maestro
             const { error: errorMaestro } = await supabase
                 .from('movimientos_inventario_maestro')
                 .delete()
                 .eq('id', movimientoSeleccionado.id);
-            
+
             if (errorMaestro) throw errorMaestro;
-            
+
             alert('Movimiento eliminado completamente');
-            
+
             // Recargar movimientos
             await cargarMovimientos();
         } catch (error) {
@@ -435,20 +435,20 @@ async function borrarOperacion() {
         alert('No hay operación seleccionada');
         return;
     }
-    
+
     const detalleSeleccionado = detallesActuales[detalleActual];
-    
+
     if (confirm(`¿Está seguro de eliminar esta operación?\n\nArtículo: ${detalleSeleccionado.articulos?.descripcion}\nCantidad: ${detalleSeleccionado.cantidad}\n\nEsta acción revertirá el cambio en el inventario.`)) {
         try {
             const { error } = await supabase
                 .from('movimientos_inventario_detalle')
                 .delete()
                 .eq('id', detalleSeleccionado.id);
-            
+
             if (error) throw error;
-            
+
             alert('Operación eliminada correctamente');
-            
+
             // Recargar el movimiento actual
             await mostrarMovimiento(registroActual);
         } catch (error) {
@@ -541,23 +541,23 @@ function navegarDetallesRegistro() {
 // Mostrar detalle
 function mostrarDetalle(index) {
     if (index < 0 || index >= detallesActuales.length) return;
-    
+
     detalleActual = index;
     const detalle = detallesActuales[index];
-    
+
     // Actualizar información del artículo
     document.getElementById('descripcionArticulo').value = detalle.articulos?.descripcion || '';
     document.getElementById('precioArticulo').value = detalle.precio_unitario ? detalle.precio_unitario.toFixed(2) : '0.00';
     document.getElementById('ivaArticulo').value = '15.00';
     document.getElementById('stockArticulo').value = detalle.articulos?.existencia || 0;
     document.getElementById('grupoArticulo').value = detalle.articulos?.grupos_articulos?.nombre || '';
-    
+
     // Actualizar navegación del detalle
     const inputDetalle = document.getElementById('inputDetalleRegistro');
     const totalDetalles = document.getElementById('totalDetalles');
     if (inputDetalle) inputDetalle.value = index + 1;
     if (totalDetalles) totalDetalles.textContent = detallesActuales.length;
-    
+
     // Actualizar tabla para resaltar el detalle seleccionado
     actualizarTablaDetalles();
 }

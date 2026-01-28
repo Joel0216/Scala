@@ -1,5 +1,5 @@
 // Inicializar Supabase
-let supabase = null;
+
 let bajaData = null;
 let grupos = [];
 let grupoSeleccionado = null;
@@ -7,7 +7,7 @@ let grupoSeleccionado = null;
 // Esperar a que se cargue la librería de Supabase
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando reingreso de alumno...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
@@ -22,20 +22,20 @@ window.addEventListener('DOMContentLoaded', async () => {
         alert('Error: initSupabase no está disponible');
         return;
     }
-    
+
     // Actualizar fecha y hora
     actualizarFechaHora();
     setInterval(actualizarFechaHora, 1000);
-    
+
     // Cargar datos de la baja desde localStorage
     cargarDatosBaja();
-    
+
     // Cargar grupos disponibles
     await cargarGrupos();
-    
+
     // Setup event listeners
     setupEventListeners();
-    
+
     console.log('Inicialización completa');
 });
 
@@ -51,7 +51,7 @@ function actualizarFechaHora() {
     const ampm = horas >= 12 ? 'p. m.' : 'a. m.';
     horas = horas % 12 || 12;
     const horasStr = String(horas).padStart(2, '0');
-    
+
     const datetime = document.getElementById('datetime');
     if (datetime) {
         datetime.textContent = `${dia}/${mes}/${anio} ${horasStr}:${minutos}:${segundos} ${ampm}`;
@@ -61,35 +61,35 @@ function actualizarFechaHora() {
 // Cargar datos de la baja desde localStorage
 function cargarDatosBaja() {
     const bajaJSON = localStorage.getItem('bajaParaReingreso');
-    
+
     if (!bajaJSON) {
         alert('Error: No se encontraron datos del alumno.\n\nDebe seleccionar un alumno desde el módulo de Bajas.');
         window.location.href = 'alumnos-bajas.html';
         return;
     }
-    
+
     bajaData = JSON.parse(bajaJSON);
-    
+
     // Llenar campos
     document.getElementById('credencial1').value = bajaData.credencial1 || '';
     document.getElementById('credencial2').value = bajaData.credencial2 || '';
     document.getElementById('nombre').value = bajaData.nombre || '';
     document.getElementById('ultimoGrupo').value = bajaData.grupo || '';
-    
+
     // Beca
     if (bajaData.beca) {
         document.getElementById('beca').checked = true;
         document.getElementById('porcentajeBeca').disabled = false;
         document.getElementById('porcentajeBeca').value = bajaData.porcentaje_beca || '0.00';
     }
-    
+
     console.log('✓ Datos de baja cargados:', bajaData);
 }
 
 // Cargar grupos disponibles
 async function cargarGrupos() {
     if (!supabase) return;
-    
+
     try {
         const { data, error } = await supabase
             .from('grupos')
@@ -101,30 +101,30 @@ async function cargarGrupos() {
             `)
             .eq('status', 'activo')
             .order('clave', { ascending: true });
-        
+
         if (error) throw error;
-        
+
         grupos = data || [];
         console.log(`✓ ${grupos.length} grupos cargados`);
-        
+
         // Llenar dropdown
         const select = document.getElementById('nuevoGrupo');
         select.innerHTML = '<option value="">-- Seleccione nuevo grupo --</option>';
-        
+
         grupos.forEach(grupo => {
             const option = document.createElement('option');
             option.value = grupo.id;
-            
+
             const nombreCurso = grupo.cursos?.curso || 'Sin curso';
             const dia = grupo.dia || '';
-            const horario = grupo.hora_entrada && grupo.hora_salida 
-                ? `${grupo.hora_entrada.substring(0,5)}-${grupo.hora_salida.substring(0,5)}`
+            const horario = grupo.hora_entrada && grupo.hora_salida
+                ? `${grupo.hora_entrada.substring(0, 5)}-${grupo.hora_salida.substring(0, 5)}`
                 : '';
             const salon = grupo.salones?.numero || '';
-            
+
             option.textContent = `${grupo.clave} - ${nombreCurso} - ${dia} ${horario} - Salón ${salon}`;
             option.dataset.grupoData = JSON.stringify(grupo);
-            
+
             select.appendChild(option);
         });
     } catch (error) {
@@ -138,9 +138,9 @@ function setupEventListeners() {
     // Checkbox de beca
     const checkBeca = document.getElementById('beca');
     const inputPorcentaje = document.getElementById('porcentajeBeca');
-    
+
     if (checkBeca && inputPorcentaje) {
-        checkBeca.addEventListener('change', function() {
+        checkBeca.addEventListener('change', function () {
             if (this.checked) {
                 inputPorcentaje.disabled = false;
                 inputPorcentaje.focus();
@@ -151,13 +151,13 @@ function setupEventListeners() {
             validarFormulario();
         });
     }
-    
+
     // Dropdown de nuevo grupo
     const selectGrupo = document.getElementById('nuevoGrupo');
     if (selectGrupo) {
-        selectGrupo.addEventListener('change', function() {
+        selectGrupo.addEventListener('change', function () {
             const selectedOption = this.options[this.selectedIndex];
-            
+
             if (selectedOption.value) {
                 grupoSeleccionado = JSON.parse(selectedOption.dataset.grupoData);
                 mostrarInfoGrupo(grupoSeleccionado);
@@ -165,11 +165,11 @@ function setupEventListeners() {
                 grupoSeleccionado = null;
                 document.getElementById('infoGrupoSeleccionado').style.display = 'none';
             }
-            
+
             validarFormulario();
         });
     }
-    
+
     // Validar al cambiar porcentaje
     if (inputPorcentaje) {
         inputPorcentaje.addEventListener('input', validarFormulario);
@@ -179,22 +179,22 @@ function setupEventListeners() {
 // Mostrar información del grupo seleccionado
 function mostrarInfoGrupo(grupo) {
     const infoDiv = document.getElementById('infoGrupoSeleccionado');
-    
+
     document.getElementById('infoGrupoClave').textContent = grupo.clave || '';
     document.getElementById('infoGrupoCurso').textContent = grupo.cursos?.curso || 'Sin curso';
     document.getElementById('infoGrupoMaestro').textContent = grupo.maestros?.nombre || 'Sin maestro';
     document.getElementById('infoGrupoDia').textContent = grupo.dia || '';
-    
-    const horario = grupo.hora_entrada && grupo.hora_salida 
-        ? `${grupo.hora_entrada.substring(0,5)} - ${grupo.hora_salida.substring(0,5)}`
+
+    const horario = grupo.hora_entrada && grupo.hora_salida
+        ? `${grupo.hora_entrada.substring(0, 5)} - ${grupo.hora_salida.substring(0, 5)}`
         : '';
     document.getElementById('infoGrupoHorario').textContent = horario;
     document.getElementById('infoGrupoSalon').textContent = grupo.salones?.numero || '';
     document.getElementById('infoGrupoCupo').textContent = grupo.cupo || '0';
-    
+
     const disponibles = (grupo.cupo || 0) - (grupo.alumnos_inscritos || 0);
     document.getElementById('infoGrupoDisponibles').textContent = disponibles;
-    
+
     infoDiv.style.display = 'block';
 }
 
@@ -204,9 +204,9 @@ function validarFormulario() {
     const nombre = document.getElementById('nombre').value.trim();
     const ultimoGrupo = document.getElementById('ultimoGrupo').value.trim();
     const nuevoGrupo = document.getElementById('nuevoGrupo').value;
-    
+
     const btnGuardar = document.getElementById('btnGuardar');
-    
+
     // Validación estricta: todos los campos obligatorios deben tener datos
     if (credencial1 && nombre && ultimoGrupo && nuevoGrupo) {
         btnGuardar.disabled = false;
@@ -221,21 +221,21 @@ async function guardarReingreso() {
         alert('Error: Datos no disponibles');
         return;
     }
-    
+
     // Validar campos obligatorios
     const nuevoGrupoId = document.getElementById('nuevoGrupo').value;
     if (!nuevoGrupoId) {
         alert('Por favor seleccione el nuevo grupo');
         return;
     }
-    
+
     const tieneBeca = document.getElementById('beca').checked;
     const porcentajeBeca = tieneBeca ? parseFloat(document.getElementById('porcentajeBeca').value) : 0;
     const observaciones = document.getElementById('observaciones').value.trim();
-    
+
     try {
         console.log('Guardando reingreso...');
-        
+
         // Llamar a la función de PostgreSQL para reingresar al alumno
         const { data, error } = await supabase.rpc('reingresar_alumno', {
             p_baja_id: bajaData.id,
@@ -244,14 +244,14 @@ async function guardarReingreso() {
             p_porcentaje_beca: porcentajeBeca,
             p_observaciones: observaciones
         });
-        
+
         if (error) throw error;
-        
+
         alert(`Alumno reingresado correctamente\n\nNombre: ${bajaData.nombre}\nCredencial: ${bajaData.credencial1}-${bajaData.credencial2}\nGrupo Anterior: ${bajaData.grupo}\nGrupo Nuevo: ${grupoSeleccionado.clave}\nBeca: ${tieneBeca ? porcentajeBeca + '%' : 'No'}\n\nEl alumno ha sido reactivado en el sistema.`);
-        
+
         // Limpiar localStorage
         localStorage.removeItem('bajaParaReingreso');
-        
+
         // Preguntar si desea reingresar otro alumno
         if (confirm('¿Desea reingresar otro alumno?')) {
             window.location.href = 'alumnos-bajas.html';
@@ -260,7 +260,7 @@ async function guardarReingreso() {
         }
     } catch (error) {
         console.error('Error guardando reingreso:', error);
-        
+
         if (error.message.includes('ya fue reingresado')) {
             alert('Error: Este alumno ya fue reingresado anteriormente.\n\nNo se puede reingresar dos veces el mismo registro.');
         } else {

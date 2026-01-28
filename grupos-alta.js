@@ -1,5 +1,5 @@
 // Inicializar Supabase
-let supabase = null;
+
 let cursos = [];
 let maestros = [];
 let salones = [];
@@ -7,7 +7,7 @@ let salones = [];
 // Esperar a que se cargue el DOM
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando alta de grupos...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
@@ -22,19 +22,19 @@ window.addEventListener('DOMContentLoaded', async () => {
         alert('Error: initSupabase no está disponible');
         return;
     }
-    
+
     // Actualizar fecha/hora
     updateDateTime();
     setInterval(updateDateTime, 1000);
-    
+
     // Cargar datos
     await cargarCursos();
     await cargarMaestros();
     await cargarSalones();
-    
+
     // Setup event listeners
     setupEventListeners();
-    
+
     console.log('Inicialización completa');
 });
 
@@ -61,60 +61,60 @@ function setupEventListeners() {
     // Búsqueda predictiva de cursos
     const cursoSearch = document.getElementById('cursoSearch');
     if (cursoSearch) {
-        cursoSearch.addEventListener('input', function() {
+        cursoSearch.addEventListener('input', function () {
             buscarCursos(this.value);
         });
-        
+
         // Cerrar sugerencias al hacer clic fuera
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (!e.target.closest('.search-container')) {
                 document.getElementById('cursoSuggestions').classList.remove('show');
             }
         });
     }
-    
+
     // Búsqueda predictiva de maestros
     const maestroSearch = document.getElementById('maestroSearch');
     if (maestroSearch) {
-        maestroSearch.addEventListener('input', function() {
+        maestroSearch.addEventListener('input', function () {
             buscarMaestros(this.value);
         });
-        
+
         // Cerrar sugerencias al hacer clic fuera
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (!e.target.closest('.search-container')) {
                 document.getElementById('maestroSuggestions').classList.remove('show');
             }
         });
     }
-    
+
     // Actualizar clave al cambiar campos
     const dia = document.getElementById('dia');
     const horaEntrada = document.getElementById('horaEntrada');
-    
+
     if (dia) dia.addEventListener('change', generarClave);
     if (horaEntrada) horaEntrada.addEventListener('change', generarClave);
-    
+
     // Mostrar información del salón
     const salon = document.getElementById('salon');
     if (salon) {
-        salon.addEventListener('change', function() {
+        salon.addEventListener('change', function () {
             mostrarInfoSalon(this.value);
         });
     }
-    
+
     // Botón Nuevo (Guardar)
     const nuevoBtn = document.getElementById('nuevoBtn');
     if (nuevoBtn) {
         nuevoBtn.addEventListener('click', guardarGrupo);
     }
-    
+
     // Botón Cancelar
     const cancelarBtn = document.getElementById('cancelarBtn');
     if (cancelarBtn) {
         cancelarBtn.addEventListener('click', limpiarFormulario);
     }
-    
+
     // Botón Terminar
     const terminarBtn = document.getElementById('terminarBtn');
     if (terminarBtn) {
@@ -129,7 +129,7 @@ function setupEventListeners() {
 // Cargar cursos
 async function cargarCursos() {
     if (!supabase) return;
-    
+
     try {
         console.log('Cargando cursos...');
         const { data, error } = await supabase
@@ -137,9 +137,9 @@ async function cargarCursos() {
             .select('*')
             .eq('activo', true)
             .order('curso', { ascending: true });
-        
+
         if (error) throw error;
-        
+
         cursos = data || [];
         console.log(`✓ ${cursos.length} cursos cargados`);
     } catch (error) {
@@ -151,7 +151,7 @@ async function cargarCursos() {
 // Cargar maestros
 async function cargarMaestros() {
     if (!supabase) return;
-    
+
     try {
         console.log('Cargando maestros...');
         const { data, error } = await supabase
@@ -159,9 +159,9 @@ async function cargarMaestros() {
             .select('*')
             .eq('status', 'activo')
             .order('nombre', { ascending: true });
-        
+
         if (error) throw error;
-        
+
         maestros = data || [];
         console.log(`✓ ${maestros.length} maestros cargados`);
     } catch (error) {
@@ -173,7 +173,7 @@ async function cargarMaestros() {
 // Cargar salones
 async function cargarSalones() {
     if (!supabase) return;
-    
+
     try {
         console.log('Cargando salones...');
         const { data, error } = await supabase
@@ -181,11 +181,11 @@ async function cargarSalones() {
             .select('*')
             .eq('activo', true)
             .order('numero', { ascending: true });
-        
+
         if (error) throw error;
-        
+
         salones = data || [];
-        
+
         // Llenar dropdown de salones
         const select = document.getElementById('salon');
         if (select) {
@@ -198,7 +198,7 @@ async function cargarSalones() {
                 select.appendChild(option);
             });
         }
-        
+
         console.log(`✓ ${salones.length} salones cargados`);
     } catch (error) {
         console.error('Error cargando salones:', error);
@@ -210,35 +210,35 @@ async function cargarSalones() {
 function buscarCursos(termino) {
     const suggestions = document.getElementById('cursoSuggestions');
     if (!suggestions) return;
-    
+
     if (!termino || termino.length < 1) {
         suggestions.classList.remove('show');
         return;
     }
-    
+
     const terminoUpper = termino.toUpperCase();
-    const resultados = cursos.filter(c => 
+    const resultados = cursos.filter(c =>
         c.curso.toUpperCase().includes(terminoUpper) ||
         c.curso.toUpperCase().startsWith(terminoUpper)
     ).slice(0, 10);
-    
+
     if (resultados.length === 0) {
         suggestions.innerHTML = '<div class="suggestion-item">No se encontraron cursos</div>';
         suggestions.classList.add('show');
         return;
     }
-    
+
     suggestions.innerHTML = '';
     resultados.forEach(curso => {
         const div = document.createElement('div');
         div.className = 'suggestion-item';
         div.textContent = curso.curso;
-        div.onclick = function() {
+        div.onclick = function () {
             seleccionarCurso(curso);
         };
         suggestions.appendChild(div);
     });
-    
+
     suggestions.classList.add('show');
 }
 
@@ -247,7 +247,7 @@ function seleccionarCurso(curso) {
     document.getElementById('cursoSearch').value = curso.curso;
     document.getElementById('cursoId').value = curso.id;
     document.getElementById('cursoSuggestions').classList.remove('show');
-    
+
     // Generar clave
     generarClave();
 }
@@ -256,35 +256,35 @@ function seleccionarCurso(curso) {
 function buscarMaestros(termino) {
     const suggestions = document.getElementById('maestroSuggestions');
     if (!suggestions) return;
-    
+
     if (!termino || termino.length < 1) {
         suggestions.classList.remove('show');
         return;
     }
-    
+
     const terminoUpper = termino.toUpperCase();
-    const resultados = maestros.filter(m => 
+    const resultados = maestros.filter(m =>
         m.nombre.toUpperCase().includes(terminoUpper) ||
         m.nombre.toUpperCase().startsWith(terminoUpper)
     ).slice(0, 10);
-    
+
     if (resultados.length === 0) {
         suggestions.innerHTML = '<div class="suggestion-item">No se encontraron maestros</div>';
         suggestions.classList.add('show');
         return;
     }
-    
+
     suggestions.innerHTML = '';
     resultados.forEach(maestro => {
         const div = document.createElement('div');
         div.className = 'suggestion-item';
         div.textContent = maestro.nombre;
-        div.onclick = function() {
+        div.onclick = function () {
             seleccionarMaestro(maestro);
         };
         suggestions.appendChild(div);
     });
-    
+
     suggestions.classList.add('show');
 }
 
@@ -293,7 +293,7 @@ function seleccionarMaestro(maestro) {
     document.getElementById('maestroSearch').value = maestro.nombre;
     document.getElementById('maestroId').value = maestro.id;
     document.getElementById('maestroSuggestions').classList.remove('show');
-    
+
     // Generar clave
     generarClave();
 }
@@ -304,14 +304,14 @@ function generarClave() {
     const maestroSearch = document.getElementById('maestroSearch').value;
     const dia = document.getElementById('dia').value;
     const horaEntrada = document.getElementById('horaEntrada').value;
-    
+
     if (!cursoSearch || !maestroSearch || !dia || !horaEntrada) {
         return;
     }
-    
+
     // Obtener código del curso (primeras 2 letras)
     const cursoCodigo = cursoSearch.substring(0, 2).toUpperCase();
-    
+
     // Obtener iniciales del maestro
     const nombres = maestroSearch.split(' ');
     let iniciales = '';
@@ -321,13 +321,13 @@ function generarClave() {
         }
     });
     iniciales = iniciales.substring(0, 4); // Máximo 4 letras
-    
+
     // Obtener hora (solo la hora sin minutos)
     const hora = horaEntrada.split(':')[0];
-    
+
     // Generar clave: CURSO + INICIALES + DIA + HORA
     const clave = `${cursoCodigo}${iniciales}${dia}${hora}`;
-    
+
     document.getElementById('clave').value = clave;
 }
 
@@ -335,12 +335,12 @@ function generarClave() {
 function mostrarInfoSalon(salonId) {
     const salonInfo = document.getElementById('salonInfo');
     if (!salonInfo) return;
-    
+
     if (!salonId) {
         salonInfo.classList.remove('show');
         return;
     }
-    
+
     const salon = salones.find(s => s.id === salonId);
     if (salon && salon.instrumentos) {
         salonInfo.textContent = `Instrumentos disponibles: ${salon.instrumentos}`;
@@ -356,7 +356,7 @@ async function guardarGrupo() {
         alert('Error: Base de datos no conectada');
         return;
     }
-    
+
     // Validar campos obligatorios
     const clave = document.getElementById('clave').value.trim();
     const cursoId = document.getElementById('cursoId').value;
@@ -367,65 +367,65 @@ async function guardarGrupo() {
     const salonId = document.getElementById('salon').value;
     const cupo = parseInt(document.getElementById('cupo').value) || 0;
     const inicio = document.getElementById('inicio').value;
-    
+
     // Validaciones
     if (!clave) {
         alert('La clave es obligatoria.\n\nComplete: Curso, Maestro, Día y Hora de entrada.');
         return;
     }
-    
+
     if (!cursoId) {
         alert('Debe seleccionar un curso');
         document.getElementById('cursoSearch').focus();
         return;
     }
-    
+
     if (!maestroId) {
         alert('Debe seleccionar un maestro');
         document.getElementById('maestroSearch').focus();
         return;
     }
-    
+
     if (!dia) {
         alert('Debe seleccionar un día');
         document.getElementById('dia').focus();
         return;
     }
-    
+
     if (!horaEntrada) {
         alert('Debe ingresar la hora de entrada');
         document.getElementById('horaEntrada').focus();
         return;
     }
-    
+
     if (!horaSalida) {
         alert('Debe ingresar la hora de salida');
         document.getElementById('horaSalida').focus();
         return;
     }
-    
+
     if (!salonId) {
         alert('Debe seleccionar un salón');
         document.getElementById('salon').focus();
         return;
     }
-    
+
     if (cupo <= 0) {
         alert('El cupo debe ser mayor a 0');
         document.getElementById('cupo').focus();
         return;
     }
-    
+
     if (!inicio) {
         alert('Debe seleccionar la fecha de inicio');
         document.getElementById('inicio').focus();
         return;
     }
-    
+
     // Campos opcionales
     const leccion = document.getElementById('leccion').value.trim() || null;
     const fechaLeccion = document.getElementById('fechaLeccion').value || null;
-    
+
     const grupoData = {
         clave: clave,
         curso_id: cursoId,
@@ -441,32 +441,32 @@ async function guardarGrupo() {
         fecha_leccion: fechaLeccion,
         status: 'activo'
     };
-    
+
     try {
         console.log('Guardando grupo:', grupoData);
-        
+
         // Verificar si ya existe la clave
         const { data: existente, error: errorCheck } = await supabase
             .from('grupos')
             .select('id')
             .eq('clave', clave)
             .single();
-        
+
         if (existente) {
             alert('Ya existe un grupo con la clave: ' + clave);
             return;
         }
-        
+
         // Insertar nuevo grupo
         const { data, error } = await supabase
             .from('grupos')
             .insert([grupoData])
             .select();
-        
+
         if (error) throw error;
-        
+
         alert(`Grupo guardado correctamente\n\nClave: ${clave}\nCurso: ${document.getElementById('cursoSearch').value}\nMaestro: ${document.getElementById('maestroSearch').value}\nDía: ${getDiaNombre(dia)}\nHorario: ${horaEntrada} - ${horaSalida}`);
-        
+
         // Preguntar si desea crear otro
         if (confirm('¿Desea crear otro grupo?')) {
             limpiarFormulario();
@@ -495,11 +495,11 @@ function limpiarFormulario() {
     document.getElementById('inicio').value = '';
     document.getElementById('leccion').value = 'Null';
     document.getElementById('fechaLeccion').value = '';
-    
+
     document.getElementById('salonInfo').classList.remove('show');
     document.getElementById('cursoSuggestions').classList.remove('show');
     document.getElementById('maestroSuggestions').classList.remove('show');
-    
+
     document.getElementById('cursoSearch').focus();
 }
 

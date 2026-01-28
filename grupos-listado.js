@@ -1,5 +1,5 @@
 // Inicializar Supabase
-let supabase = null;
+
 let grupos = [];
 let maestros = [];
 let cursos = [];
@@ -8,7 +8,7 @@ let salones = [];
 // Esperar a que se cargue el DOM
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando listado de grupos...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
@@ -23,20 +23,20 @@ window.addEventListener('DOMContentLoaded', async () => {
         alert('Error: initSupabase no está disponible');
         return;
     }
-    
+
     // Actualizar fecha/hora
     updateDateTime();
     setInterval(updateDateTime, 1000);
-    
+
     // Cargar datos
     await cargarDatos();
-    
+
     // Setup event listeners
     setupEventListeners();
-    
+
     // Mostrar todos los grupos
     mostrarGrupos(grupos);
-    
+
     console.log('Inicialización completa');
 });
 
@@ -65,13 +65,13 @@ function setupEventListeners() {
     if (aplicarFiltrosBtn) {
         aplicarFiltrosBtn.addEventListener('click', aplicarFiltros);
     }
-    
+
     // Botón Limpiar Filtros
     const limpiarFiltrosBtn = document.getElementById('limpiarFiltrosBtn');
     if (limpiarFiltrosBtn) {
         limpiarFiltrosBtn.addEventListener('click', limpiarFiltros);
     }
-    
+
     // Botón Imprimir
     const imprimirBtn = document.getElementById('imprimirBtn');
     if (imprimirBtn) {
@@ -79,7 +79,7 @@ function setupEventListeners() {
             window.print();
         });
     }
-    
+
     // Botón Cerrar
     const cerrarBtn = document.getElementById('cerrarBtn');
     if (cerrarBtn) {
@@ -92,7 +92,7 @@ function setupEventListeners() {
 // Cargar todos los datos
 async function cargarDatos() {
     if (!supabase) return;
-    
+
     try {
         // Cargar grupos con relaciones
         console.log('Cargando grupos...');
@@ -106,21 +106,21 @@ async function cargarDatos() {
             `)
             .eq('status', 'activo')
             .order('dia', { ascending: true });
-        
+
         if (errorGrupos) throw errorGrupos;
         grupos = dataGrupos || [];
         console.log(`✓ ${grupos.length} grupos cargados`);
-        
+
         // Cargar maestros para filtro
         const { data: dataMaestros, error: errorMaestros } = await supabase
             .from('maestros')
             .select('id, nombre')
             .eq('status', 'activo')
             .order('nombre', { ascending: true });
-        
+
         if (errorMaestros) throw errorMaestros;
         maestros = dataMaestros || [];
-        
+
         // Llenar dropdown de maestros
         const filterMaestro = document.getElementById('filterMaestro');
         if (filterMaestro) {
@@ -132,7 +132,7 @@ async function cargarDatos() {
                 filterMaestro.appendChild(option);
             });
         }
-        
+
         console.log(`✓ ${maestros.length} maestros cargados`);
     } catch (error) {
         console.error('Error cargando datos:', error);
@@ -145,19 +145,19 @@ function aplicarFiltros() {
     const filterDia = document.getElementById('filterDia').value;
     const filterMaestro = document.getElementById('filterMaestro').value;
     const sortBy = document.getElementById('sortBy').value;
-    
+
     let gruposFiltrados = [...grupos];
-    
+
     // Filtrar por día
     if (filterDia) {
         gruposFiltrados = gruposFiltrados.filter(g => g.dia === filterDia);
     }
-    
+
     // Filtrar por maestro
     if (filterMaestro) {
         gruposFiltrados = gruposFiltrados.filter(g => g.maestro_id === filterMaestro);
     }
-    
+
     // Ordenar
     gruposFiltrados.sort((a, b) => {
         switch (sortBy) {
@@ -176,7 +176,7 @@ function aplicarFiltros() {
                 return 0;
         }
     });
-    
+
     mostrarGrupos(gruposFiltrados);
 }
 
@@ -185,7 +185,7 @@ function limpiarFiltros() {
     document.getElementById('filterDia').value = '';
     document.getElementById('filterMaestro').value = '';
     document.getElementById('sortBy').value = 'dia';
-    
+
     mostrarGrupos(grupos);
 }
 
@@ -193,24 +193,24 @@ function limpiarFiltros() {
 function mostrarGrupos(gruposAMostrar) {
     const tbody = document.getElementById('gruposTableBody');
     if (!tbody) return;
-    
+
     tbody.innerHTML = '';
-    
+
     if (gruposAMostrar.length === 0) {
         tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px;">No se encontraron grupos</td></tr>';
         actualizarEstadisticas(0, 0, 0);
         return;
     }
-    
+
     let totalAlumnos = 0;
     let totalHoras = 0;
-    
+
     gruposAMostrar.forEach(grupo => {
         const row = document.createElement('tr');
-        
+
         const disponibles = (grupo.cupo || 0) - (grupo.alumnos_inscritos || 0);
         const porcentajeOcupacion = grupo.cupo > 0 ? (grupo.alumnos_inscritos / grupo.cupo) * 100 : 0;
-        
+
         // Determinar clase de color según disponibilidad
         let claseDisponibilidad = '';
         if (porcentajeOcupacion >= 100) {
@@ -222,9 +222,9 @@ function mostrarGrupos(gruposAMostrar) {
         } else {
             claseDisponibilidad = 'disponible-alta';
         }
-        
+
         row.className = claseDisponibilidad;
-        
+
         // Calcular horas del grupo
         if (grupo.hora_entrada && grupo.hora_salida) {
             const [horaE, minE] = grupo.hora_entrada.split(':').map(Number);
@@ -232,9 +232,9 @@ function mostrarGrupos(gruposAMostrar) {
             const horas = (horaS * 60 + minS - horaE * 60 - minE) / 60;
             totalHoras += horas;
         }
-        
+
         totalAlumnos += grupo.alumnos_inscritos || 0;
-        
+
         row.innerHTML = `
             <td><strong>${grupo.clave || ''}</strong></td>
             <td>${grupo.cursos?.curso || 'N/A'}</td>
@@ -247,10 +247,10 @@ function mostrarGrupos(gruposAMostrar) {
             <td style="text-align: center;">${disponibles}</td>
             <td>${grupo.inicio || ''}</td>
         `;
-        
+
         tbody.appendChild(row);
     });
-    
+
     actualizarEstadisticas(gruposAMostrar.length, totalAlumnos, totalHoras);
 }
 

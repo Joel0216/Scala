@@ -1,11 +1,11 @@
 // Inicializar Supabase
-let supabase = null;
+
 let cursosExistentes = [];
 
 // Esperar a que se cargue la librería de Supabase
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando alta de cursos...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
@@ -19,20 +19,20 @@ window.addEventListener('DOMContentLoaded', async () => {
         alert('Error: initSupabase no está disponible');
         return;
     }
-    
+
     // Actualizar fecha y hora
     actualizarFechaHora();
     setInterval(actualizarFechaHora, 1000);
-    
+
     // Cargar cursos existentes para el dropdown
     await cargarCursosExistentes();
-    
+
     // Event listener para generar clave automáticamente
     const cursoInput = document.getElementById('curso');
     if (cursoInput) {
         cursoInput.addEventListener('input', generarClave);
     }
-    
+
     console.log('Inicialización de alta de cursos completa');
 });
 
@@ -48,7 +48,7 @@ function actualizarFechaHora() {
     const ampm = horas >= 12 ? 'p. m.' : 'a. m.';
     horas = horas % 12 || 12;
     const horasStr = String(horas).padStart(2, '0');
-    
+
     const datetime = document.getElementById('datetime');
     if (datetime) {
         datetime.textContent = `${dia}/${mes}/${anio} ${horasStr}:${minutos}:${segundos} ${ampm}`;
@@ -58,17 +58,17 @@ function actualizarFechaHora() {
 // Cargar cursos existentes para el dropdown
 async function cargarCursosExistentes() {
     if (!supabase) return;
-    
+
     try {
         const { data, error } = await supabase
             .from('cursos')
             .select('id, curso')
             .order('curso', { ascending: true });
-        
+
         if (error) throw error;
-        
+
         cursosExistentes = data || [];
-        
+
         const select = document.getElementById('cursoSiguiente');
         if (select) {
             select.innerHTML = '<option value="">-- Ninguno (Fin de cadena) --</option>';
@@ -88,25 +88,25 @@ async function cargarCursosExistentes() {
 function generarClave() {
     const cursoInput = document.getElementById('curso');
     const claveInput = document.getElementById('clave');
-    
+
     if (!cursoInput || !claveInput) return;
-    
+
     const nombreCurso = cursoInput.value.trim().toUpperCase();
-    
+
     if (!nombreCurso) {
         claveInput.value = '';
         return;
     }
-    
+
     // Dividir el nombre en palabras
     const palabras = nombreCurso.split(' ').filter(p => p.length > 0);
-    
+
     let clave = '';
-    
+
     // Verificar si la última palabra es un número
     const ultimaPalabra = palabras[palabras.length - 1];
     const esNumero = !isNaN(ultimaPalabra);
-    
+
     if (esNumero && palabras.length > 1) {
         // Ejemplo: "Piano Infantil 1" -> "P1"
         // Tomar primera letra de la primera palabra + número
@@ -120,14 +120,14 @@ function generarClave() {
         // Ejemplo: "Bajo Electrico" -> "BE"
         clave = palabras[0].charAt(0) + palabras[1].charAt(0);
     }
-    
+
     // Buscar si ya existe esta categoría (clave) en cursos existentes
     const cursoConMismaClave = cursosExistentes.find(c => {
         const palabrasCurso = c.curso.toUpperCase().split(' ');
         const primeraPalabra = palabrasCurso[0];
         return primeraPalabra === palabras[0];
     });
-    
+
     if (cursoConMismaClave) {
         // Si existe un curso con la misma primera palabra, usar su clave
         // Esto asegura que "Bajo Electrico 1", "Bajo Electrico 2", etc. tengan la misma clave "BE"
@@ -136,7 +136,7 @@ function generarClave() {
             clave = palabrasCursoExistente[0].charAt(0) + palabrasCursoExistente[1].charAt(0);
         }
     }
-    
+
     claveInput.value = clave;
 }
 
@@ -145,26 +145,26 @@ function validarCampos() {
     const curso = document.getElementById('curso').value.trim();
     const costo = document.getElementById('costo').value;
     const iva = document.getElementById('iva').value;
-    
+
     const errores = [];
-    
+
     if (!curso) {
         errores.push('- Curso');
     }
-    
+
     if (!costo || parseFloat(costo) <= 0) {
         errores.push('- Costo (debe ser mayor a 0)');
     }
-    
+
     if (!iva || parseFloat(iva) < 0) {
         errores.push('- IVA (debe ser 0 o mayor)');
     }
-    
+
     if (errores.length > 0) {
         alert('Por favor complete los siguientes campos obligatorios:\n\n' + errores.join('\n'));
         return false;
     }
-    
+
     return true;
 }
 
@@ -174,12 +174,12 @@ async function guardarCurso() {
         alert('Error: Base de datos no conectada');
         return;
     }
-    
+
     // Validar campos obligatorios
     if (!validarCampos()) {
         return;
     }
-    
+
     const cursoData = {
         curso: document.getElementById('curso').value.trim().toUpperCase(),
         precio_mensual: parseFloat(document.getElementById('costo').value),
@@ -187,31 +187,31 @@ async function guardarCurso() {
         descripcion: document.getElementById('descripcion').value.trim(),
         activo: true
     };
-    
+
     // Agregar clave si existe
     const claveInput = document.getElementById('clave');
     if (claveInput && claveInput.value) {
         cursoData.clave = claveInput.value.toUpperCase();
     }
-    
+
     // Agregar curso siguiente si está seleccionado
     const cursoSiguienteSelect = document.getElementById('cursoSiguiente');
     if (cursoSiguienteSelect && cursoSiguienteSelect.value) {
         cursoData.curso_siguiente_id = cursoSiguienteSelect.value;
     }
-    
+
     try {
         console.log('Guardando curso:', cursoData);
-        
+
         const { data, error } = await supabase
             .from('cursos')
             .insert([cursoData])
             .select();
-        
+
         if (error) throw error;
-        
+
         alert(`Curso dado de alta correctamente\n\nNombre: ${cursoData.curso}\nClave: ${cursoData.clave || 'N/A'}\nCosto: $${cursoData.precio_mensual.toFixed(2)}`);
-        
+
         // Preguntar si desea dar de alta otro curso
         if (confirm('¿Desea dar de alta otro curso?')) {
             limpiarFormulario();
@@ -234,7 +234,7 @@ function limpiarFormulario() {
     document.getElementById('recargo').value = '0.00';
     document.getElementById('cursoSiguiente').value = '';
     document.getElementById('descripcion').value = '';
-    
+
     // Enfocar en el campo curso
     const cursoInput = document.getElementById('curso');
     if (cursoInput) {

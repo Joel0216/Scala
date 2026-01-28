@@ -1,12 +1,12 @@
 // Inicializar Supabase
-let supabase = null;
+
 let salones = [];
 let currentIndex = 0;
 
 // Esperar a que se cargue la libreria de Supabase
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando salones...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
@@ -20,16 +20,16 @@ window.addEventListener('DOMContentLoaded', async () => {
         alert('Error: initSupabase no está disponible');
         return;
     }
-    
+
     updateDateTime();
     setInterval(updateDateTime, 1000);
-    
+
     // Cargar datos
     await loadSalones();
-    
+
     // Configurar event listeners
     setupEventListeners();
-    
+
     console.log('Inicialización de salones completa');
 });
 
@@ -157,7 +157,7 @@ function navegarSalonRegistro() {
 function aceptarBusquedaSalon() {
     const searchInput = document.getElementById('searchInput');
     const modal = document.getElementById('searchModal');
-    
+
     if (modal) {
         modal.style.display = 'none';
     }
@@ -182,53 +182,53 @@ function cerrarModalSalon() {
     }
 }
 
-    // Botones de navegación
-    const firstBtn = document.getElementById('firstBtn');
-    if (firstBtn) {
-        firstBtn.addEventListener('click', () => {
-            currentIndex = 0;
+// Botones de navegación
+const firstBtn = document.getElementById('firstBtn');
+if (firstBtn) {
+    firstBtn.addEventListener('click', () => {
+        currentIndex = 0;
+        displaySalon(currentIndex);
+    });
+}
+
+const prevBtn = document.getElementById('prevBtn');
+if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
             displaySalon(currentIndex);
-        });
-    }
+        }
+    });
+}
 
-    const prevBtn = document.getElementById('prevBtn');
-    if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
-            if (currentIndex > 0) {
-                currentIndex--;
-                displaySalon(currentIndex);
-            }
-        });
-    }
-
-    const nextBtn = document.getElementById('nextBtn');
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            if (currentIndex < salones.length - 1) {
-                currentIndex++;
-                displaySalon(currentIndex);
-            }
-        });
-    }
-
-    const lastBtn = document.getElementById('lastBtn');
-    if (lastBtn) {
-        lastBtn.addEventListener('click', () => {
-            currentIndex = salones.length - 1;
+const nextBtn = document.getElementById('nextBtn');
+if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+        if (currentIndex < salones.length - 1) {
+            currentIndex++;
             displaySalon(currentIndex);
-        });
-    }
+        }
+    });
+}
 
-    const newRecordBtn = document.getElementById('newRecordBtn');
-    if (newRecordBtn) {
-        newRecordBtn.addEventListener('click', () => {
-            const num = parseInt(document.getElementById('inputRegistro')?.value || '1');
-            if (num > 0 && num <= salones.length) {
-                currentIndex = num - 1;
-                displaySalon(currentIndex);
-            }
-        });
-    }
+const lastBtn = document.getElementById('lastBtn');
+if (lastBtn) {
+    lastBtn.addEventListener('click', () => {
+        currentIndex = salones.length - 1;
+        displaySalon(currentIndex);
+    });
+}
+
+const newRecordBtn = document.getElementById('newRecordBtn');
+if (newRecordBtn) {
+    newRecordBtn.addEventListener('click', () => {
+        const num = parseInt(document.getElementById('inputRegistro')?.value || '1');
+        if (num > 0 && num <= salones.length) {
+            currentIndex = num - 1;
+            displaySalon(currentIndex);
+        }
+    });
+}
 }
 
 // Cargar salones
@@ -237,7 +237,7 @@ async function loadSalones() {
         console.error('Supabase no inicializado');
         return;
     }
-    
+
     try {
         const { data, error } = await supabase
             .from('salones')
@@ -251,13 +251,13 @@ async function loadSalones() {
         if (totalElement) {
             totalElement.textContent = salones.length;
         }
-        
+
         // Actualizar máximo del input
         const inputRegistro = document.getElementById('inputRegistro');
         if (inputRegistro) {
             inputRegistro.max = salones.length;
         }
-        
+
         if (salones.length > 0) {
             currentIndex = 0;
             displaySalon(currentIndex);
@@ -280,20 +280,20 @@ function displaySalon(index) {
     const cupoInput = document.getElementById('cupo');
     const instrumentosInput = document.getElementById('instrumentos');
     const currentRecordElement = document.getElementById('currentRecord');
-    
+
     if (salonInput) salonInput.value = salon.numero || '';
     if (ubicacionInput) ubicacionInput.value = salon.ubicacion || '';
     if (cupoInput) cupoInput.value = salon.cupo || 10;
     if (instrumentosInput) instrumentosInput.value = salon.instrumentos || '';
     if (currentRecordElement) currentRecordElement.textContent = index + 1;
-    
+
     // Actualizar input de registro
     const inputRegistro = document.getElementById('inputRegistro');
     if (inputRegistro) {
         inputRegistro.value = index + 1;
         inputRegistro.max = salones.length;
     }
-    
+
     // Actualizar total
     const totalRecords = document.getElementById('totalRecords');
     if (totalRecords) totalRecords.textContent = salones.length;
@@ -312,7 +312,7 @@ function clearForm() {
 function nuevoSalon() {
     clearForm();
     document.getElementById('salon').focus();
-    
+
     // Cambiar texto del botón
     const nuevoBtn = document.getElementById('nuevoBtn');
     if (nuevoBtn) {
@@ -358,7 +358,7 @@ async function saveSalon() {
             if (error) throw error;
             alert('Salón guardado correctamente');
         }
-        
+
         // Restaurar texto del botón
         const nuevoBtn = document.getElementById('nuevoBtn');
         if (nuevoBtn) {

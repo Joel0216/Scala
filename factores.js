@@ -1,5 +1,5 @@
 // Inicializar Supabase
-let supabase = null;
+
 let factores = [];
 let maestros = [];
 let cursos = [];
@@ -10,7 +10,7 @@ let factorActual = null;
 // Esperar a que se cargue la libreria de Supabase y el DOM
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando módulo de Factores...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
@@ -25,22 +25,22 @@ window.addEventListener('DOMContentLoaded', async () => {
         alert('Error: initSupabase no está disponible');
         return;
     }
-    
+
     // Inicializar fecha/hora
     updateDateTime();
     setInterval(updateDateTime, 1000);
-    
+
     // Cargar datos
     await loadMaestros();
     await loadCursos();
     await loadFactores();
-    
+
     // Configurar event listeners
     setupEventListeners();
-    
+
     // Deshabilitar campos inicialmente (solo lectura)
     desactivarModoEdicion();
-    
+
     // Mostrar primer factor si existe
     if (factores.length > 0) {
         mostrarFactor(0);
@@ -55,7 +55,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('detallesGrado').value = '';
         document.getElementById('fechaIngreso').value = '';
     }
-    
+
     console.log('Inicialización completa');
 });
 
@@ -82,12 +82,12 @@ function setupEventListeners() {
     // Actualizar detalles del maestro al seleccionar
     const maestroSelect = document.getElementById('maestro');
     if (maestroSelect) {
-        maestroSelect.addEventListener('change', function() {
+        maestroSelect.addEventListener('change', function () {
             actualizarDetallesMaestro(this.value);
         });
-        
+
         // Búsqueda alfabética rápida (TypeAhead)
-        maestroSelect.addEventListener('keypress', function(e) {
+        maestroSelect.addEventListener('keypress', function (e) {
             const letra = e.key.toUpperCase();
             if (letra.length === 1 && letra.match(/[A-Z]/)) {
                 buscarPorLetra(this, letra);
@@ -98,7 +98,7 @@ function setupEventListeners() {
     // Búsqueda alfabética rápida para cursos
     const cursoSelect = document.getElementById('curso');
     if (cursoSelect) {
-        cursoSelect.addEventListener('keypress', function(e) {
+        cursoSelect.addEventListener('keypress', function (e) {
             const letra = e.key.toUpperCase();
             if (letra.length === 1 && letra.match(/[A-Z]/)) {
                 buscarPorLetra(this, letra);
@@ -109,7 +109,7 @@ function setupEventListeners() {
     // Calcular porcentaje automáticamente
     const factorInput = document.getElementById('factor');
     if (factorInput) {
-        factorInput.addEventListener('input', function() {
+        factorInput.addEventListener('input', function () {
             const factor = parseFloat(this.value) || 0;
             const porcentaje = (factor / 100).toFixed(2);
             document.getElementById('porcentaje').value = porcentaje + '%';
@@ -160,35 +160,35 @@ function terminarFactores() {
     }
 }
 
-    // Navegación
-    const firstBtn = document.getElementById('firstBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const lastBtn = document.getElementById('lastBtn');
-    const inputRegistro = document.getElementById('inputRegistro');
+// Navegación
+const firstBtn = document.getElementById('firstBtn');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const lastBtn = document.getElementById('lastBtn');
+const inputRegistro = document.getElementById('inputRegistro');
 
-    if (firstBtn) firstBtn.addEventListener('click', () => mostrarFactor(0));
-    if (prevBtn) prevBtn.addEventListener('click', () => mostrarFactor(currentIndex - 1));
-    if (nextBtn) nextBtn.addEventListener('click', () => mostrarFactor(currentIndex + 1));
-    if (lastBtn) lastBtn.addEventListener('click', () => mostrarFactor(factores.length - 1));
-    
-    // Navegar a registro específico
-    if (inputRegistro) {
-        inputRegistro.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const num = parseInt(this.value);
-                if (num > 0 && num <= factores.length) {
-                    mostrarFactor(num - 1);
-                }
+if (firstBtn) firstBtn.addEventListener('click', () => mostrarFactor(0));
+if (prevBtn) prevBtn.addEventListener('click', () => mostrarFactor(currentIndex - 1));
+if (nextBtn) nextBtn.addEventListener('click', () => mostrarFactor(currentIndex + 1));
+if (lastBtn) lastBtn.addEventListener('click', () => mostrarFactor(factores.length - 1));
+
+// Navegar a registro específico
+if (inputRegistro) {
+    inputRegistro.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            const num = parseInt(this.value);
+            if (num > 0 && num <= factores.length) {
+                mostrarFactor(num - 1);
             }
-        });
-    }
-    
-    // Botón nuevo registro (|>*)
-    const newRecordBtn = document.getElementById('newRecordBtn');
-    if (newRecordBtn) {
-        newRecordBtn.addEventListener('click', navegarFactorRegistro);
-    }
+        }
+    });
+}
+
+// Botón nuevo registro (|>*)
+const newRecordBtn = document.getElementById('newRecordBtn');
+if (newRecordBtn) {
+    newRecordBtn.addEventListener('click', navegarFactorRegistro);
+}
 }
 
 // Función para navegar a registro específico (disponible globalmente)
@@ -248,18 +248,18 @@ function navegarMaestroRegistro() {
 
 function mostrarMaestro(index) {
     if (index < 0 || index >= maestros.length) return;
-    
+
     const maestro = maestros[index];
     document.getElementById('nombreMaestro').value = maestro.nombre || '';
     document.getElementById('grado').value = maestro.grado || '';
     document.getElementById('detallesGrado').value = maestro.detalles_grado || '';
     document.getElementById('fechaIngreso').value = maestro.fecha_ingreso || '';
-    
+
     const input = document.getElementById('inputRegistroMaestro');
     const total = document.getElementById('totalMaestros');
     if (input) input.value = index + 1;
     if (total) total.textContent = maestros.length;
-    
+
     // Actualizar el select de maestro
     const selectMaestro = document.getElementById('maestro');
     if (selectMaestro) {
@@ -274,7 +274,7 @@ async function loadMaestros() {
         console.error('Supabase no inicializado');
         return;
     }
-    
+
     try {
         console.log('Cargando maestros...');
         const { data, error } = await supabase
@@ -291,9 +291,9 @@ async function loadMaestros() {
             console.error('Elemento maestro no encontrado');
             return;
         }
-        
+
         select.innerHTML = '<option value="">-- Seleccione un maestro --</option>';
-        
+
         if (maestros.length > 0) {
             maestros.forEach(maestro => {
                 const option = document.createElement('option');
@@ -320,7 +320,7 @@ async function loadCursos() {
         console.error('Supabase no inicializado');
         return;
     }
-    
+
     try {
         console.log('Cargando cursos...');
         const { data, error } = await supabase
@@ -337,9 +337,9 @@ async function loadCursos() {
             console.error('Elemento curso no encontrado');
             return;
         }
-        
+
         select.innerHTML = '<option value="">-- Seleccione un curso --</option>';
-        
+
         if (cursos.length > 0) {
             cursos.forEach(curso => {
                 const option = document.createElement('option');
@@ -363,7 +363,7 @@ async function loadFactores() {
         console.error('Supabase no inicializado');
         return;
     }
-    
+
     try {
         console.log('Cargando factores...');
         const { data, error } = await supabase
@@ -382,13 +382,13 @@ async function loadFactores() {
         if (totalElement) {
             totalElement.textContent = factores.length;
         }
-        
+
         // Actualizar máximo del input
         const inputRegistro = document.getElementById('inputRegistro');
         if (inputRegistro) {
             inputRegistro.max = factores.length;
         }
-        
+
         console.log(`✓ ${factores.length} factores cargados`);
     } catch (error) {
         console.error('Error cargando factores:', error);
@@ -399,16 +399,16 @@ async function loadFactores() {
 // Búsqueda alfabética rápida (TypeAhead)
 function buscarPorLetra(selectElement, letra) {
     const options = Array.from(selectElement.options);
-    
+
     // Buscar la primera opción que empiece con la letra
-    const match = options.find(opt => 
+    const match = options.find(opt =>
         opt.textContent.toUpperCase().startsWith(letra) && opt.value !== ''
     );
-    
+
     if (match) {
         selectElement.value = match.value;
         selectElement.dispatchEvent(new Event('change'));
-        
+
         // Resaltar visualmente
         selectElement.focus();
     }
@@ -423,7 +423,7 @@ function actualizarDetallesMaestro(maestroId) {
         document.getElementById('fechaIngreso').value = '';
         return;
     }
-    
+
     const maestro = maestros.find(m => m.id === maestroId);
     if (maestro) {
         document.getElementById('nombreMaestro').value = maestro.nombre || '';
@@ -437,14 +437,14 @@ function actualizarDetallesMaestro(maestroId) {
 function activarModoEdicion() {
     modoEdicion = true;
     factorActual = null;
-    
+
     // Cambiar estilo a azul
     const form = document.getElementById('factoresForm');
     if (form) {
         form.style.border = '3px solid #4169E1';
         form.style.backgroundColor = '#E6F2FF';
     }
-    
+
     // Limpiar campos
     document.getElementById('maestro').value = '';
     document.getElementById('curso').value = '';
@@ -454,56 +454,56 @@ function activarModoEdicion() {
     document.getElementById('grado').value = '';
     document.getElementById('detallesGrado').value = '';
     document.getElementById('fechaIngreso').value = '';
-    
+
     // Habilitar campos
     const maestroSelect = document.getElementById('maestro');
     const cursoSelect = document.getElementById('curso');
     const factorInput = document.getElementById('factor');
-    
+
     if (maestroSelect) maestroSelect.disabled = false;
     if (cursoSelect) cursoSelect.disabled = false;
     if (factorInput) factorInput.disabled = false;
-    
+
     // Cambiar texto del botón
     const nuevoBtn = document.getElementById('nuevoBtn');
     if (nuevoBtn) {
         nuevoBtn.textContent = 'Guardar';
         nuevoBtn.setAttribute('onclick', 'guardarFactor()');
     }
-    
+
     // Focus en maestro
     document.getElementById('maestro').focus();
-    
+
     console.log('Modo edición activado');
 }
 
 // Desactivar modo edición
 function desactivarModoEdicion() {
     modoEdicion = false;
-    
+
     // Restaurar estilo
     const form = document.getElementById('factoresForm');
     if (form) {
         form.style.border = '';
         form.style.backgroundColor = '';
     }
-    
+
     // Cambiar texto del botón
     const nuevoBtn = document.getElementById('nuevoBtn');
     if (nuevoBtn) {
         nuevoBtn.textContent = 'Nuevo';
         nuevoBtn.setAttribute('onclick', 'activarModoEdicion()');
     }
-    
+
     // Deshabilitar campos
     const maestroSelect = document.getElementById('maestro');
     const cursoSelect = document.getElementById('curso');
     const factorInput = document.getElementById('factor');
-    
+
     if (maestroSelect) maestroSelect.disabled = true;
     if (cursoSelect) cursoSelect.disabled = true;
     if (factorInput) factorInput.disabled = true;
-    
+
     console.log('Modo edición desactivado');
 }
 
@@ -513,7 +513,7 @@ async function guardarFactor() {
         alert('Error: Base de datos no conectada');
         return;
     }
-    
+
     const maestroId = document.getElementById('maestro').value;
     const cursoId = document.getElementById('curso').value;
     const factor = parseInt(document.getElementById('factor').value) || 0;
@@ -545,7 +545,7 @@ async function guardarFactor() {
 
     try {
         console.log('Guardando factor:', factorData);
-        
+
         // Verificar si ya existe
         const { data: existente, error: errorCheck } = await supabase
             .from('factores')
@@ -553,18 +553,18 @@ async function guardarFactor() {
             .eq('maestro_id', maestroId)
             .eq('curso_id', cursoId)
             .single();
-        
+
         if (existente) {
             if (!confirm('Ya existe un factor para este maestro y curso.\n¿Desea actualizarlo?')) {
                 return;
             }
-            
+
             // Actualizar
             const { error } = await supabase
                 .from('factores')
                 .update(factorData)
                 .eq('id', existente.id);
-            
+
             if (error) throw error;
             alert('Factor actualizado correctamente');
         } else {
@@ -572,17 +572,17 @@ async function guardarFactor() {
             const { error } = await supabase
                 .from('factores')
                 .insert([factorData]);
-            
+
             if (error) throw error;
             alert('Factor guardado correctamente');
         }
-        
+
         // Recargar factores
         await loadFactores();
-        
+
         // Desactivar modo edición
         desactivarModoEdicion();
-        
+
         // Mostrar el factor recién guardado
         if (factores.length > 0) {
             mostrarFactor(factores.length - 1);
@@ -596,53 +596,53 @@ async function guardarFactor() {
 // Mostrar factor
 function mostrarFactor(index) {
     if (index < 0 || index >= factores.length) return;
-    
+
     currentIndex = index;
     factorActual = factores[index];
-    
+
     // Desactivar modo edición si está activo
     if (modoEdicion) {
         desactivarModoEdicion();
     }
-    
+
     // Actualizar campos
     const maestroSelect = document.getElementById('maestro');
     const cursoSelect = document.getElementById('curso');
     const factorInput = document.getElementById('factor');
     const porcentajeInput = document.getElementById('porcentaje');
-    
+
     if (maestroSelect) maestroSelect.value = factorActual.maestros?.id || '';
     if (cursoSelect) cursoSelect.value = factorActual.cursos?.id || '';
     if (factorInput) factorInput.value = factorActual.factor || 0;
-    
+
     const porcentaje = (factorActual.factor / 100).toFixed(2);
     if (porcentajeInput) porcentajeInput.value = porcentaje + '%';
-    
+
     // Actualizar detalles del maestro
     if (factorActual.maestros) {
         const nombreMaestroEl = document.getElementById('nombreMaestro');
         const gradoEl = document.getElementById('grado');
         const detallesGradoEl = document.getElementById('detallesGrado');
         const fechaIngresoEl = document.getElementById('fechaIngreso');
-        
+
         if (nombreMaestroEl) nombreMaestroEl.value = factorActual.maestros.nombre || '';
         if (gradoEl) gradoEl.value = factorActual.maestros.grado || '';
         if (detallesGradoEl) detallesGradoEl.value = factorActual.maestros.detalles_grado || '';
         if (fechaIngresoEl) fechaIngresoEl.value = factorActual.maestros.fecha_ingreso || '';
     }
-    
+
     // Actualizar navegación
     const currentRecordEl = document.getElementById('currentRecord');
     const totalRecordsEl = document.getElementById('totalRecords');
     const inputRegistroEl = document.getElementById('inputRegistro');
-    
+
     if (currentRecordEl) currentRecordEl.textContent = index + 1;
     if (totalRecordsEl) totalRecordsEl.textContent = factores.length;
     if (inputRegistroEl) {
         inputRegistroEl.value = index + 1;
         inputRegistroEl.max = factores.length;
     }
-    
+
     console.log(`Mostrando factor ${index + 1} de ${factores.length}`);
 }
 
@@ -670,25 +670,25 @@ function cerrarModalBusqueda() {
 // Buscar por maestro
 async function buscarPorMaestro() {
     const searchValue = document.getElementById('searchInput').value.trim().toUpperCase();
-    
+
     cerrarModalBusqueda();
-    
+
     if (!searchValue) {
         alert('Debe ingresar un nombre o letras iniciales');
         return;
     }
-    
+
     // Buscar en factores existentes
-    const resultados = factores.filter(f => 
+    const resultados = factores.filter(f =>
         f.maestros?.nombre.toUpperCase().includes(searchValue) ||
         f.maestros?.nombre.toUpperCase().startsWith(searchValue)
     );
-    
+
     if (resultados.length === 0) {
         alert('No se encontraron factores para el maestro: ' + searchValue);
         return;
     }
-    
+
     if (resultados.length === 1) {
         // Mostrar directamente
         const index = factores.findIndex(f => f.id === resultados[0].id);
@@ -702,9 +702,9 @@ async function buscarPorMaestro() {
             mensaje += `${i + 1}. ${f.maestros?.nombre} - ${f.cursos?.curso} (Factor: ${f.factor})\n`;
         });
         mensaje += '\nMostrando el primero...';
-        
+
         alert(mensaje);
-        
+
         // Mostrar el primero
         const index = factores.findIndex(f => f.id === resultados[0].id);
         if (index !== -1) {
@@ -719,46 +719,46 @@ async function borrarFactor() {
         alert('Error: Base de datos no conectada');
         return;
     }
-    
+
     // Validación estricta: todos los campos deben estar llenos
     const maestroId = document.getElementById('maestro').value;
     const cursoId = document.getElementById('curso').value;
     const factor = parseInt(document.getElementById('factor').value) || 0;
-    
+
     if (!maestroId || !cursoId || factor <= 0) {
         alert('Para borrar un factor, debe tener todos los campos completos.\n\nUse "Buscar X Maestro" para cargar un factor existente.');
         return;
     }
-    
+
     // Verificar que el factor existe
     if (!factorActual || !factorActual.id) {
         alert('No hay un factor seleccionado para borrar.\n\nUse "Buscar X Maestro" para cargar un factor existente.');
         return;
     }
-    
+
     // Confirmación
     const maestroNombre = document.getElementById('nombreMaestro').value;
     const cursoNombre = document.getElementById('curso').options[document.getElementById('curso').selectedIndex].text;
-    
+
     if (!confirm(`¿Está seguro de eliminar el factor?\n\nMaestro: ${maestroNombre}\nCurso: ${cursoNombre}\nFactor: ${factor}`)) {
         return;
     }
-    
+
     try {
         console.log('Eliminando factor:', factorActual.id);
-        
+
         const { error } = await supabase
             .from('factores')
             .delete()
             .eq('id', factorActual.id);
-        
+
         if (error) throw error;
-        
+
         alert('Factor eliminado correctamente');
-        
+
         // Recargar factores
         await loadFactores();
-        
+
         // Limpiar formulario
         document.getElementById('maestro').value = '';
         document.getElementById('curso').value = '';
@@ -768,9 +768,9 @@ async function borrarFactor() {
         document.getElementById('grado').value = '';
         document.getElementById('detallesGrado').value = '';
         document.getElementById('fechaIngreso').value = '';
-        
+
         factorActual = null;
-        
+
         // Mostrar primer factor si existe
         if (factores.length > 0) {
             mostrarFactor(0);

@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Programación de Exámenes</title>
     <link rel="stylesheet" href="programacion-examenes.css">
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>Programación de Exámenes</h1>
             <div class="fecha-hora" id="fechaHora"></div>
         </div>
-        
+
         <div class="form-section">
             <div class="form-row">
                 <div class="form-group">
                     <label>Clave de examen:</label>
                     <input type="text" id="claveExamen" maxlength="20">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Maestro Base:</label>
                     <select id="maestroBase">
@@ -28,13 +30,13 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="form-row">
                 <div class="form-group">
                     <label>Fecha de examen:</label>
                     <input type="text" id="fechaExamen" placeholder="de diciembre de 2017">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Examinador 1:</label>
                     <select id="examinador1">
@@ -43,13 +45,13 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="form-row">
                 <div class="form-group">
                     <label>Hora del examen:</label>
                     <input type="time" id="horaExamen" value="19:00">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Examinador 2:</label>
                     <select id="examinador2">
@@ -57,7 +59,7 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="form-row">
                 <div class="form-group">
                     <label>Tipo de examen:</label>
@@ -69,7 +71,7 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="form-row">
                 <div class="form-group">
                     <label>Salón de examen:</label>
@@ -78,7 +80,7 @@
                         <option value="6">6</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Curso que se examina:</label>
                     <select id="cursoExamen">
@@ -87,15 +89,16 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="button-group">
                 <button id="btnNuevo" class="btn">Nuevo</button>
+                <button id="btnGuardar" class="btn">Guardar</button>
                 <button id="btnBuscar" class="btn">Buscar</button>
                 <button id="btnBorrar" class="btn">Borrar</button>
                 <button id="btnTerminar" class="btn btn-terminar">Terminar</button>
             </div>
         </div>
-        
+
         <div class="navigation">
             <span>Registro: <span id="registroActual">0</span></span>
             <button id="btnPrimero">|◄</button>
@@ -144,6 +147,8 @@
         </div>
     </div>
 
+    <script src="supabase-config.js"></script>
     <script src="programacion-examenes.js"></script>
 </body>
+
 </html>

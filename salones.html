@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salones</title>
     <link rel="stylesheet" href="salones.css">
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -38,15 +40,18 @@
                 <button type="button" class="btn" id="nuevoBtn" onclick="nuevoSalon()">Nuevo</button>
                 <button type="button" class="btn" id="buscarBtn" onclick="buscarSalon()">Buscar</button>
                 <button type="button" class="btn" id="borrarBtn" onclick="deleteSalon()">Borrar</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn" onclick="terminarSalones()">Terminar</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn"
+                    onclick="terminarSalones()">Terminar</button>
             </div>
         </form>
 
         <div class="navigation">
             <button class="nav-btn" id="firstBtn" onclick="navegarSalonPrimero()">|&lt;</button>
             <button class="nav-btn" id="prevBtn" onclick="navegarSalonAnterior()">&lt;</button>
-            <span class="record-info">Registro: <span id="currentRecord">1</span> de <span id="totalRecords">0</span></span>
-            <input type="number" id="inputRegistro" value="1" min="1" class="nav-input" style="width: 60px; margin: 0 5px;">
+            <span class="record-info">Registro: <span id="currentRecord">1</span> de <span
+                    id="totalRecords">0</span></span>
+            <input type="number" id="inputRegistro" value="1" min="1" class="nav-input"
+                style="width: 60px; margin: 0 5px;">
             <button class="nav-btn" id="nextBtn" onclick="navegarSalonSiguiente()">&gt;</button>
             <button class="nav-btn" id="lastBtn" onclick="navegarSalonUltimo()">&gt;|</button>
             <button class="nav-btn" id="newRecordBtn" onclick="navegarSalonRegistro()">|&gt;*</button>
@@ -66,7 +71,8 @@
     </div>
 
     <!-- Cargar Supabase desde CDN -->
-<script src="supabase-config.js"></script>
+    <script src="supabase-config.js"></script>
     <script src="salones.js"></script>
 </body>
+
 </html>

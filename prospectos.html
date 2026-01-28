@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Prospectos</title>
     <link rel="stylesheet" href="prospectos.css">
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -154,13 +156,15 @@
                 <button type="button" class="btn" id="nuevoBtn" onclick="nuevoProspecto()">Nuevo</button>
                 <button type="button" class="btn" id="buscarBtn" onclick="buscarProspecto()">Buscar</button>
                 <button type="button" class="btn" id="borrarBtn" onclick="deleteProspecto()">Borrar</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn" onclick="terminarProspectos()">Terminar</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn"
+                    onclick="terminarProspectos()">Terminar</button>
             </div>
         </form>
     </div>
 
     <!-- Cargar Supabase desde CDN -->
-<script src="supabase-config.js"></script>
+    <script src="supabase-config.js"></script>
     <script src="prospectos.js"></script>
 </body>
+
 </html>

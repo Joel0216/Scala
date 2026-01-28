@@ -1,12 +1,12 @@
 // Inicializar Supabase
-let supabase = null;
+
 let prospectos = [];
 let currentIndex = 0;
 
 // Esperar a que se cargue la libreria de Supabase
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando prospectos...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
@@ -20,7 +20,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         alert('Error: initSupabase no está disponible');
         return;
     }
-    
+
     // Inicializar datos
     await loadCursos();
     const idProspectoInput = document.getElementById('idProspecto');
@@ -31,10 +31,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (fechaAtencionInput) {
         fechaAtencionInput.value = new Date().toISOString().split('T')[0];
     }
-    
+
     // Configurar event listeners
     setupEventListeners();
-    
+
     console.log('Inicialización de prospectos completa');
 });
 
@@ -75,7 +75,7 @@ function terminarProspectos() {
 // Generar ID de prospecto
 async function generateProspectoId() {
     if (!supabase) return 1001;
-    
+
     try {
         const { data, error } = await supabase
             .from('prospectos')
@@ -96,7 +96,7 @@ async function generateProspectoId() {
 // Cargar cursos
 async function loadCursos() {
     if (!supabase) return;
-    
+
     try {
         const { data, error } = await supabase
             .from('cursos')
@@ -107,9 +107,9 @@ async function loadCursos() {
 
         const select = document.getElementById('curso');
         if (!select) return;
-        
+
         select.innerHTML = '<option value=""></option>';
-        
+
         if (data && data.length > 0) {
             data.forEach(curso => {
                 const option = document.createElement('option');
@@ -129,26 +129,26 @@ async function nuevoProspecto() {
     if (form) {
         form.reset();
     }
-    
+
     // Generar nuevo ID
     const idProspectoInput = document.getElementById('idProspecto');
     if (idProspectoInput) {
         idProspectoInput.value = await generateProspectoId();
     }
-    
+
     // Establecer fecha actual
     const fechaAtencionInput = document.getElementById('fechaAtencion');
     if (fechaAtencionInput) {
         fechaAtencionInput.value = new Date().toISOString().split('T')[0];
     }
-    
+
     // Cambiar texto del botón a "Guardar"
     const nuevoBtn = document.getElementById('nuevoBtn');
     if (nuevoBtn) {
         nuevoBtn.textContent = 'Guardar';
         nuevoBtn.setAttribute('onclick', 'saveProspecto()');
     }
-    
+
     // Focus en nombre
     const nombreInput = document.getElementById('nombre');
     if (nombreInput) {
@@ -198,23 +198,23 @@ async function saveProspecto() {
         if (error) throw error;
 
         alert('Prospecto guardado correctamente');
-        
+
         // Limpiar formulario
         const form = document.getElementById('prospectosForm');
         if (form) form.reset();
-        
+
         // Generar nuevo ID
         const idProspectoInput = document.getElementById('idProspecto');
         if (idProspectoInput) {
             idProspectoInput.value = await generateProspectoId();
         }
-        
+
         // Establecer fecha actual
         const fechaAtencionInput = document.getElementById('fechaAtencion');
         if (fechaAtencionInput) {
             fechaAtencionInput.value = new Date().toISOString().split('T')[0];
         }
-        
+
         // Restaurar texto del botón
         const nuevoBtn = document.getElementById('nuevoBtn');
         if (nuevoBtn) {
@@ -276,7 +276,7 @@ async function buscarProspecto() {
 async function deleteProspecto() {
     if (!supabase) return;
     const id = document.getElementById('idProspecto').value;
-    
+
     if (!id) {
         alert('Seleccione un prospecto primero');
         return;

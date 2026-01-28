@@ -1,5 +1,5 @@
 // Inicializar Supabase
-let supabase = null;
+
 let bajas = [];
 let instrumentos = [];
 let medios = [];
@@ -10,14 +10,14 @@ let bajaSeleccionada = null;
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando módulo de bajas...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
         if (success) {
             supabase = window.supabase;
             console.log('✓ Supabase conectado');
-            
+
             // Cargar catálogos y bajas
             await cargarCatalogos();
             await cargarBajas();
@@ -29,10 +29,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('✗ initSupabase no está disponible');
         alert('Error: initSupabase no está disponible');
     }
-    
+
     // Setup event listeners
     setupEventListeners();
-    
+
     console.log('Inicialización completa');
 });
 
@@ -41,16 +41,16 @@ function setupEventListeners() {
     // Búsqueda inteligente en tiempo real
     const inputBusqueda = document.getElementById('inputBusqueda');
     if (inputBusqueda) {
-        inputBusqueda.addEventListener('input', function() {
+        inputBusqueda.addEventListener('input', function () {
             buscarEnTiempoReal(this.value);
         });
     }
-    
+
     // Checkbox de beca
     const checkBeca = document.getElementById('beca');
     const inputPorcentaje = document.getElementById('porcentajeBeca');
     if (checkBeca && inputPorcentaje) {
-        checkBeca.addEventListener('change', function() {
+        checkBeca.addEventListener('change', function () {
             if (this.checked) {
                 inputPorcentaje.disabled = false;
                 inputPorcentaje.focus();
@@ -65,7 +65,7 @@ function setupEventListeners() {
 // Cargar catálogos (Instrumentos, Medios, Motivos)
 async function cargarCatalogos() {
     if (!supabase) return;
-    
+
     try {
         // Cargar instrumentos
         const { data: dataInstrumentos, error: errorInstrumentos } = await supabase
@@ -73,32 +73,32 @@ async function cargarCatalogos() {
             .select('*')
             .eq('activo', true)
             .order('clave', { ascending: true });
-        
+
         if (errorInstrumentos) throw errorInstrumentos;
         instrumentos = dataInstrumentos || [];
-        
+
         // Cargar medios de contacto
         const { data: dataMedios, error: errorMedios } = await supabase
             .from('medios_contacto')
             .select('*')
             .eq('activo', true)
             .order('clave', { ascending: true });
-        
+
         if (errorMedios) throw errorMedios;
         medios = dataMedios || [];
-        
+
         // Cargar motivos de baja
         const { data: dataMotivos, error: errorMotivos } = await supabase
             .from('motivos_baja')
             .select('*')
             .eq('activo', true)
             .order('clave', { ascending: true });
-        
+
         if (errorMotivos) throw errorMotivos;
         motivos = dataMotivos || [];
-        
+
         console.log(`✓ Catálogos cargados: ${instrumentos.length} instrumentos, ${medios.length} medios, ${motivos.length} motivos`);
-        
+
         // Llenar dropdowns
         llenarDropdowns();
     } catch (error) {
@@ -120,7 +120,7 @@ function llenarDropdowns() {
             selectInstrumento.appendChild(option);
         });
     }
-    
+
     // Dropdown de medios
     const selectMedio = document.getElementById('medio');
     if (selectMedio) {
@@ -132,7 +132,7 @@ function llenarDropdowns() {
             selectMedio.appendChild(option);
         });
     }
-    
+
     // Dropdown de motivos
     const selectMotivo = document.getElementById('motivo');
     if (selectMotivo) {
@@ -149,7 +149,7 @@ function llenarDropdowns() {
 // Cargar bajas desde Supabase
 async function cargarBajas() {
     if (!supabase) return;
-    
+
     try {
         const { data, error } = await supabase
             .from('alumnos_bajas')
@@ -161,12 +161,12 @@ async function cargarBajas() {
             `)
             .order('fecha_baja', { ascending: false })
             .limit(100);
-        
+
         if (error) throw error;
-        
+
         bajas = data || [];
         console.log(`✓ ${bajas.length} bajas cargadas`);
-        
+
         // Mostrar primer registro si hay bajas
         if (bajas.length > 0) {
             mostrarBaja(0);
@@ -180,10 +180,10 @@ async function cargarBajas() {
 // Mostrar baja
 function mostrarBaja(index) {
     if (index < 0 || index >= bajas.length) return;
-    
+
     registroActual = index;
     bajaSeleccionada = bajas[index];
-    
+
     // Actualizar campos
     document.getElementById('credencial1').value = bajaSeleccionada.credencial1 || '';
     document.getElementById('credencial2').value = bajaSeleccionada.credencial2 || '';
@@ -204,18 +204,18 @@ function mostrarBaja(index) {
     document.getElementById('edad').value = bajaSeleccionada.edad || '';
     document.getElementById('comentario').value = bajaSeleccionada.comentario || '';
     document.getElementById('observaciones').value = bajaSeleccionada.observaciones || '';
-    
+
     // Beca
     const tieneBeca = bajaSeleccionada.beca || false;
     document.getElementById('beca').checked = tieneBeca;
     document.getElementById('porcentajeBeca').value = bajaSeleccionada.porcentaje_beca || '0.00';
     document.getElementById('porcentajeBeca').disabled = !tieneBeca;
-    
+
     // Dropdowns
     document.getElementById('instrumento').value = bajaSeleccionada.instrumento_id || '';
     document.getElementById('medio').value = bajaSeleccionada.medio_entero_id || '';
     document.getElementById('motivo').value = bajaSeleccionada.motivo_baja_id || '';
-    
+
     // Actualizar navegación
     const inputPagos = document.getElementById('inputRegistroPagos');
     if (inputPagos) inputPagos.value = index + 1;
@@ -224,18 +224,18 @@ function mostrarBaja(index) {
 // Búsqueda inteligente en tiempo real
 function buscarEnTiempoReal(termino) {
     const contenedor = document.getElementById('sugerenciasBusqueda');
-    
+
     if (!termino || termino.length < 1) {
         contenedor.innerHTML = '';
         contenedor.style.display = 'none';
         return;
     }
-    
+
     const terminoUpper = termino.toUpperCase();
     const esNumero = /^\d+$/.test(termino);
-    
+
     let resultados = [];
-    
+
     if (esNumero) {
         // Buscar por credencial
         resultados = bajas.filter(b =>
@@ -248,17 +248,17 @@ function buscarEnTiempoReal(termino) {
             b.nombre.toUpperCase().includes(terminoUpper)
         );
     }
-    
+
     resultados = resultados.slice(0, 10);
-    
+
     contenedor.innerHTML = '';
-    
+
     if (resultados.length === 0) {
         contenedor.innerHTML = '<div class="sugerencia-item">No se encontraron resultados</div>';
         contenedor.style.display = 'block';
         return;
     }
-    
+
     resultados.forEach(baja => {
         const div = document.createElement('div');
         div.className = 'sugerencia-item';
@@ -267,8 +267,8 @@ function buscarEnTiempoReal(termino) {
             <div class="sugerencia-credencial">Cred: ${baja.credencial1}-${baja.credencial2 || '0'}</div>
             <div class="sugerencia-fecha">Baja: ${baja.fecha_baja}</div>
         `;
-        
-        div.onclick = function() {
+
+        div.onclick = function () {
             const index = bajas.findIndex(b => b.id === baja.id);
             if (index !== -1) {
                 mostrarBaja(index);
@@ -276,10 +276,10 @@ function buscarEnTiempoReal(termino) {
                 document.getElementById('inputBusqueda').value = '';
             }
         };
-        
+
         contenedor.appendChild(div);
     });
-    
+
     contenedor.style.display = 'block';
 }
 
@@ -309,12 +309,12 @@ function irAReingreso() {
         alert('Primero debe seleccionar un alumno dado de baja');
         return;
     }
-    
+
     if (bajaSeleccionada.reingresado) {
         alert('Este alumno ya fue reingresado anteriormente el ' + bajaSeleccionada.fecha_reingreso);
         return;
     }
-    
+
     // Guardar ID de la baja en localStorage para usarlo en la página de reingreso
     localStorage.setItem('bajaParaReingreso', JSON.stringify({
         id: bajaSeleccionada.id,
@@ -325,14 +325,14 @@ function irAReingreso() {
         beca: bajaSeleccionada.beca,
         porcentaje_beca: bajaSeleccionada.porcentaje_beca
     }));
-    
+
     window.location.href = 'alumnos-reingreso.html';
 }
 
 // Terminar
 function terminar() {
     if (confirm('¿Desea salir del módulo de bajas?')) {
-        window.location.href = 'alumnos.html';
+        window.location.href = 'archivos.html';
     }
 }
 

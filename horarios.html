@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Horarios</title>
     <link rel="stylesheet" href="horarios.css">
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -19,11 +21,8 @@
             <!-- Buscador Híbrido Inteligente -->
             <div class="search-section">
                 <div class="search-container">
-                    <input type="text" 
-                           id="hybridSearch" 
-                           class="hybrid-search-input" 
-                           placeholder="Buscar por Curso o Maestro..."
-                           autocomplete="off">
+                    <input type="text" id="hybridSearch" class="hybrid-search-input"
+                        placeholder="Buscar por Curso o Maestro..." autocomplete="off">
                     <div id="searchSuggestions" class="search-suggestions"></div>
                 </div>
             </div>
@@ -55,18 +54,24 @@
 
                 <div class="table-nav">
                     <span>Registro: </span>
-                    <button type="button" class="nav-btn-small" id="firstBtn" onclick="navegarHorariosPrimero()">|&lt;</button>
-                    <button type="button" class="nav-btn-small" id="prevBtn" onclick="navegarHorariosAnterior()">&lt;</button>
+                    <button type="button" class="nav-btn-small" id="firstBtn"
+                        onclick="navegarHorariosPrimero()">|&lt;</button>
+                    <button type="button" class="nav-btn-small" id="prevBtn"
+                        onclick="navegarHorariosAnterior()">&lt;</button>
                     <input type="text" value="0" class="record-input" id="recordCount" readonly>
-                    <button type="button" class="nav-btn-small" id="nextBtn" onclick="navegarHorariosSiguiente()">&gt;</button>
-                    <button type="button" class="nav-btn-small" id="lastBtn" onclick="navegarHorariosUltimo()">&gt;|</button>
-                    <button type="button" class="nav-btn-small" id="newBtn" onclick="navegarHorariosRegistro()">|&gt;*</button>
+                    <button type="button" class="nav-btn-small" id="nextBtn"
+                        onclick="navegarHorariosSiguiente()">&gt;</button>
+                    <button type="button" class="nav-btn-small" id="lastBtn"
+                        onclick="navegarHorariosUltimo()">&gt;|</button>
+                    <button type="button" class="nav-btn-small" id="newBtn"
+                        onclick="navegarHorariosRegistro()">|&gt;*</button>
                 </div>
             </div>
 
             <div class="button-group">
                 <button type="button" class="btn" id="buscarBtn" onclick="buscarHorarios()">Buscar</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn" onclick="terminarHorarios()">Terminar</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn"
+                    onclick="terminarHorarios()">Terminar</button>
             </div>
         </div>
     </div>
@@ -74,4 +79,5 @@
     <script src="supabase-config.js"></script>
     <script src="horarios.js"></script>
 </body>
+
 </html>

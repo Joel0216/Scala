@@ -23,14 +23,14 @@ function initSupabase() {
                 console.warn('No se pudo cargar Supabase vía npm:', e.message);
             }
         }
-        
+
         // Fallback: Intentar usar la versión CDN (navegador)
         if (typeof window !== 'undefined' && typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             console.log('✓ Supabase inicializado correctamente (CDN)');
             return true;
         }
-        
+
         console.error('✗ La librería de Supabase no está disponible');
         alert('Error: No se pudo conectar a la base de datos. Verifica tu conexión a Internet.');
         return false;
@@ -49,7 +49,7 @@ async function getAlumnos() {
         const { data, error } = await supabase
             .from('alumnos')
             .select('*');
-        
+
         if (error) throw error;
         return data;
     } catch (error) {
@@ -64,7 +64,7 @@ async function getMaestros() {
         const { data, error } = await supabase
             .from('maestros')
             .select('*');
-        
+
         if (error) throw error;
         return data;
     } catch (error) {
@@ -79,7 +79,7 @@ async function getCursos() {
         const { data, error } = await supabase
             .from('cursos')
             .select('*');
-        
+
         if (error) throw error;
         return data;
     } catch (error) {
@@ -94,7 +94,7 @@ async function getGrupos() {
         const { data, error } = await supabase
             .from('grupos')
             .select('*');
-        
+
         if (error) throw error;
         return data;
     } catch (error) {
@@ -110,7 +110,7 @@ async function insertAlumno(alumnoData) {
             .from('alumnos')
             .insert([alumnoData])
             .select();
-        
+
         if (error) throw error;
         return data;
     } catch (error) {
@@ -127,7 +127,7 @@ async function updateAlumno(id, alumnoData) {
             .update(alumnoData)
             .eq('id', id)
             .select();
-        
+
         if (error) throw error;
         return data;
     } catch (error) {
@@ -143,7 +143,7 @@ async function deleteAlumno(id) {
             .from('alumnos')
             .delete()
             .eq('id', id);
-        
+
         if (error) throw error;
         return true;
     } catch (error) {
@@ -158,7 +158,7 @@ async function getReportes() {
         const { data, error } = await supabase
             .from('reportes')
             .select('*');
-        
+
         if (error) throw error;
         return data;
     } catch (error) {
@@ -171,7 +171,7 @@ async function getReportes() {
 async function executeReportQuery(query) {
     try {
         const { data, error } = await supabase.rpc('execute_query', { query_text: query });
-        
+
         if (error) throw error;
         return data;
     } catch (error) {

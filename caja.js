@@ -1,10 +1,10 @@
 // Inicializar Supabase
-let supabase = null;
+
 
 // Esperar a que se cargue la librería de Supabase
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando caja...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
@@ -18,13 +18,13 @@ window.addEventListener('DOMContentLoaded', async () => {
         alert('Error: initSupabase no está disponible');
         return;
     }
-    
+
     updateDateTime();
     setInterval(updateDateTime, 1000);
-    
+
     // Configurar event listeners
     setupEventListeners();
-    
+
     console.log('Inicialización de caja completa');
 });
 

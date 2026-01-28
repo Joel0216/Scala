@@ -1,12 +1,12 @@
 // Inicializar Supabase
-let supabase = null;
+
 let clientes = [];
 let currentCliente = null;
 
 // Esperar a que se cargue la libreria de Supabase
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando rfc-clientes...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
@@ -20,13 +20,13 @@ window.addEventListener('DOMContentLoaded', async () => {
         alert('Error: initSupabase no está disponible');
         return;
     }
-    
+
     updateDateTime();
     setInterval(updateDateTime, 1000);
-    
+
     // Configurar event listeners
     setupEventListeners();
-    
+
     console.log('Inicialización de rfc-clientes completa');
 });
 
@@ -53,7 +53,7 @@ function setupEventListeners() {
     // Actualizar RFC display
     const rfcInput = document.getElementById('rfc');
     if (rfcInput) {
-        rfcInput.addEventListener('input', function() {
+        rfcInput.addEventListener('input', function () {
             const rfcDisplay = document.getElementById('rfcDisplay');
             if (rfcDisplay) {
                 rfcDisplay.value = this.value;
@@ -64,7 +64,13 @@ function setupEventListeners() {
     // Botón Nuevo
     const nuevoBtn = document.getElementById('nuevoBtn');
     if (nuevoBtn) {
-        nuevoBtn.addEventListener('click', nuevoCliente);
+        nuevoBtn.addEventListener('click', function () {
+            if (this.textContent === 'Nuevo') {
+                nuevoCliente();
+            } else {
+                guardarCliente();
+            }
+        });
     }
 
     // Botón Buscar
@@ -139,7 +145,7 @@ function cerrarModalRFC() {
 // Cargar credenciales asociadas
 async function loadCredenciales(rfc) {
     if (!supabase) return;
-    
+
     try {
         const { data, error } = await supabase
             .from('alumnos')
@@ -150,7 +156,7 @@ async function loadCredenciales(rfc) {
 
         const tbody = document.getElementById('credencialesTableBody');
         if (!tbody) return;
-        
+
         tbody.innerHTML = '';
 
         // Agregar credenciales encontradas
@@ -182,7 +188,7 @@ function nuevoCliente() {
     const form = document.getElementById('rfcForm');
     if (form) form.reset();
     currentCliente = null;
-    
+
     // Limpiar tabla de credenciales
     const tbody = document.getElementById('credencialesTableBody');
     if (tbody) {
@@ -197,14 +203,13 @@ function nuevoCliente() {
             </tr>
         `;
     }
-    
+
     // Cambiar texto del botón
     const nuevoBtn = document.getElementById('nuevoBtn');
     if (nuevoBtn) {
         nuevoBtn.textContent = 'Guardar';
-        nuevoBtn.setAttribute('onclick', 'guardarCliente()');
     }
-    
+
     document.getElementById('rfc').focus();
 }
 
@@ -252,18 +257,17 @@ async function guardarCliente() {
         }
 
         alert('Cliente guardado correctamente');
-        
+
         // Limpiar formulario
         const form = document.getElementById('rfcForm');
         if (form) form.reset();
-        
+
         // Restaurar texto del botón
         const nuevoBtn = document.getElementById('nuevoBtn');
         if (nuevoBtn) {
             nuevoBtn.textContent = 'Nuevo';
-            nuevoBtn.setAttribute('onclick', 'nuevoCliente()');
         }
-        
+
         currentCliente = null;
     } catch (error) {
         console.error('Error guardando cliente:', error);
@@ -276,13 +280,13 @@ async function buscarCliente() {
     if (!supabase) return;
     const searchInput = document.getElementById('searchInput');
     const modal = document.getElementById('searchModal');
-    
+
     if (modal) {
         modal.style.display = 'none';
     }
 
     if (!searchInput || !searchInput.value) return;
-    
+
     const rfc = searchInput.value.toUpperCase();
 
     try {
@@ -300,7 +304,7 @@ async function buscarCliente() {
             document.getElementById('direccion1').value = data.direccion1 || '';
             document.getElementById('direccion2').value = data.direccion2 || '';
             document.getElementById('rfcDisplay').value = data.rfc;
-            
+
             currentCliente = data;
             await loadCredenciales(data.rfc);
         } else {

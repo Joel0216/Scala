@@ -1,5 +1,5 @@
 // Inicializar Supabase
-let supabase = null;
+
 let cursos = [];
 let registroActual = 0;
 let cursoSeleccionado = null;
@@ -7,14 +7,14 @@ let cursoSeleccionado = null;
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando módulo de cursos...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
         if (success) {
             supabase = window.supabase;
             console.log('✓ Supabase conectado');
-            
+
             // Cargar cursos desde la base de datos
             await cargarCursos();
         } else {
@@ -25,38 +25,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('✗ initSupabase no está disponible');
         alert('Error: initSupabase no está disponible');
     }
-    
+
     // Actualizar fecha y hora
     actualizarFechaHora();
     setInterval(actualizarFechaHora, 1000);
-    
+
     console.log('Inicialización completa');
 });
 
 // Cargar cursos desde Supabase
 async function cargarCursos() {
     if (!supabase) return;
-    
+
     try {
         const { data, error } = await supabase
             .from('cursos')
             .select('*')
             .order('curso', { ascending: true });
-        
+
         if (error) throw error;
-        
+
         cursos = data || [];
         console.log(`✓ ${cursos.length} cursos cargados`);
-        
+
         // Cargar dropdown de curso siguiente
         await cargarDropdownCursoSiguiente();
-        
+
         // Actualizar total de registros
         const totalRegistros = document.getElementById('totalRegistros');
         if (totalRegistros) {
             // El total se actualiza en mostrarRegistro
         }
-        
+
         // Mostrar primer registro si hay cursos
         if (cursos.length > 0) {
             mostrarRegistro(0);
@@ -73,9 +73,9 @@ async function cargarCursos() {
 async function cargarDropdownCursoSiguiente() {
     const select = document.getElementById('cursoSiguiente');
     if (!select) return;
-    
+
     select.innerHTML = '<option value="">-- Ninguno (Fin de cadena) --</option>';
-    
+
     cursos.forEach(curso => {
         const option = document.createElement('option');
         option.value = curso.id;
@@ -96,7 +96,7 @@ function actualizarFechaHora() {
     const ampm = horas >= 12 ? 'p. m.' : 'a. m.';
     horas = horas % 12 || 12;
     const horasStr = String(horas).padStart(2, '0');
-    
+
     const datetime = document.getElementById('datetime');
     if (datetime) {
         datetime.textContent = `${dia}/${mes}/${anio} ${horasStr}:${minutos}:${segundos} ${ampm}`;
@@ -123,7 +123,7 @@ function cargarDatosCurso(curso) {
     const ivaInput = document.getElementById('iva');
     const recargoInput = document.getElementById('recargo');
     const cursoSiguienteSelect = document.getElementById('cursoSiguiente');
-    
+
     if (cursoInput) cursoInput.value = curso.curso || '';
     if (costoInput) costoInput.value = curso.precio_mensual ? '$' + curso.precio_mensual.toFixed(2) : '';
     if (claveInput) claveInput.value = curso.clave || '';
@@ -137,11 +137,11 @@ function mostrarRegistro(index) {
     if (index >= 0 && index < cursos.length) {
         registroActual = index;
         cargarDatosCurso(cursos[index]);
-        
+
         const registroActualEl = document.getElementById('registroActual');
         const inputRegistroEl = document.getElementById('inputRegistro');
         const totalRegistrosEl = document.getElementById('totalRegistros');
-        
+
         if (registroActualEl) registroActualEl.textContent = index + 1;
         if (inputRegistroEl) {
             inputRegistroEl.value = index + 1;
@@ -167,28 +167,28 @@ function buscarCurso() {
 // Aceptar búsqueda
 async function aceptarBusqueda() {
     const termino = document.getElementById('inputBusqueda').value.trim().toUpperCase();
-    
+
     if (!termino) {
         alert('Por favor ingrese un nombre');
         return;
     }
-    
+
     if (!supabase) {
         alert('Error: Base de datos no conectada');
         return;
     }
-    
+
     try {
         const { data, error } = await supabase
             .from('cursos')
             .select('*')
             .or(`curso.ilike.%${termino}%,clave.ilike.%${termino}%`)
             .order('curso', { ascending: true });
-        
+
         if (error) throw error;
-        
+
         cerrarModal();
-        
+
         if (!data || data.length === 0) {
             alert('No se encontraron cursos con ese nombre o clave');
         } else if (data.length === 1) {
@@ -210,10 +210,10 @@ function mostrarListaCursos(resultados) {
     const modal = document.getElementById('modalLista');
     const tbody = document.getElementById('bodyResultados');
     tbody.innerHTML = '';
-    
+
     resultados.forEach((curso) => {
         const tr = document.createElement('tr');
-        tr.onclick = function() {
+        tr.onclick = function () {
             const index = cursos.findIndex(c => c.id === curso.id);
             if (index !== -1) {
                 mostrarRegistro(index);
@@ -228,7 +228,7 @@ function mostrarListaCursos(resultados) {
         `;
         tbody.appendChild(tr);
     });
-    
+
     modal.style.display = 'block';
 }
 
@@ -244,23 +244,23 @@ async function borrarCurso() {
         alert('Primero debe seleccionar un curso');
         return;
     }
-    
+
     if (!supabase) {
         alert('Error: Base de datos no conectada');
         return;
     }
-    
+
     if (confirm('¿Está seguro de eliminar este curso?\n\nEsta acción no se puede deshacer.')) {
         try {
             const { error } = await supabase
                 .from('cursos')
                 .delete()
                 .eq('id', cursoSeleccionado.id);
-            
+
             if (error) throw error;
-            
+
             alert('Curso eliminado correctamente');
-            
+
             // Recargar cursos
             await cargarCursos();
         } catch (error) {

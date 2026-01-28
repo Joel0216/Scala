@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo de Instrumentos</title>
     <link rel="stylesheet" href="catalogo-instrumentos.css">
 </head>
+
 <body>
     <div class="container">
         <h1>Catálogo de Instrumentos</h1>
-        
+
         <div class="form-section">
             <div class="form-group">
                 <label>Instrumento:</label>
                 <input type="text" id="claveInstrumento" maxlength="10">
             </div>
-            
+
             <div class="form-group">
                 <label>Descripción:</label>
                 <input type="text" id="descripcionInstrumento" maxlength="100">
             </div>
-            
+
             <div class="button-group">
                 <button id="btnNuevo" class="btn">Nuevo</button>
                 <button id="btnBuscar" class="btn">Buscar</button>
@@ -28,7 +30,7 @@
                 <button id="btnTerminar" class="btn btn-terminar">Terminar captura</button>
             </div>
         </div>
-        
+
         <div class="navigation">
             <span>Registro: <span id="registroActual">0</span> de <span id="totalRegistros">0</span></span>
             <button id="btnPrimero">|◄</button>
@@ -74,6 +76,8 @@
         </div>
     </div>
 
+    <script src="supabase-config.js"></script>
     <script src="catalogo-instrumentos.js"></script>
 </body>
+
 </html>

@@ -1,12 +1,12 @@
 // Inicializar Supabase
-let supabase = null;
+
 let grupos = [];
 let currentIndex = 0;
 
 // Esperar a que se cargue la libreria de Supabase y el DOM
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando grupos...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
@@ -20,20 +20,20 @@ window.addEventListener('DOMContentLoaded', async () => {
         alert('Error: initSupabase no está disponible');
         return;
     }
-    
+
     // Inicializar fecha/hora
     updateDateTime();
     setInterval(updateDateTime, 1000);
-    
+
     // Cargar datos
     await loadCursos();
     await loadMaestros();
     await loadSalones();
     await loadGrupos();
-    
+
     // Configurar event listeners
     setupEventListeners();
-    
+
     console.log('Inicialización de grupos completa');
 });
 
@@ -122,7 +122,7 @@ function setupEventListeners() {
         buscarBtn.addEventListener('click', () => {
             const clave = prompt('Proporcione la clave del grupo o inicio de la clave');
             if (clave) {
-                const index = grupos.findIndex(g => 
+                const index = grupos.findIndex(g =>
                     g.clave && g.clave.toLowerCase().includes(clave.toLowerCase())
                 );
                 if (index >= 0) {
@@ -191,13 +191,13 @@ function setupEventListeners() {
             window.location.href = 'archivos.html';
         });
     }
-    
+
     // Botón Info Grupo
     const infoGrupoBtn = document.getElementById('infoGrupoBtn');
     if (infoGrupoBtn) {
         infoGrupoBtn.addEventListener('click', mostrarInfoGrupo);
     }
-    
+
     // Botón Listado (Sábana de Horarios)
     const listadoBtn = document.getElementById('listadoBtn');
     if (listadoBtn) {
@@ -213,9 +213,9 @@ function mostrarInfoGrupo() {
         alert('Seleccione un grupo primero');
         return;
     }
-    
+
     const grupo = grupos[currentIndex];
-    
+
     const modal = document.createElement('div');
     modal.className = 'modal';
     modal.style.cssText = `
@@ -228,7 +228,7 @@ function mostrarInfoGrupo() {
         height: 100%;
         background-color: rgba(0,0,0,0.4);
     `;
-    
+
     modal.innerHTML = `
         <div style="
             background-color: #fefefe;
@@ -299,7 +299,7 @@ function mostrarInfoGrupo() {
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
 }
 
@@ -307,7 +307,7 @@ function mostrarInfoGrupo() {
 function getCursoNombre(cursoId) {
     const cursoSelect = document.getElementById('curso');
     if (!cursoSelect) return 'N/A';
-    
+
     const option = Array.from(cursoSelect.options).find(opt => opt.value === cursoId);
     return option ? option.textContent : 'N/A';
 }
@@ -315,7 +315,7 @@ function getCursoNombre(cursoId) {
 function getMaestroNombre(maestroId) {
     const maestroSelect = document.getElementById('maestro');
     if (!maestroSelect) return 'N/A';
-    
+
     const option = Array.from(maestroSelect.options).find(opt => opt.value === maestroId);
     return option ? option.textContent : 'N/A';
 }
@@ -323,7 +323,7 @@ function getMaestroNombre(maestroId) {
 function getSalonNumero(salonId) {
     const salonSelect = document.getElementById('salon');
     if (!salonSelect) return 'N/A';
-    
+
     const option = Array.from(salonSelect.options).find(opt => opt.value === salonId);
     return option ? option.textContent : 'N/A';
 }
@@ -344,7 +344,7 @@ function getDiaNombre(dia) {
 // Cargar cursos
 async function loadCursos() {
     if (!supabase) return;
-    
+
     try {
         console.log('Cargando cursos...');
         const { data, error } = await supabase
@@ -356,9 +356,9 @@ async function loadCursos() {
 
         const select = document.getElementById('curso');
         if (!select) return;
-        
+
         select.innerHTML = '<option value="">Seleccione un curso...</option>';
-        
+
         if (data && data.length > 0) {
             data.forEach(curso => {
                 const option = document.createElement('option');
@@ -376,7 +376,7 @@ async function loadCursos() {
 // Cargar maestros
 async function loadMaestros() {
     if (!supabase) return;
-    
+
     try {
         console.log('Cargando maestros...');
         const { data, error } = await supabase
@@ -388,9 +388,9 @@ async function loadMaestros() {
 
         const select = document.getElementById('maestro');
         if (!select) return;
-        
+
         select.innerHTML = '<option value="">Seleccione un maestro...</option>';
-        
+
         if (data && data.length > 0) {
             data.forEach(maestro => {
                 const option = document.createElement('option');
@@ -408,7 +408,7 @@ async function loadMaestros() {
 // Cargar salones
 async function loadSalones() {
     if (!supabase) return;
-    
+
     try {
         console.log('Cargando salones...');
         const { data, error } = await supabase
@@ -420,9 +420,9 @@ async function loadSalones() {
 
         const select = document.getElementById('salon');
         if (!select) return;
-        
+
         select.innerHTML = '<option value="">Seleccione un salón...</option>';
-        
+
         if (data && data.length > 0) {
             data.forEach(salon => {
                 const option = document.createElement('option');
@@ -440,20 +440,20 @@ async function loadSalones() {
 // Cargar alumnos del grupo
 async function loadAlumnosGrupo(grupoId) {
     if (!supabase) return;
-    
+
     try {
         const { data, error } = await supabase
             .from('alumnos')
             .select('*')
             .eq('grupo_id', grupoId)
-            .order('nombre', { ascending: true});
+            .order('nombre', { ascending: true });
 
         if (error) throw error;
 
         alumnosGrupo = data || [];
         const tbody = document.getElementById('alumnosTableBody');
         if (!tbody) return;
-        
+
         tbody.innerHTML = '';
 
         if (alumnosGrupo.length > 0) {
@@ -469,7 +469,7 @@ async function loadAlumnosGrupo(grupoId) {
                 `;
                 tbody.appendChild(row);
             });
-            
+
             // Actualizar navegación
             registroActualAlumnos = 0;
             actualizarNavegacionAlumnos();
@@ -488,7 +488,7 @@ async function loadAlumnosGrupo(grupoId) {
 // Cargar grupos
 async function loadGrupos() {
     if (!supabase) return;
-    
+
     try {
         console.log('Cargando grupos...');
         const { data, error } = await supabase
@@ -500,7 +500,7 @@ async function loadGrupos() {
 
         grupos = data || [];
         console.log(`${grupos.length} grupos cargados`);
-        
+
         if (grupos.length > 0) {
             currentIndex = 0;
             displayGrupo(currentIndex);
@@ -515,7 +515,7 @@ function displayGrupo(index) {
     if (index < 0 || index >= grupos.length) return;
 
     const grupo = grupos[index];
-    
+
     const claveInput = document.getElementById('clave');
     const cursoSelect = document.getElementById('curso');
     const diaInput = document.getElementById('dia');

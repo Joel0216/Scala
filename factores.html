@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Factores</title>
     <link rel="stylesheet" href="factores.css">
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -76,17 +78,21 @@
 
             <div class="button-group">
                 <button type="button" class="btn" id="nuevoBtn" onclick="activarModoEdicion()">Nuevo</button>
-                <button type="button" class="btn" id="buscarMaestroBtn" onclick="abrirModalBusqueda()">Buscar X Maestro</button>
+                <button type="button" class="btn" id="buscarMaestroBtn" onclick="abrirModalBusqueda()">Buscar X
+                    Maestro</button>
                 <button type="button" class="btn" id="borrarBtn" onclick="borrarFactor()">Borrar</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn" onclick="terminarFactores()">Terminar</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn"
+                    onclick="terminarFactores()">Terminar</button>
             </div>
         </form>
 
         <div class="navigation">
             <button class="nav-btn" id="firstBtn" onclick="mostrarFactor(0)">|&lt;</button>
             <button class="nav-btn" id="prevBtn" onclick="mostrarFactor(currentIndex - 1)">&lt;</button>
-            <span class="record-info">Registro: <span id="currentRecord">1</span> de <span id="totalRecords">0</span></span>
-            <input type="number" id="inputRegistro" value="1" min="1" class="nav-input" style="width: 60px; margin: 0 5px;">
+            <span class="record-info">Registro: <span id="currentRecord">1</span> de <span
+                    id="totalRecords">0</span></span>
+            <input type="number" id="inputRegistro" value="1" min="1" class="nav-input"
+                style="width: 60px; margin: 0 5px;">
             <button class="nav-btn" id="nextBtn" onclick="mostrarFactor(currentIndex + 1)">&gt;</button>
             <button class="nav-btn" id="lastBtn" onclick="mostrarFactor(factores.length - 1)">&gt;|</button>
             <button class="nav-btn" id="newRecordBtn" onclick="navegarFactorRegistro()">|&gt;*</button>
@@ -106,7 +112,8 @@
     </div>
 
     <!-- Cargar Supabase desde CDN -->
-<script src="supabase-config.js"></script>
+    <script src="supabase-config.js"></script>
     <script src="factores.js"></script>
 </body>
+
 </html>

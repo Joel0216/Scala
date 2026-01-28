@@ -4,15 +4,15 @@ let supabaseAlumnos = null;
 // Inicializar cuando se carga alumnos-alta.html
 window.addEventListener('DOMContentLoaded', async () => {
     // Verificar si estamos en alumnos-alta.html
-    const esAlta = document.getElementById('grupo') && 
-                   document.getElementById('instrumento') && 
-                   document.getElementById('medio') &&
-                   !document.getElementById('credencial')?.readOnly === false;
-    
-    if (esAlta || window.location.pathname.includes('alumnos-alta') || 
+    const esAlta = document.getElementById('grupo') &&
+        document.getElementById('instrumento') &&
+        document.getElementById('medio') &&
+        !document.getElementById('credencial')?.readOnly === false;
+
+    if (esAlta || window.location.pathname.includes('alumnos-alta') ||
         window.location.href.includes('alumnos-alta')) {
         console.log('Inicializando alumnos-alta...');
-        
+
         // Inicializar Supabase
         if (typeof initSupabase === 'function') {
             const success = initSupabase();
@@ -33,7 +33,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 // Cargar selects para alumnos-alta
 async function cargarSelectsAlta() {
     if (!supabaseAlumnos) return;
-    
+
     try {
         // Cargar grupos
         const { data: gruposData, error: gruposError } = await supabaseAlumnos
@@ -41,7 +41,7 @@ async function cargarSelectsAlta() {
             .select('id, clave, cursos(curso)')
             .eq('status', 'activo')
             .order('clave', { ascending: true });
-        
+
         if (!gruposError && gruposData) {
             const selectGrupo = document.getElementById('grupo');
             if (selectGrupo) {
@@ -56,14 +56,14 @@ async function cargarSelectsAlta() {
                 gruposDisponibles = gruposData;
             }
         }
-        
+
         // Cargar instrumentos
         const { data: instrumentosData, error: instrumentosError } = await supabaseAlumnos
             .from('instrumentos')
             .select('id, clave, descripcion')
             .eq('activo', true)
             .order('clave', { ascending: true });
-        
+
         if (!instrumentosError && instrumentosData) {
             const selectInstrumento = document.getElementById('instrumento');
             if (selectInstrumento) {
@@ -76,14 +76,14 @@ async function cargarSelectsAlta() {
                 });
             }
         }
-        
+
         // Cargar medios de contacto
         const { data: mediosData, error: mediosError } = await supabaseAlumnos
             .from('medios_contacto')
             .select('id, clave, descripcion')
             .eq('activo', true)
             .order('clave', { ascending: true });
-        
+
         if (!mediosError && mediosData) {
             const selectMedio = document.getElementById('medio');
             if (selectMedio) {
@@ -96,7 +96,7 @@ async function cargarSelectsAlta() {
                 });
             }
         }
-        
+
         console.log('✓ Selects cargados para alumnos-alta');
     } catch (error) {
         console.error('Error cargando selects:', error);
@@ -209,20 +209,20 @@ function crearModalBusqueda() {
 
 function aceptarBusqueda() {
     const termino = document.getElementById('inputBusquedaAlumno').value.trim().toUpperCase();
-    
+
     if (!termino) {
         alert('Por favor ingrese una credencial o nombre');
         return;
     }
-    
-    const resultados = alumnos.filter(a => 
-        a.credencial.includes(termino) || 
+
+    const resultados = alumnos.filter(a =>
+        a.credencial.includes(termino) ||
         a.nombre.toUpperCase().includes(termino) ||
         a.nombre.toUpperCase().startsWith(termino)
     );
-    
+
     cerrarModal();
-    
+
     if (resultados.length === 0) {
         alert('No se encontraron resultados');
     } else if (resultados.length === 1) {
@@ -235,7 +235,7 @@ function aceptarBusqueda() {
 function mostrarListaAlumnos(resultados) {
     const modal = document.createElement('div');
     modal.className = 'modal';
-    
+
     let tablaHTML = `
         <div class="modal-content modal-lista">
             <h2>Seleccione un alumno</h2>
@@ -251,7 +251,7 @@ function mostrarListaAlumnos(resultados) {
                     </thead>
                     <tbody>
     `;
-    
+
     resultados.forEach((alumno, index) => {
         tablaHTML += `
             <tr onclick="seleccionarAlumno(${index})" style="cursor: pointer;">
@@ -262,7 +262,7 @@ function mostrarListaAlumnos(resultados) {
             </tr>
         `;
     });
-    
+
     tablaHTML += `
                     </tbody>
                 </table>
@@ -272,11 +272,11 @@ function mostrarListaAlumnos(resultados) {
             </div>
         </div>
     `;
-    
+
     modal.innerHTML = tablaHTML;
     document.body.appendChild(modal);
     modal.style.display = 'block';
-    
+
     // Guardar resultados temporalmente
     window.resultadosBusqueda = resultados;
 }
@@ -289,7 +289,7 @@ function seleccionarAlumno(index) {
 
 function cargarDatosAlumno(alumno) {
     alumnoSeleccionado = alumno;
-    
+
     // Cargar datos en los campos del formulario
     const campos = {
         'credencial': alumno.credencial,
@@ -312,7 +312,7 @@ function cargarDatosAlumno(alumno) {
         'porcentaje': alumno.porcentaje,
         'comentario': alumno.comentario
     };
-    
+
     for (let campo in campos) {
         const elemento = document.getElementById(campo);
         if (elemento) {
@@ -323,18 +323,18 @@ function cargarDatosAlumno(alumno) {
             }
         }
     }
-    
+
     // Checkboxes
     const becaCheck = document.getElementById('beca');
     if (becaCheck) becaCheck.checked = alumno.beca;
-    
+
     const reingresoCheck = document.getElementById('reingreso');
     if (reingresoCheck) reingresoCheck.checked = alumno.reingreso;
-    
+
     // Selects
     const instrumentoSelect = document.getElementById('instrumento');
     if (instrumentoSelect) instrumentoSelect.value = alumno.instrumento;
-    
+
     const medioSelect = document.getElementById('medio');
     if (medioSelect) medioSelect.value = alumno.medio;
 }
@@ -356,7 +356,7 @@ function cambiarGrupo() {
         alert('Primero debe seleccionar un alumno');
         return;
     }
-    
+
     const modal = document.createElement('div');
     modal.className = 'modal';
     modal.id = 'modalCambioGrupo';
@@ -384,7 +384,7 @@ function cambiarGrupo() {
     `;
     document.body.appendChild(modal);
     modal.style.display = 'block';
-    
+
     // Cargar grupos disponibles
     cargarGruposDisponibles();
 }
@@ -398,10 +398,10 @@ async function cargarGruposDisponibles() {
         { clave: 'BCASJU12', curso: 'Batería Adultos', maestro: 'Sergio Martínez', dia: 'JU', hora: '12:00', cupo: 6, inscritos: 2 },
         { clave: 'PIASMA16', curso: 'Piano Adultos', maestro: 'María López', dia: 'MA', hora: '16:00', cupo: 10, inscritos: 7 }
     ];
-    
+
     const select = document.getElementById('nuevoGrupo');
     if (!select) return;
-    
+
     grupos.forEach(grupo => {
         const option = document.createElement('option');
         option.value = grupo.clave;
@@ -414,12 +414,12 @@ async function cargarGruposDisponibles() {
         option.dataset.inscritos = grupo.inscritos;
         select.appendChild(option);
     });
-    
+
     // Evento para mostrar información del grupo seleccionado
-    select.addEventListener('change', function() {
+    select.addEventListener('change', function () {
         const selectedOption = this.options[this.selectedIndex];
         const infoDiv = document.getElementById('infoGrupo');
-        
+
         if (selectedOption.value) {
             document.getElementById('cursoInfo').textContent = selectedOption.dataset.curso;
             document.getElementById('maestroInfo').textContent = selectedOption.dataset.maestro;
@@ -434,29 +434,29 @@ async function cargarGruposDisponibles() {
 
 function confirmarCambioGrupo() {
     const nuevoGrupo = document.getElementById('nuevoGrupo').value;
-    
+
     if (!nuevoGrupo) {
         alert('Debe seleccionar un grupo');
         return;
     }
-    
+
     if (!confirm(`¿Está seguro de cambiar al alumno ${alumnoSeleccionado.nombre} al grupo ${nuevoGrupo}?`)) {
         return;
     }
-    
+
     // Aquí guardarías el cambio en Supabase
     const grupoAnterior = alumnoSeleccionado.grupo;
     alumnoSeleccionado.grupo = nuevoGrupo;
-    
+
     // Actualizar el campo en la interfaz
     const grupoInput = document.getElementById('grupo');
     if (grupoInput) {
         grupoInput.value = nuevoGrupo;
     }
-    
+
     alert(`Grupo cambiado exitosamente\n\nGrupo anterior: ${grupoAnterior}\nGrupo nuevo: ${nuevoGrupo}`);
     cerrarModal();
-    
+
     // Aquí registrarías el cambio en la tabla cambios_alumnos
     console.log('Cambio registrado:', {
         alumno_id: alumnoSeleccionado.credencial,
@@ -494,18 +494,18 @@ function cancelarAlta() {
 
 function nuevoAlumno() {
     // Limpiar formulario
-    const campos = ['nombre', 'direccion', 'email', 'celular', 'telefono', 
-                    'nombrePadre', 'celularPadre', 'nombreMadre', 'celularMadre',
-                    'grado', 'comentario'];
-    
+    const campos = ['nombre', 'direccion', 'email', 'celular', 'telefono',
+        'nombrePadre', 'celularPadre', 'nombreMadre', 'celularMadre',
+        'grado', 'comentario'];
+
     campos.forEach(campo => {
         const elemento = document.getElementById(campo);
         if (elemento) elemento.value = '';
     });
-    
+
     const becaCheck = document.getElementById('beca');
     if (becaCheck) becaCheck.checked = false;
-    
+
     const reingresoCheck = document.getElementById('reingreso');
     if (reingresoCheck) reingresoCheck.checked = false;
 }

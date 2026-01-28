@@ -1,5 +1,5 @@
 // Inicializar Supabase
-let supabase = null;
+
 let todosLosGrupos = [];
 let gruposFiltrados = [];
 let currentPage = 0;
@@ -8,7 +8,7 @@ const ITEMS_PER_PAGE = 20;
 // Esperar a que se cargue la libreria de Supabase
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando horarios...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
@@ -22,16 +22,16 @@ window.addEventListener('DOMContentLoaded', async () => {
         alert('Error: initSupabase no está disponible');
         return;
     }
-    
+
     updateDateTime();
     setInterval(updateDateTime, 1000);
-    
+
     // Configurar event listeners
     setupEventListeners();
-    
+
     // Cargar todos los grupos al inicio
     await loadAllGrupos();
-    
+
     console.log('Inicialización de horarios completa');
 });
 
@@ -60,7 +60,7 @@ function setupEventListeners() {
     if (hybridSearch) {
         hybridSearch.addEventListener('input', handleHybridSearch);
         hybridSearch.addEventListener('focus', handleHybridSearch);
-        
+
         // Cerrar sugerencias al hacer clic fuera
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.search-container')) {
@@ -129,7 +129,7 @@ function navegarHorariosRegistro() {
 // Cargar todos los grupos al inicio
 async function loadAllGrupos() {
     if (!supabase) return;
-    
+
     try {
         const { data, error } = await supabase
             .from('grupos')
@@ -157,23 +157,23 @@ async function loadAllGrupos() {
 function handleHybridSearch(e) {
     const searchValue = e.target.value.trim().toLowerCase();
     const suggestionsDiv = document.getElementById('searchSuggestions');
-    
+
     if (!suggestionsDiv) return;
-    
+
     // Si está vacío, ocultar sugerencias
     if (searchValue === '') {
         suggestionsDiv.style.display = 'none';
         suggestionsDiv.innerHTML = '';
         return;
     }
-    
+
     // Buscar coincidencias en cursos y maestros
     const matches = new Map(); // Usar Map para evitar duplicados
-    
+
     todosLosGrupos.forEach(grupo => {
         const cursoNombre = grupo.cursos?.curso || '';
         const maestroNombre = grupo.maestros?.nombre || '';
-        
+
         // Buscar en curso
         if (cursoNombre.toLowerCase().includes(searchValue)) {
             const key = `curso_${grupo.curso_id}`;
@@ -187,7 +187,7 @@ function handleHybridSearch(e) {
                 });
             }
         }
-        
+
         // Buscar en maestro
         if (maestroNombre.toLowerCase().includes(searchValue)) {
             const key = `maestro_${grupo.maestro_id}_${grupo.curso_id}`;
@@ -202,14 +202,14 @@ function handleHybridSearch(e) {
             }
         }
     });
-    
+
     // Mostrar sugerencias
     if (matches.size === 0) {
         suggestionsDiv.innerHTML = '<div class="suggestion-item no-results">No se encontraron resultados</div>';
         suggestionsDiv.style.display = 'block';
     } else {
         suggestionsDiv.innerHTML = '';
-        
+
         // Convertir a array y ordenar
         const matchesArray = Array.from(matches.values());
         matchesArray.sort((a, b) => {
@@ -218,12 +218,12 @@ function handleHybridSearch(e) {
             }
             return a.curso.localeCompare(b.curso);
         });
-        
+
         // Limitar a 10 resultados
         matchesArray.slice(0, 10).forEach(match => {
             const div = document.createElement('div');
             div.className = 'suggestion-item';
-            
+
             if (match.type === 'curso') {
                 div.innerHTML = `
                     <span class="icon">📘</span>
@@ -247,10 +247,10 @@ function handleHybridSearch(e) {
                 `;
                 div.onclick = () => filterByMaestroAndCurso(match.id, match.curso);
             }
-            
+
             suggestionsDiv.appendChild(div);
         });
-        
+
         suggestionsDiv.style.display = 'block';
     }
 }
@@ -260,7 +260,7 @@ function filterByCurso(cursoId) {
     gruposFiltrados = todosLosGrupos.filter(g => g.curso_id === cursoId);
     currentPage = 0;
     displayGrupos();
-    
+
     // Ocultar sugerencias
     const suggestionsDiv = document.getElementById('searchSuggestions');
     if (suggestionsDiv) {
@@ -270,13 +270,13 @@ function filterByCurso(cursoId) {
 
 // Filtrar por maestro y curso
 function filterByMaestroAndCurso(maestroId, cursoNombre) {
-    gruposFiltrados = todosLosGrupos.filter(g => 
-        g.maestro_id === maestroId && 
+    gruposFiltrados = todosLosGrupos.filter(g =>
+        g.maestro_id === maestroId &&
         g.cursos?.curso === cursoNombre
     );
     currentPage = 0;
     displayGrupos();
-    
+
     // Ocultar sugerencias
     const suggestionsDiv = document.getElementById('searchSuggestions');
     if (suggestionsDiv) {
@@ -288,9 +288,9 @@ function filterByMaestroAndCurso(maestroId, cursoNombre) {
 function displayGrupos() {
     const tbody = document.getElementById('horariosTableBody');
     if (!tbody) return;
-    
+
     tbody.innerHTML = '';
-    
+
     if (gruposFiltrados.length === 0) {
         const row = document.createElement('tr');
         row.innerHTML = '<td colspan="12" class="no-data">No se encontraron horarios</td>';
@@ -298,7 +298,7 @@ function displayGrupos() {
         updateRecordCount(0, 0);
         return;
     }
-    
+
     const diasMap = {
         'LU': 'Lunes',
         'MA': 'Martes',
@@ -308,24 +308,24 @@ function displayGrupos() {
         'SA': 'Sábado',
         'DO': 'Domingo'
     };
-    
+
     // Calcular paginación
     const start = currentPage * ITEMS_PER_PAGE;
     const end = Math.min(start + ITEMS_PER_PAGE, gruposFiltrados.length);
     const pageData = gruposFiltrados.slice(start, end);
-    
+
     pageData.forEach((grupo, index) => {
         const row = document.createElement('tr');
-        
+
         // Formatear hora
         const horaEntrada = grupo.hora_entrada ? grupo.hora_entrada.substring(0, 5) : '';
         const horaSalida = grupo.hora_salida ? grupo.hora_salida.substring(0, 5) : '';
         const horaCompleta = horaEntrada && horaSalida ? `${horaEntrada} - ${horaSalida}` : horaEntrada;
-        
+
         // Formatear fecha de inicio
         const fechaInicio = grupo.inicio ? formatDate(grupo.inicio) : '';
         const fechaLeccion = grupo.fecha_leccion ? formatDate(grupo.fecha_leccion) : '';
-        
+
         row.innerHTML = `
             <td>${index === 0 ? '▶' : ''}</td>
             <td>${diasMap[grupo.dia] || grupo.dia || ''}</td>
@@ -342,7 +342,7 @@ function displayGrupos() {
         `;
         tbody.appendChild(row);
     });
-    
+
     updateRecordCount(start + 1, end);
 }
 
@@ -367,8 +367,8 @@ function updateRecordCount(start, end) {
 // Navegar en la tabla
 function navigateTable(direction) {
     const totalPages = Math.ceil(gruposFiltrados.length / ITEMS_PER_PAGE);
-    
-    switch(direction) {
+
+    switch (direction) {
         case 'first':
             currentPage = 0;
             break;
@@ -382,6 +382,6 @@ function navigateTable(direction) {
             currentPage = totalPages - 1;
             break;
     }
-    
+
     displayGrupos();
 }

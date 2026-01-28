@@ -1,5 +1,5 @@
 // Inicializar Supabase
-let supabase = null;
+
 
 // Esperar a que se cargue la librería de Supabase
 window.addEventListener('DOMContentLoaded', async () => {
@@ -8,7 +8,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         initSupabase();
         supabase = window.supabase;
     }
-    
+
     updateDate();
     loadAlumnosBaja();
 });

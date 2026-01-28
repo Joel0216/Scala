@@ -1,5 +1,5 @@
 // Inicializar Supabase
-let supabase = null;
+
 let tiposMovimiento = [];
 let articulos = [];
 let detalleMovimiento = []; // Array para almacenar las filas del detalle
@@ -8,7 +8,7 @@ let contadorFilas = 0;
 // Esperar a que se cargue la librería de Supabase
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando nuevo movimiento de inventario...');
-    
+
     // Inicializar Supabase
     if (typeof initSupabase === 'function') {
         const success = initSupabase();
@@ -23,21 +23,21 @@ window.addEventListener('DOMContentLoaded', async () => {
         alert('Error: initSupabase no está disponible');
         return;
     }
-    
+
     // Actualizar fecha y hora
     actualizarFechaHora();
     setInterval(actualizarFechaHora, 1000);
-    
+
     // Inicializar fecha y hora actuales
     const ahora = new Date();
     document.getElementById('fecha').valueAsDate = ahora;
     document.getElementById('hora').value = ahora.toTimeString().substring(0, 5);
-    
+
     // Cargar datos necesarios
     await cargarTiposMovimiento();
     await cargarArticulos();
     await obtenerSiguienteNumero();
-    
+
     console.log('Inicialización completa');
 });
 
@@ -53,7 +53,7 @@ function actualizarFechaHora() {
     const ampm = horas >= 12 ? 'p. m.' : 'a. m.';
     horas = horas % 12 || 12;
     const horasStr = String(horas).padStart(2, '0');
-    
+
     const datetime = document.getElementById('datetime');
     if (datetime) {
         datetime.textContent = `${dia}/${mes}/${anio} ${horasStr}:${minutos}:${segundos} ${ampm}`;
@@ -63,19 +63,19 @@ function actualizarFechaHora() {
 // Obtener el siguiente número de movimiento
 async function obtenerSiguienteNumero() {
     if (!supabase) return;
-    
+
     try {
         const { data, error } = await supabase
             .from('movimientos_inventario_maestro')
             .select('numero')
             .order('numero', { ascending: false })
             .limit(1);
-        
+
         if (error) throw error;
-        
+
         const siguienteNumero = data && data.length > 0 ? data[0].numero + 1 : 1;
         document.getElementById('numeroMovimiento').value = siguienteNumero;
-        
+
         console.log(`✓ Siguiente número de movimiento: ${siguienteNumero}`);
     } catch (error) {
         console.error('Error obteniendo siguiente número:', error);
@@ -86,23 +86,23 @@ async function obtenerSiguienteNumero() {
 // Cargar tipos de movimiento
 async function cargarTiposMovimiento() {
     if (!supabase) return;
-    
+
     try {
         const { data, error } = await supabase
             .from('tipos_movimiento')
             .select('*')
             .eq('activo', true)
             .order('clave', { ascending: true });
-        
+
         if (error) throw error;
-        
+
         tiposMovimiento = data || [];
         console.log(`✓ ${tiposMovimiento.length} tipos de movimiento cargados`);
-        
+
         // Llenar el dropdown
         const select = document.getElementById('tipoMovimiento');
         select.innerHTML = '<option value="">-- Seleccione tipo --</option>';
-        
+
         tiposMovimiento.forEach(tipo => {
             const option = document.createElement('option');
             option.value = tipo.id;
@@ -110,13 +110,13 @@ async function cargarTiposMovimiento() {
             option.dataset.afecta = tipo.afecta_inventario;
             select.appendChild(option);
         });
-        
+
         // Event listener para mostrar info del tipo
-        select.addEventListener('change', function() {
+        select.addEventListener('change', function () {
             const selectedOption = this.options[this.selectedIndex];
             const afecta = selectedOption.dataset.afecta;
             const infoTipo = document.getElementById('infoTipo');
-            
+
             if (afecta === 'SUMA') {
                 infoTipo.textContent = '📈 Este tipo AUMENTA el inventario';
                 infoTipo.style.color = '#27ae60';
@@ -137,7 +137,7 @@ async function cargarTiposMovimiento() {
 // Cargar artículos
 async function cargarArticulos() {
     if (!supabase) return;
-    
+
     try {
         const { data, error } = await supabase
             .from('articulos')
@@ -147,9 +147,9 @@ async function cargarArticulos() {
             `)
             .eq('activo', true)
             .order('clave', { ascending: true });
-        
+
         if (error) throw error;
-        
+
         articulos = data || [];
         console.log(`✓ ${articulos.length} artículos cargados`);
     } catch (error) {
@@ -162,11 +162,11 @@ async function cargarArticulos() {
 function agregarFila() {
     contadorFilas++;
     const tbody = document.getElementById('bodyDetalle');
-    
+
     const tr = document.createElement('tr');
     tr.id = `fila-${contadorFilas}`;
     tr.dataset.filaId = contadorFilas;
-    
+
     tr.innerHTML = `
         <td>${contadorFilas}</td>
         <td>
@@ -200,9 +200,9 @@ function agregarFila() {
             </button>
         </td>
     `;
-    
+
     tbody.appendChild(tr);
-    
+
     // Agregar al array de detalle
     detalleMovimiento.push({
         filaId: contadorFilas,
@@ -220,13 +220,13 @@ function mostrarBusquedaArticulo(filaId) {
     const modal = document.getElementById('modalBuscarArticulo');
     modal.style.display = 'block';
     modal.dataset.filaActual = filaId;
-    
+
     const input = document.getElementById('inputBuscarArticulo');
     input.value = '';
     input.focus();
-    
+
     // Setup búsqueda en tiempo real
-    input.oninput = function() {
+    input.oninput = function () {
         buscarArticulosEnTiempoReal(this.value, filaId);
     };
 }
@@ -234,25 +234,25 @@ function mostrarBusquedaArticulo(filaId) {
 // Buscar artículos en tiempo real
 function buscarArticulosEnTiempoReal(termino, filaId) {
     const contenedor = document.getElementById('sugerenciasArticulo');
-    
+
     if (!termino || termino.length < 1) {
         contenedor.innerHTML = '';
         return;
     }
-    
+
     const terminoUpper = termino.toUpperCase();
     const resultados = articulos.filter(art =>
         art.clave.toUpperCase().includes(terminoUpper) ||
         art.descripcion.toUpperCase().includes(terminoUpper)
     ).slice(0, 10);
-    
+
     contenedor.innerHTML = '';
-    
+
     if (resultados.length === 0) {
         contenedor.innerHTML = '<div class="sugerencia-item">No se encontraron artículos</div>';
         return;
     }
-    
+
     resultados.forEach(articulo => {
         const div = document.createElement('div');
         div.className = 'sugerencia-item';
@@ -261,11 +261,11 @@ function buscarArticulosEnTiempoReal(termino, filaId) {
             <div class="sugerencia-desc">${articulo.descripcion}</div>
             <div class="sugerencia-precio">$${articulo.precio.toFixed(2)}</div>
         `;
-        
-        div.onclick = function() {
+
+        div.onclick = function () {
             seleccionarArticulo(articulo, filaId);
         };
-        
+
         contenedor.appendChild(div);
     });
 }
@@ -276,7 +276,7 @@ function seleccionarArticulo(articulo, filaId) {
     document.getElementById(`clave-${filaId}`).value = articulo.clave;
     document.getElementById(`desc-${filaId}`).textContent = articulo.descripcion;
     document.getElementById(`precio-${filaId}`).value = articulo.precio.toFixed(2);
-    
+
     // Actualizar array de detalle
     const index = detalleMovimiento.findIndex(d => d.filaId === filaId);
     if (index !== -1) {
@@ -285,10 +285,10 @@ function seleccionarArticulo(articulo, filaId) {
         detalleMovimiento[index].descripcion = articulo.descripcion;
         detalleMovimiento[index].precio_unitario = articulo.precio;
     }
-    
+
     // Calcular total de la fila
     calcularTotalFila(filaId);
-    
+
     // Cerrar modal
     cerrarModalArticulo();
 }
@@ -298,9 +298,9 @@ function calcularTotalFila(filaId) {
     const cantidad = parseFloat(document.getElementById(`cantidad-${filaId}`).value) || 0;
     const precio = parseFloat(document.getElementById(`precio-${filaId}`).value) || 0;
     const total = cantidad * precio;
-    
+
     document.getElementById(`total-${filaId}`).textContent = `$${total.toFixed(2)}`;
-    
+
     // Actualizar array de detalle
     const index = detalleMovimiento.findIndex(d => d.filaId === filaId);
     if (index !== -1) {
@@ -308,7 +308,7 @@ function calcularTotalFila(filaId) {
         detalleMovimiento[index].precio_unitario = precio;
         detalleMovimiento[index].total = total;
     }
-    
+
     // Actualizar total general
     calcularTotalGeneral();
 }
@@ -327,13 +327,13 @@ function eliminarFila(filaId) {
         if (fila) {
             fila.remove();
         }
-        
+
         // Eliminar del array
         const index = detalleMovimiento.findIndex(d => d.filaId === filaId);
         if (index !== -1) {
             detalleMovimiento.splice(index, 1);
         }
-        
+
         // Recalcular total
         calcularTotalGeneral();
     }
@@ -359,32 +359,32 @@ function cerrarModalArticulo() {
 function validarMovimiento() {
     const tipoMovimiento = document.getElementById('tipoMovimiento').value;
     const fecha = document.getElementById('fecha').value;
-    
+
     const errores = [];
-    
+
     if (!tipoMovimiento) {
         errores.push('- Tipo de Movimiento');
     }
-    
+
     if (!fecha) {
         errores.push('- Fecha');
     }
-    
+
     if (detalleMovimiento.length === 0) {
         errores.push('- Debe agregar al menos un artículo');
     }
-    
+
     // Validar que todos los artículos tengan datos completos
     const articulosIncompletos = detalleMovimiento.filter(d => !d.articulo_id || d.cantidad <= 0);
     if (articulosIncompletos.length > 0) {
         errores.push('- Todos los artículos deben tener clave y cantidad mayor a 0');
     }
-    
+
     if (errores.length > 0) {
         alert('Por favor complete los siguientes campos:\n\n' + errores.join('\n'));
         return false;
     }
-    
+
     return true;
 }
 
@@ -394,15 +394,15 @@ async function guardarMovimiento() {
         alert('Error: Base de datos no conectada');
         return;
     }
-    
+
     // Validar
     if (!validarMovimiento()) {
         return;
     }
-    
+
     try {
         console.log('Guardando movimiento de inventario...');
-        
+
         // 1. Guardar MAESTRO (Cabecera)
         const maestroData = {
             fecha: document.getElementById('fecha').value,
@@ -410,19 +410,19 @@ async function guardarMovimiento() {
             tipo_movimiento_id: document.getElementById('tipoMovimiento').value,
             observaciones: document.getElementById('observaciones').value.trim() || null
         };
-        
+
         const { data: maestro, error: errorMaestro } = await supabase
             .from('movimientos_inventario_maestro')
             .insert([maestroData])
             .select();
-        
+
         if (errorMaestro) throw errorMaestro;
-        
+
         const movimientoId = maestro[0].id;
         const numeroMovimiento = maestro[0].numero;
-        
+
         console.log(`✓ Maestro guardado con ID: ${movimientoId}, Número: ${numeroMovimiento}`);
-        
+
         // 2. Guardar DETALLE (Artículos)
         const detalleData = detalleMovimiento.map(item => ({
             movimiento_id: movimientoId,
@@ -431,21 +431,21 @@ async function guardarMovimiento() {
             precio_unitario: item.precio_unitario,
             total: item.total
         }));
-        
+
         const { error: errorDetalle } = await supabase
             .from('movimientos_inventario_detalle')
             .insert(detalleData);
-        
+
         if (errorDetalle) throw errorDetalle;
-        
+
         console.log(`✓ ${detalleData.length} artículos guardados en el detalle`);
-        
+
         // Obtener tipo de movimiento para el mensaje
         const tipoSeleccionado = tiposMovimiento.find(t => t.id === maestroData.tipo_movimiento_id);
         const tipoNombre = tipoSeleccionado ? `${tipoSeleccionado.clave} - ${tipoSeleccionado.descripcion}` : '';
-        
+
         alert(`Movimiento de inventario guardado correctamente\n\nNúmero: ${numeroMovimiento}\nTipo: ${tipoNombre}\nArtículos: ${detalleData.length}\n\nEl inventario se ha actualizado automáticamente.`);
-        
+
         // Preguntar si desea crear otro movimiento
         if (confirm('¿Desea crear otro movimiento de inventario?')) {
             window.location.reload();

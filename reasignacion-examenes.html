@@ -1,70 +1,72 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reasignación de Exámenes</title>
     <link rel="stylesheet" href="reasignacion-examenes.css">
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>REASIGNACION DE EXAMENES</h1>
         </div>
-        
+
         <div class="form-section">
             <div class="form-group">
                 <label>Credencial:</label>
                 <input type="text" id="credencial">
             </div>
-            
+
             <div class="form-group">
                 <label>Clave del Examen:</label>
                 <input type="text" id="claveExamen" readonly>
             </div>
-            
+
             <div class="form-group">
                 <label>Horario:</label>
                 <input type="text" id="horario" readonly>
             </div>
-            
+
             <div class="form-group">
                 <label>Nombre:</label>
                 <input type="text" id="nombre">
             </div>
-            
+
             <div class="form-group">
                 <label>Grado o Nivel:</label>
                 <input type="text" id="gradoNivel" readonly>
             </div>
-            
+
             <div class="form-group">
                 <label># de recibo de pago:</label>
                 <input type="text" id="reciboPago" readonly>
             </div>
-            
+
             <div class="form-group">
                 <label>Fecha del pago:</label>
                 <input type="text" id="fechaPago" readonly>
             </div>
-            
+
             <div class="form-group">
                 <label>cantidad:</label>
                 <input type="text" id="cantidad" readonly>
             </div>
-            
+
             <div class="form-group">
                 <label>neto:</label>
                 <input type="text" id="neto" readonly>
             </div>
         </div>
-        
+
         <div class="button-group">
             <button id="btnBuscar" class="btn">Buscar</button>
             <button id="btnReasignar" class="btn">Reasignar</button>
             <button id="btnTerminar" class="btn">Terminar</button>
         </div>
-        
+
         <div class="navigation">
             <span>Registro: <span id="registroActual">0</span></span>
             <button id="btnPrimero">|◄</button>
@@ -127,4 +129,5 @@
 
     <script src="reasignacion-examenes.js"></script>
 </body>
+
 </html>

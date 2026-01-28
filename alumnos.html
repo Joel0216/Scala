@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scala - Consulta de Alumnos</title>
     <link rel="stylesheet" href="alumnos.css">
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -19,10 +21,10 @@
                     <label>Credencial:</label>
                     <input type="text" id="credencial" class="input-small">
                     <input type="text" id="digito" class="input-tiny">
-                    
+
                     <label class="label-right">Celular:</label>
                     <input type="text" id="celular" class="input-medium">
-                    
+
                     <label class="label-right">Telefono:</label>
                     <input type="text" id="telefono" class="input-medium">
                 </div>
@@ -30,7 +32,7 @@
                 <div class="form-row">
                     <label>Nombre:</label>
                     <input type="text" id="nombre" class="input-large">
-                    
+
                     <label class="label-right">Fecha Ingreso:</label>
                     <input type="text" id="fechaIngreso" class="input-medium">
                 </div>
@@ -38,7 +40,7 @@
                 <div class="form-row">
                     <label>Direccion:</label>
                     <input type="text" id="direccion1" class="input-large">
-                    
+
                     <label class="label-right">F. de Nacimiento:</label>
                     <input type="date" id="fechaNacimiento" class="input-medium">
                 </div>
@@ -46,10 +48,10 @@
                 <div class="form-row">
                     <label></label>
                     <input type="text" id="direccion2" class="input-large">
-                    
+
                     <label class="label-right">Edad:</label>
                     <input type="text" id="edad" class="input-small">
-                    
+
                     <label class="label-inline">Reingreso:</label>
                     <input type="checkbox" id="reingreso">
                 </div>
@@ -62,7 +64,7 @@
                 <div class="form-row">
                     <label>Nombre del padre:</label>
                     <input type="text" id="nombrePadre" class="input-large">
-                    
+
                     <label class="label-right">Celular padre:</label>
                     <input type="text" id="celularPadre" class="input-medium">
                 </div>
@@ -70,7 +72,7 @@
                 <div class="form-row">
                     <label>Nombre de la madre:</label>
                     <input type="text" id="nombreMadre" class="input-large">
-                    
+
                     <label class="label-right">Celular madre:</label>
                     <input type="text" id="celularMadre" class="input-medium">
                 </div>
@@ -79,7 +81,7 @@
                     <label>Grupo:</label>
                     <input type="text" id="grupo" class="input-small">
                     <input type="text" id="cursoNombre" class="input-xlarge">
-                    
+
                     <label class="label-right">Salón:</label>
                     <input type="text" id="salon" class="input-tiny">
                 </div>
@@ -87,10 +89,10 @@
                 <div class="form-row">
                     <label>Beca:</label>
                     <input type="checkbox" id="beca">
-                    
+
                     <label class="label-inline">Porcentaje:</label>
                     <input type="text" id="porcentaje" class="input-small">
-                    
+
                     <label class="label-inline">Comentario:</label>
                     <input type="text" id="comentario" class="input-xlarge">
                 </div>
@@ -98,12 +100,12 @@
                 <div class="form-row">
                     <label>Grado:</label>
                     <input type="text" id="grado" class="input-small">
-                    
+
                     <label class="label-inline">Instrumento:</label>
                     <select id="instrumento" class="input-medium">
                         <option>NOTI</option>
                     </select>
-                    
+
                     <label class="label-inline">Medio que se enteró:</label>
                     <select id="medio" class="input-medium">
                         <option>ANUN</option>
@@ -128,9 +130,15 @@
                         </tr>
                     </thead>
                     <tbody id="tablaPagos">
-                        <tr><td colspan="9"></td></tr>
-                        <tr><td colspan="9"></td></tr>
-                        <tr><td colspan="9"></td></tr>
+                        <tr>
+                            <td colspan="9"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="9"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="9"></td>
+                        </tr>
                     </tbody>
                 </table>
                 <div class="table-nav">
@@ -161,8 +169,12 @@
                         </tr>
                     </thead>
                     <tbody id="tablaExamenes">
-                        <tr><td colspan="8"></td></tr>
-                        <tr><td colspan="8"></td></tr>
+                        <tr>
+                            <td colspan="8"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="8"></td>
+                        </tr>
                     </tbody>
                 </table>
                 <div class="table-nav">
@@ -189,7 +201,9 @@
         </footer>
     </div>
 
+    <script src="supabase-config.js"></script>
     <script src="common.js"></script>
     <script src="alumnos.js"></script>
 </body>
+
 </html>

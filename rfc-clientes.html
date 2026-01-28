@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RFC Clientes</title>
     <link rel="stylesheet" href="rfc-clientes.css">
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -65,7 +67,8 @@
                 <button type="button" class="btn" id="nuevoBtn" onclick="nuevoCliente()">Nuevo</button>
                 <button type="button" class="btn" id="buscarBtn" onclick="buscarCliente()">Buscar</button>
                 <button type="button" class="btn" id="borrarBtn" onclick="deleteCliente()">Borrar</button>
-                <button type="button" class="btn btn-terminar" id="terminarBtn" onclick="terminarRFC()">Terminar</button>
+                <button type="button" class="btn btn-terminar" id="terminarBtn"
+                    onclick="terminarRFC()">Terminar</button>
             </div>
         </form>
     </div>
@@ -83,7 +86,8 @@
     </div>
 
     <!-- Cargar Supabase desde CDN -->
-<script src="supabase-config.js"></script>
+    <script src="supabase-config.js"></script>
     <script src="rfc-clientes.js"></script>
 </body>
+
 </html>
