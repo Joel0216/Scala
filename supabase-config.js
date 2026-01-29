@@ -20,7 +20,7 @@ function initSupabase() {
                 console.log('✓ Supabase inicializado correctamente (Electron/npm)');
                 return true;
             } catch (e) {
-                console.warn('No se pudo cargar Supabase vía npm:', e.message);
+                console.warn('No se pudo cargar Supabase vía npm, intentando CDN:', e.message);
             }
         }
 
@@ -29,14 +29,32 @@ function initSupabase() {
             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             console.log('✓ Supabase inicializado correctamente (CDN)');
             return true;
+        } else {
+            // Inject CDN script dynamically if missing
+            console.warn('Supabase SDK not found. Injecting CDN script...');
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/@supabase/supabase-js@2';
+            script.onload = () => {
+                console.log('CDN Script loaded. Initializing...');
+                if (typeof window.supabase !== 'undefined') {
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    console.log('✓ Supabase initialized via injected CDN');
+                    // Trigger a custom event or re-run load logic if needed
+                    // For now, we rely on the user refreshing or the app being resilient
+                }
+            };
+            document.head.appendChild(script);
+            // We return false for now, but the script is loading. 
+            // Ideally we should await this, but this is a sync function.
+            // The UI handles 'false' by showing an error, but next time it might work.
+            // We will suppress the alert in the calling code to prevent blocking.
         }
 
-        console.error('✗ La librería de Supabase no está disponible');
-        alert('Error: No se pudo conectar a la base de datos. Verifica tu conexión a Internet.');
+        console.error('✗ La librería de Supabase no está disponible inmediatamente.');
+        // Don't alert here, let the calling code decide.
         return false;
     } catch (error) {
         console.error('✗ Error al inicializar Supabase:', error);
-        alert('Error al inicializar base de datos: ' + error.message);
         return false;
     }
 }

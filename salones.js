@@ -7,28 +7,37 @@ let currentIndex = 0;
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando salones...');
 
+    // Configurar event listeners PRIMERO para que los botones funcionen
+    setupEventListeners();
+    console.log('Event listeners configurados');
+
     // Inicializar Supabase
+    let dbConnected = false;
     if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
+        dbConnected = initSupabase();
+        if (dbConnected) {
             supabase = window.supabase;
         } else {
-            alert('Error: No se pudo conectar a la base de datos');
-            return;
+            console.warn('Conexión a base de datos pendiente o fallida - Modo Offline/Limitado');
+            // No alertar bloqueante, permitir que la UI cargue
         }
-    } else {
-        alert('Error: initSupabase no está disponible');
-        return;
     }
 
     updateDateTime();
     setInterval(updateDateTime, 1000);
 
-    // Cargar datos
-    await loadSalones();
-
-    // Configurar event listeners
-    setupEventListeners();
+    // Cargar datos si hay conexión
+    if (dbConnected) {
+        await loadSalones();
+    } else {
+        // Reintentar conexión en 2 segundos por si el CDN se inyectó
+        setTimeout(async () => {
+            if (window.supabase) {
+                supabase = window.supabase; // Update ref
+                await loadSalones();
+            }
+        }, 2000);
+    }
 
     console.log('Inicialización de salones completa');
 });
@@ -229,7 +238,6 @@ if (newRecordBtn) {
         }
     });
 }
-}
 
 // Cargar salones
 async function loadSalones() {
@@ -312,6 +320,12 @@ function clearForm() {
 function nuevoSalon() {
     clearForm();
     document.getElementById('salon').focus();
+
+    // Asegurar que los inputs estén habilitados
+    document.getElementById('salon').disabled = false;
+    document.getElementById('ubicacion').disabled = false;
+    document.getElementById('cupo').disabled = false;
+    document.getElementById('instrumentos').disabled = false;
 
     // Cambiar texto del botón
     const nuevoBtn = document.getElementById('nuevoBtn');

@@ -7,28 +7,41 @@ let maestroSeleccionado = null;
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando maestros...');
 
-    // Inicializar Supabase
+    // Inicializar Supabase de forma robusta
+    let dbConnected = false;
     if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
+        dbConnected = initSupabase();
+        if (dbConnected) {
             supabase = window.supabase;
         } else {
-            alert('Error: No se pudo conectar a la base de datos');
-            return;
+            console.warn('Esperando conexión a base de datos (Maestros)');
         }
-    } else {
-        alert('Error: initSupabase no está disponible');
-        return;
     }
 
     // Actualizar fecha y hora
     actualizarFechaHora();
     setInterval(actualizarFechaHora, 1000);
 
-    // Cargar maestros desde Supabase
-    await cargarMaestros();
+    // Cargar maestros si hay conexión
+    if (dbConnected) {
+        await cargarMaestros();
+    } else {
+        setTimeout(async () => {
+            if (window.supabase) {
+                supabase = window.supabase;
+                await cargarMaestros();
+            }
+        }, 2000);
+    }
+
+    // Asegurar que los inputs estén habilitados por si acaso
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => input.disabled = false);
 
     console.log('Inicialización de maestros completa');
+});
+
+console.log('Inicialización de maestros completa');
 });
 
 // Cargar maestros desde Supabase
@@ -157,6 +170,10 @@ function cargarDatosMaestro(maestro) {
 // Botón Nuevo - Limpiar formulario
 function nuevoMaestro() {
     limpiarFormulario();
+    // Habilitar todos los campos explícitamente
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => input.disabled = false);
+
     document.getElementById('nombre').focus();
 }
 

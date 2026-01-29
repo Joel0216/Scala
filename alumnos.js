@@ -13,19 +13,26 @@ window.addEventListener('DOMContentLoaded', async () => {
         window.location.href.includes('alumnos-alta')) {
         console.log('Inicializando alumnos-alta...');
 
-        // Inicializar Supabase
+        // Inicializar Supabase de forma robusta
+        let dbConnected = false;
         if (typeof initSupabase === 'function') {
-            const success = initSupabase();
-            if (success) {
+            dbConnected = initSupabase();
+            if (dbConnected) {
                 supabaseAlumnos = window.supabase;
                 await cargarSelectsAlta();
             } else {
-                console.error('Error al conectar con Supabase');
+                console.warn('Conexión a base de datos pendiente (Alumnos)');
             }
-        } else if (window.supabase) {
-            // Si ya está inicializado
-            supabaseAlumnos = window.supabase;
-            await cargarSelectsAlta();
+        }
+
+        // Reintentar carga de selects si falló inicialmente
+        if (!dbConnected) {
+            setTimeout(async () => {
+                if (window.supabase) {
+                    supabaseAlumnos = window.supabase;
+                    await cargarSelectsAlta();
+                }
+            }, 2000);
         }
     }
 });
@@ -500,14 +507,28 @@ function nuevoAlumno() {
 
     campos.forEach(campo => {
         const elemento = document.getElementById(campo);
-        if (elemento) elemento.value = '';
+        if (elemento) {
+            elemento.value = '';
+            elemento.disabled = false; // Asegurar habilitado
+        }
     });
 
+    // Habilitar checkbox
     const becaCheck = document.getElementById('beca');
-    if (becaCheck) becaCheck.checked = false;
+    if (becaCheck) {
+        becaCheck.checked = false;
+        becaCheck.disabled = false;
+    }
 
     const reingresoCheck = document.getElementById('reingreso');
-    if (reingresoCheck) reingresoCheck.checked = false;
+    if (reingresoCheck) {
+        reingresoCheck.checked = false;
+        reingresoCheck.disabled = false;
+    }
+
+    // Habilitar selects
+    const selects = document.querySelectorAll('select');
+    selects.forEach(s => s.disabled = false);
 }
 
 // Funciones de navegación para tabla de pagos
