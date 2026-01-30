@@ -1,5 +1,5 @@
 // Inicializar Supabase
-
+let supabase = null;
 let examenes = [];
 let registroActual = 0;
 let filaSeleccionada = null;
@@ -25,23 +25,16 @@ const bodyResultados = document.getElementById('bodyResultados');
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando programación de exámenes...');
 
-    // Inicializar Supabase
-    if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
-            supabase = window.supabase;
+    try {
+        await new Promise(r => setTimeout(r, 500));
+        if (typeof waitForSupabase === 'function') {
+            supabase = await waitForSupabase(10000);
             console.log('✓ Supabase conectado');
-
-            // Cargar catálogos y datos
             await cargarCatalogos();
             await cargarExamenes();
-        } else {
-            console.error('✗ Error al conectar con Supabase');
-            alert('Error: No se pudo conectar a la base de datos');
         }
-    } else {
-        console.error('✗ initSupabase no está disponible');
-        alert('Error: initSupabase no está disponible');
+    } catch (e) {
+        console.error('Error conectando a Supabase:', e);
     }
 
     actualizarFechaHora();

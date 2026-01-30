@@ -1,22 +1,18 @@
 // Inicializar Supabase
-
+let supabase = null;
 
 // Esperar a que se cargue la librería de Supabase
-window.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando alta de maestros...');
 
-    // Inicializar Supabase
-    if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
-            supabase = window.supabase;
-        } else {
-            alert('Error: No se pudo conectar a la base de datos');
-            return;
+    try {
+        await new Promise(r => setTimeout(r, 500));
+        if (typeof waitForSupabase === 'function') {
+            supabase = await waitForSupabase(10000);
+            console.log('✓ Supabase conectado');
         }
-    } else {
-        alert('Error: initSupabase no está disponible');
-        return;
+    } catch (e) {
+        console.error('Error conectando a Supabase:', e);
     }
 
     // Actualizar fecha y hora

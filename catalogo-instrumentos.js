@@ -157,6 +157,11 @@ document.getElementById('btnBorrar').addEventListener('click', () => {
             actualizarContador();
         }
     }
+    // Habilitar inputs después de la acción
+    setTimeout(() => {
+        if (claveInput) claveInput.disabled = false;
+        if (descripcionInput) descripcionInput.disabled = false;
+    }, 100);
 });
 
 // Botón Guardar

@@ -1,26 +1,24 @@
 // Inicializar Supabase
-
+let supabase = null;
 let salones = [];
 let currentIndex = 0;
 
 // Esperar a que se cargue la libreria de Supabase
-window.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando salones...');
 
-    // Configurar event listeners PRIMERO para que los botones funcionen
+    // Configurar event listeners PRIMERO
     setupEventListeners();
-    console.log('Event listeners configurados');
 
-    // Inicializar Supabase
-    let dbConnected = false;
-    if (typeof initSupabase === 'function') {
-        dbConnected = initSupabase();
-        if (dbConnected) {
-            supabase = window.supabase;
-        } else {
-            console.warn('Conexión a base de datos pendiente o fallida - Modo Offline/Limitado');
-            // No alertar bloqueante, permitir que la UI cargue
+    // Esperar a que Supabase esté listo
+    try {
+        await new Promise(r => setTimeout(r, 500));
+        if (typeof waitForSupabase === 'function') {
+            supabase = await waitForSupabase(10000);
+            console.log('✓ Supabase conectado');
         }
+    } catch (e) {
+        console.error('Error conectando a Supabase:', e);
     }
 
     updateDateTime();
@@ -389,13 +387,20 @@ async function saveSalon() {
 
 // Eliminar salón
 async function deleteSalon() {
-    if (!supabase) return;
+    if (!supabase) {
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
+        return;
+    }
     if (currentIndex < 0 || !salones[currentIndex]) {
         alert('Seleccione un salón para eliminar');
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
-    if (!confirm('¿Está seguro de eliminar este salón?')) return;
+    if (!confirm('¿Está seguro de eliminar este salón?')) {
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
+        return;
+    }
 
     try {
         const { error } = await supabase
@@ -411,4 +416,7 @@ async function deleteSalon() {
         console.error('Error eliminando salón:', error);
         alert('Error al eliminar el salón: ' + error.message);
     }
+    
+    // Habilitar inputs después de la operación
+    setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
 }

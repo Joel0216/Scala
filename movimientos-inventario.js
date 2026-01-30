@@ -1,5 +1,5 @@
 // Inicializar Supabase
-
+let supabase = null;
 let movimientos = [];
 let registroActual = 0;
 let detalleActual = 0;
@@ -10,22 +10,15 @@ let detallesActuales = [];
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando módulo de movimientos de inventario...');
 
-    // Inicializar Supabase
-    if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
-            supabase = window.supabase;
+    try {
+        await new Promise(r => setTimeout(r, 500));
+        if (typeof waitForSupabase === 'function') {
+            supabase = await waitForSupabase(10000);
             console.log('✓ Supabase conectado');
-
-            // Cargar movimientos desde la base de datos
             await cargarMovimientos();
-        } else {
-            console.error('✗ Error al conectar con Supabase');
-            alert('Error: No se pudo conectar a la base de datos');
         }
-    } else {
-        console.error('✗ initSupabase no está disponible');
-        alert('Error: initSupabase no está disponible');
+    } catch (e) {
+        console.error('Error conectando a Supabase:', e);
     }
 
     // Actualizar fecha

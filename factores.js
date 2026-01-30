@@ -1,5 +1,4 @@
-// Inicializar Supabase
-
+// Variables globales
 let factores = [];
 let maestros = [];
 let cursos = [];
@@ -7,24 +6,62 @@ let currentIndex = 0;
 let modoEdicion = false;
 let factorActual = null;
 
-// Esperar a que se cargue la libreria de Supabase y el DOM
-window.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOM cargado, inicializando módulo de Factores...');
+// Variable para evitar inicialización múltiple
+let moduloInicializado = false;
 
-    // Inicializar Supabase
-    if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
-            supabase = window.supabase;
-            console.log('✓ Supabase conectado');
+// Esperar a que Supabase esté listo
+window.addEventListener('supabaseReady', () => {
+    if (!moduloInicializado) {
+        inicializarModulo();
+    }
+});
+
+// También intentar inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', async () => {
+    // Esperar un momento para que Supabase se cargue
+    setTimeout(async () => {
+        if (moduloInicializado) return;
+        
+        if (typeof isSupabaseConnected === 'function' && isSupabaseConnected()) {
+            await inicializarModulo();
+        } else if (typeof waitForSupabase === 'function') {
+            try {
+                await waitForSupabase(8000);
+                await inicializarModulo();
+            } catch (e) {
+                console.error('Error esperando Supabase:', e);
+                mostrarErrorConexion();
+            }
         } else {
-            alert('Error: No se pudo conectar a la base de datos');
-            return;
+            mostrarErrorConexion();
         }
-    } else {
-        alert('Error: initSupabase no está disponible');
+    }, 1000);
+});
+
+// Mostrar error de conexión
+function mostrarErrorConexion() {
+    const msg = 'No se pudo conectar a la base de datos.\n\n' +
+                'Posibles causas:\n' +
+                '1. Las tablas no existen en Supabase\n' +
+                '2. RLS está habilitado\n' +
+                '3. Sin conexión a internet\n\n' +
+                'Consulte INSTRUCCIONES-SUPABASE.md para configurar la base de datos.';
+    alert(msg);
+}
+
+// Función principal de inicialización
+async function inicializarModulo() {
+    if (moduloInicializado) return;
+    
+    console.log('Inicializando módulo de Factores...');
+    
+    // Verificar conexión
+    if (typeof isSupabaseConnected !== 'function' || !isSupabaseConnected()) {
+        console.error('Supabase no está conectado');
         return;
     }
+    
+    moduloInicializado = true;
 
     // Inicializar fecha/hora
     updateDateTime();
@@ -38,379 +75,158 @@ window.addEventListener('DOMContentLoaded', async () => {
     // Configurar event listeners
     setupEventListeners();
 
-    // Deshabilitar campos inicialmente (solo lectura)
+    // Deshabilitar campos inicialmente
     desactivarModoEdicion();
 
     // Mostrar primer factor si existe
     if (factores.length > 0) {
         mostrarFactor(0);
     } else {
-        // Si no hay factores, limpiar campos
-        document.getElementById('maestro').value = '';
-        document.getElementById('curso').value = '';
-        document.getElementById('factor').value = '0';
-        document.getElementById('porcentaje').value = '0.00%';
-        document.getElementById('nombreMaestro').value = '';
-        document.getElementById('grado').value = '';
-        document.getElementById('detallesGrado').value = '';
-        document.getElementById('fechaIngreso').value = '';
+        limpiarFormulario();
     }
 
-    console.log('Inicialización completa');
-});
+    // Habilitar inputs
+    if (typeof habilitarInputs === 'function') {
+        habilitarInputs();
+    }
+
+    console.log('✓ Módulo de Factores inicializado');
+}
 
 // Actualizar fecha y hora
 function updateDateTime() {
     const now = new Date();
     const formatted = now.toLocaleString('es-MX', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
     });
-    const datetimeElement = document.getElementById('datetime');
-    if (datetimeElement) {
-        datetimeElement.textContent = formatted;
-    }
+    const el = document.getElementById('datetime');
+    if (el) el.textContent = formatted;
 }
 
-// Configurar todos los event listeners
+// Limpiar formulario
+function limpiarFormulario() {
+    const campos = ['maestro', 'curso', 'factor', 'porcentaje', 'nombreMaestro', 'grado', 'detallesGrado', 'fechaIngreso'];
+    campos.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (el.tagName === 'SELECT') el.value = '';
+            else if (id === 'factor') el.value = '0';
+            else if (id === 'porcentaje') el.value = '0.00%';
+            else el.value = '';
+        }
+    });
+}
+
+// Configurar event listeners
 function setupEventListeners() {
-    // Actualizar detalles del maestro al seleccionar
+    // Maestro select
     const maestroSelect = document.getElementById('maestro');
     if (maestroSelect) {
-        maestroSelect.addEventListener('change', function () {
+        maestroSelect.addEventListener('change', function() {
             actualizarDetallesMaestro(this.value);
         });
-
-        // Búsqueda alfabética rápida (TypeAhead)
-        maestroSelect.addEventListener('keypress', function (e) {
-            const letra = e.key.toUpperCase();
-            if (letra.length === 1 && letra.match(/[A-Z]/)) {
-                buscarPorLetra(this, letra);
-            }
-        });
     }
 
-    // Búsqueda alfabética rápida para cursos
-    const cursoSelect = document.getElementById('curso');
-    if (cursoSelect) {
-        cursoSelect.addEventListener('keypress', function (e) {
-            const letra = e.key.toUpperCase();
-            if (letra.length === 1 && letra.match(/[A-Z]/)) {
-                buscarPorLetra(this, letra);
-            }
-        });
-    }
-
-    // Calcular porcentaje automáticamente
+    // Factor input - calcular porcentaje
     const factorInput = document.getElementById('factor');
     if (factorInput) {
-        factorInput.addEventListener('input', function () {
+        factorInput.addEventListener('input', function() {
             const factor = parseFloat(this.value) || 0;
             const porcentaje = (factor / 100).toFixed(2);
             document.getElementById('porcentaje').value = porcentaje + '%';
         });
     }
 
-    // Botón Nuevo - Activar modo edición
-    const nuevoBtn = document.getElementById('nuevoBtn');
-    if (nuevoBtn) {
-        nuevoBtn.addEventListener('click', activarModoEdicion);
-    }
-
-    // Botón Buscar X Maestro
-    const buscarMaestroBtn = document.getElementById('buscarMaestroBtn');
-    if (buscarMaestroBtn) {
-        buscarMaestroBtn.addEventListener('click', abrirModalBusqueda);
-    }
-
-    // Botón Aceptar búsqueda
-    const aceptarBtn = document.getElementById('aceptarBtn');
-    if (aceptarBtn) {
-        aceptarBtn.addEventListener('click', buscarPorMaestro);
-    }
-
-    // Botón Cancelar búsqueda
-    const cancelarBtn = document.getElementById('cancelarBtn');
-    if (cancelarBtn) {
-        cancelarBtn.addEventListener('click', cerrarModalBusqueda);
-    }
-
-    // Botón Borrar
-    const borrarBtn = document.getElementById('borrarBtn');
-    if (borrarBtn) {
-        borrarBtn.addEventListener('click', borrarFactor);
-    }
-
-    // Botón Terminar
-    const terminarBtn = document.getElementById('terminarBtn');
-    if (terminarBtn) {
-        terminarBtn.addEventListener('click', terminarFactores);
-    }
-}
-
-// Función terminar (disponible globalmente)
-function terminarFactores() {
-    if (confirm('¿Desea salir del módulo de Factores?')) {
-        window.location.href = 'archivos.html';
-    }
-}
-
-// Navegación
-const firstBtn = document.getElementById('firstBtn');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const lastBtn = document.getElementById('lastBtn');
-const inputRegistro = document.getElementById('inputRegistro');
-
-if (firstBtn) firstBtn.addEventListener('click', () => mostrarFactor(0));
-if (prevBtn) prevBtn.addEventListener('click', () => mostrarFactor(currentIndex - 1));
-if (nextBtn) nextBtn.addEventListener('click', () => mostrarFactor(currentIndex + 1));
-if (lastBtn) lastBtn.addEventListener('click', () => mostrarFactor(factores.length - 1));
-
-// Navegar a registro específico
-if (inputRegistro) {
-    inputRegistro.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            const num = parseInt(this.value);
-            if (num > 0 && num <= factores.length) {
-                mostrarFactor(num - 1);
+    // Input de registro para navegación
+    const inputRegistro = document.getElementById('inputRegistro');
+    if (inputRegistro) {
+        inputRegistro.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const num = parseInt(this.value);
+                if (num > 0 && num <= factores.length) {
+                    mostrarFactor(num - 1);
+                }
             }
-        }
-    });
-}
-
-// Botón nuevo registro (|>*)
-const newRecordBtn = document.getElementById('newRecordBtn');
-if (newRecordBtn) {
-    newRecordBtn.addEventListener('click', navegarFactorRegistro);
-}
-}
-
-// Función para navegar a registro específico (disponible globalmente)
-function navegarFactorRegistro() {
-    const input = document.getElementById('inputRegistro');
-    if (input) {
-        const num = parseInt(input.value);
-        if (num > 0 && num <= factores.length) {
-            mostrarFactor(num - 1);
-        } else {
-            alert(`El número debe estar entre 1 y ${factores.length}`);
-        }
+        });
     }
 }
 
-// Navegación de maestros (para la sección de detalles del maestro)
-let registroActualMaestro = 0;
-
-function navegarMaestroPrimero() {
-    if (maestros.length > 0) {
-        registroActualMaestro = 0;
-        mostrarMaestro(0);
-    }
-}
-
-function navegarMaestroAnterior() {
-    if (registroActualMaestro > 0) {
-        registroActualMaestro--;
-        mostrarMaestro(registroActualMaestro);
-    }
-}
-
-function navegarMaestroSiguiente() {
-    if (registroActualMaestro < maestros.length - 1) {
-        registroActualMaestro++;
-        mostrarMaestro(registroActualMaestro);
-    }
-}
-
-function navegarMaestroUltimo() {
-    if (maestros.length > 0) {
-        registroActualMaestro = maestros.length - 1;
-        mostrarMaestro(registroActualMaestro);
-    }
-}
-
-function navegarMaestroRegistro() {
-    const input = document.getElementById('inputRegistroMaestro');
-    if (input) {
-        const num = parseInt(input.value);
-        if (num > 0 && num <= maestros.length) {
-            registroActualMaestro = num - 1;
-            mostrarMaestro(registroActualMaestro);
-        }
-    }
-}
-
-function mostrarMaestro(index) {
-    if (index < 0 || index >= maestros.length) return;
-
-    const maestro = maestros[index];
-    document.getElementById('nombreMaestro').value = maestro.nombre || '';
-    document.getElementById('grado').value = maestro.grado || '';
-    document.getElementById('detallesGrado').value = maestro.detalles_grado || '';
-    document.getElementById('fechaIngreso').value = maestro.fecha_ingreso || '';
-
-    const input = document.getElementById('inputRegistroMaestro');
-    const total = document.getElementById('totalMaestros');
-    if (input) input.value = index + 1;
-    if (total) total.textContent = maestros.length;
-
-    // Actualizar el select de maestro
-    const selectMaestro = document.getElementById('maestro');
-    if (selectMaestro) {
-        selectMaestro.value = maestro.id;
-        actualizarDetallesMaestro(maestro.id);
-    }
-}
 
 // Cargar maestros
 async function loadMaestros() {
-    if (!supabase) {
-        console.error('Supabase no inicializado');
-        return;
-    }
-
     try {
-        console.log('Cargando maestros...');
         const { data, error } = await supabase
             .from('maestros')
             .select('*')
-            .eq('status', 'activo')
             .order('nombre', { ascending: true });
 
         if (error) throw error;
 
         maestros = data || [];
         const select = document.getElementById('maestro');
-        if (!select) {
-            console.error('Elemento maestro no encontrado');
-            return;
-        }
+        if (!select) return;
 
         select.innerHTML = '<option value="">-- Seleccione un maestro --</option>';
-
-        if (maestros.length > 0) {
-            maestros.forEach(maestro => {
-                const option = document.createElement('option');
-                option.value = maestro.id;
-                option.textContent = maestro.nombre;
-                option.dataset.grado = maestro.grado || '';
-                option.dataset.detallesGrado = maestro.detalles_grado || '';
-                option.dataset.fechaIngreso = maestro.fecha_ingreso || '';
-                select.appendChild(option);
-            });
-            console.log(`✓ ${maestros.length} maestros cargados`);
-        } else {
-            console.log('No hay maestros en la base de datos');
-        }
+        maestros.forEach(m => {
+            const option = document.createElement('option');
+            option.value = m.id;
+            option.textContent = m.nombre;
+            select.appendChild(option);
+        });
+        
+        console.log(`✓ ${maestros.length} maestros cargados`);
     } catch (error) {
         console.error('Error cargando maestros:', error);
-        alert('Error al cargar maestros: ' + error.message);
     }
 }
 
 // Cargar cursos
 async function loadCursos() {
-    if (!supabase) {
-        console.error('Supabase no inicializado');
-        return;
-    }
-
     try {
-        console.log('Cargando cursos...');
         const { data, error } = await supabase
             .from('cursos')
             .select('*')
-            .eq('activo', true)
             .order('curso', { ascending: true });
 
         if (error) throw error;
 
         cursos = data || [];
         const select = document.getElementById('curso');
-        if (!select) {
-            console.error('Elemento curso no encontrado');
-            return;
-        }
+        if (!select) return;
 
         select.innerHTML = '<option value="">-- Seleccione un curso --</option>';
-
-        if (cursos.length > 0) {
-            cursos.forEach(curso => {
-                const option = document.createElement('option');
-                option.value = curso.id;
-                option.textContent = curso.curso;
-                select.appendChild(option);
-            });
-            console.log(`✓ ${cursos.length} cursos cargados`);
-        } else {
-            console.log('No hay cursos en la base de datos');
-        }
+        cursos.forEach(c => {
+            const option = document.createElement('option');
+            option.value = c.id;
+            option.textContent = c.curso;
+            select.appendChild(option);
+        });
+        
+        console.log(`✓ ${cursos.length} cursos cargados`);
     } catch (error) {
         console.error('Error cargando cursos:', error);
-        alert('Error al cargar cursos: ' + error.message);
     }
 }
 
 // Cargar factores
 async function loadFactores() {
-    if (!supabase) {
-        console.error('Supabase no inicializado');
-        return;
-    }
-
     try {
-        console.log('Cargando factores...');
         const { data, error } = await supabase
             .from('factores')
-            .select(`
-                *,
-                maestros (id, nombre, grado, detalles_grado, fecha_ingreso),
-                cursos (id, curso)
-            `)
+            .select(`*, maestros (id, nombre, grado, detalles_grado, fecha_ingreso), cursos (id, curso)`)
             .order('id', { ascending: true });
 
         if (error) throw error;
 
         factores = data || [];
-        const totalElement = document.getElementById('totalRecords');
-        if (totalElement) {
-            totalElement.textContent = factores.length;
-        }
-
-        // Actualizar máximo del input
-        const inputRegistro = document.getElementById('inputRegistro');
-        if (inputRegistro) {
-            inputRegistro.max = factores.length;
-        }
-
+        
+        const totalEl = document.getElementById('totalRecords');
+        if (totalEl) totalEl.textContent = factores.length;
+        
         console.log(`✓ ${factores.length} factores cargados`);
     } catch (error) {
         console.error('Error cargando factores:', error);
-    }
-}
-
-
-// Búsqueda alfabética rápida (TypeAhead)
-function buscarPorLetra(selectElement, letra) {
-    const options = Array.from(selectElement.options);
-
-    // Buscar la primera opción que empiece con la letra
-    const match = options.find(opt =>
-        opt.textContent.toUpperCase().startsWith(letra) && opt.value !== ''
-    );
-
-    if (match) {
-        selectElement.value = match.value;
-        selectElement.dispatchEvent(new Event('change'));
-
-        // Resaltar visualmente
-        selectElement.focus();
     }
 }
 
@@ -433,166 +249,6 @@ function actualizarDetallesMaestro(maestroId) {
     }
 }
 
-// Activar modo edición (Botón "Nuevo")
-function activarModoEdicion() {
-    modoEdicion = true;
-    factorActual = null;
-
-    // Cambiar estilo a azul
-    const form = document.getElementById('factoresForm');
-    if (form) {
-        form.style.border = '3px solid #4169E1';
-        form.style.backgroundColor = '#E6F2FF';
-    }
-
-    // Limpiar campos
-    document.getElementById('maestro').value = '';
-    document.getElementById('curso').value = '';
-    document.getElementById('factor').value = '0';
-    document.getElementById('porcentaje').value = '0.00%';
-    document.getElementById('nombreMaestro').value = '';
-    document.getElementById('grado').value = '';
-    document.getElementById('detallesGrado').value = '';
-    document.getElementById('fechaIngreso').value = '';
-
-    // Habilitar campos
-    const maestroSelect = document.getElementById('maestro');
-    const cursoSelect = document.getElementById('curso');
-    const factorInput = document.getElementById('factor');
-
-    if (maestroSelect) maestroSelect.disabled = false;
-    if (cursoSelect) cursoSelect.disabled = false;
-    if (factorInput) factorInput.disabled = false;
-
-    // Cambiar texto del botón
-    const nuevoBtn = document.getElementById('nuevoBtn');
-    if (nuevoBtn) {
-        nuevoBtn.textContent = 'Guardar';
-        nuevoBtn.setAttribute('onclick', 'guardarFactor()');
-    }
-
-    // Focus en maestro
-    document.getElementById('maestro').focus();
-
-    console.log('Modo edición activado');
-}
-
-// Desactivar modo edición
-function desactivarModoEdicion() {
-    modoEdicion = false;
-
-    // Restaurar estilo
-    const form = document.getElementById('factoresForm');
-    if (form) {
-        form.style.border = '';
-        form.style.backgroundColor = '';
-    }
-
-    // Cambiar texto del botón
-    const nuevoBtn = document.getElementById('nuevoBtn');
-    if (nuevoBtn) {
-        nuevoBtn.textContent = 'Nuevo';
-        nuevoBtn.setAttribute('onclick', 'activarModoEdicion()');
-    }
-
-    // Deshabilitar campos
-    const maestroSelect = document.getElementById('maestro');
-    const cursoSelect = document.getElementById('curso');
-    const factorInput = document.getElementById('factor');
-
-    if (maestroSelect) maestroSelect.disabled = true;
-    if (cursoSelect) cursoSelect.disabled = true;
-    if (factorInput) factorInput.disabled = true;
-
-    console.log('Modo edición desactivado');
-}
-
-// Guardar factor
-async function guardarFactor() {
-    if (!supabase) {
-        alert('Error: Base de datos no conectada');
-        return;
-    }
-
-    const maestroId = document.getElementById('maestro').value;
-    const cursoId = document.getElementById('curso').value;
-    const factor = parseInt(document.getElementById('factor').value) || 0;
-
-    // Validaciones
-    if (!maestroId) {
-        alert('Debe seleccionar un maestro');
-        document.getElementById('maestro').focus();
-        return;
-    }
-
-    if (!cursoId) {
-        alert('Debe seleccionar un curso');
-        document.getElementById('curso').focus();
-        return;
-    }
-
-    if (factor <= 0) {
-        alert('El factor debe ser mayor a 0');
-        document.getElementById('factor').focus();
-        return;
-    }
-
-    const factorData = {
-        maestro_id: maestroId,
-        curso_id: cursoId,
-        factor: factor
-    };
-
-    try {
-        console.log('Guardando factor:', factorData);
-
-        // Verificar si ya existe
-        const { data: existente, error: errorCheck } = await supabase
-            .from('factores')
-            .select('id')
-            .eq('maestro_id', maestroId)
-            .eq('curso_id', cursoId)
-            .single();
-
-        if (existente) {
-            if (!confirm('Ya existe un factor para este maestro y curso.\n¿Desea actualizarlo?')) {
-                return;
-            }
-
-            // Actualizar
-            const { error } = await supabase
-                .from('factores')
-                .update(factorData)
-                .eq('id', existente.id);
-
-            if (error) throw error;
-            alert('Factor actualizado correctamente');
-        } else {
-            // Insertar nuevo
-            const { error } = await supabase
-                .from('factores')
-                .insert([factorData]);
-
-            if (error) throw error;
-            alert('Factor guardado correctamente');
-        }
-
-        // Recargar factores
-        await loadFactores();
-
-        // Desactivar modo edición
-        desactivarModoEdicion();
-
-        // Mostrar el factor recién guardado
-        if (factores.length > 0) {
-            mostrarFactor(factores.length - 1);
-        }
-    } catch (error) {
-        console.error('Error guardando factor:', error);
-        alert('Error al guardar el factor: ' + error.message);
-    }
-}
-
 // Mostrar factor
 function mostrarFactor(index) {
     if (index < 0 || index >= factores.length) return;
@@ -600,50 +256,160 @@ function mostrarFactor(index) {
     currentIndex = index;
     factorActual = factores[index];
 
-    // Desactivar modo edición si está activo
-    if (modoEdicion) {
-        desactivarModoEdicion();
-    }
+    if (modoEdicion) desactivarModoEdicion();
 
     // Actualizar campos
-    const maestroSelect = document.getElementById('maestro');
-    const cursoSelect = document.getElementById('curso');
-    const factorInput = document.getElementById('factor');
-    const porcentajeInput = document.getElementById('porcentaje');
+    document.getElementById('maestro').value = factorActual.maestro_id || '';
+    document.getElementById('curso').value = factorActual.curso_id || '';
+    document.getElementById('factor').value = factorActual.factor || 0;
+    document.getElementById('porcentaje').value = ((factorActual.factor || 0) / 100).toFixed(2) + '%';
 
-    if (maestroSelect) maestroSelect.value = factorActual.maestros?.id || '';
-    if (cursoSelect) cursoSelect.value = factorActual.cursos?.id || '';
-    if (factorInput) factorInput.value = factorActual.factor || 0;
-
-    const porcentaje = (factorActual.factor / 100).toFixed(2);
-    if (porcentajeInput) porcentajeInput.value = porcentaje + '%';
-
-    // Actualizar detalles del maestro
+    // Detalles del maestro
     if (factorActual.maestros) {
-        const nombreMaestroEl = document.getElementById('nombreMaestro');
-        const gradoEl = document.getElementById('grado');
-        const detallesGradoEl = document.getElementById('detallesGrado');
-        const fechaIngresoEl = document.getElementById('fechaIngreso');
-
-        if (nombreMaestroEl) nombreMaestroEl.value = factorActual.maestros.nombre || '';
-        if (gradoEl) gradoEl.value = factorActual.maestros.grado || '';
-        if (detallesGradoEl) detallesGradoEl.value = factorActual.maestros.detalles_grado || '';
-        if (fechaIngresoEl) fechaIngresoEl.value = factorActual.maestros.fecha_ingreso || '';
+        document.getElementById('nombreMaestro').value = factorActual.maestros.nombre || '';
+        document.getElementById('grado').value = factorActual.maestros.grado || '';
+        document.getElementById('detallesGrado').value = factorActual.maestros.detalles_grado || '';
+        document.getElementById('fechaIngreso').value = factorActual.maestros.fecha_ingreso || '';
     }
 
-    // Actualizar navegación
-    const currentRecordEl = document.getElementById('currentRecord');
-    const totalRecordsEl = document.getElementById('totalRecords');
-    const inputRegistroEl = document.getElementById('inputRegistro');
+    // Navegación
+    document.getElementById('currentRecord').textContent = index + 1;
+    document.getElementById('totalRecords').textContent = factores.length;
+    document.getElementById('inputRegistro').value = index + 1;
+}
 
-    if (currentRecordEl) currentRecordEl.textContent = index + 1;
-    if (totalRecordsEl) totalRecordsEl.textContent = factores.length;
-    if (inputRegistroEl) {
-        inputRegistroEl.value = index + 1;
-        inputRegistroEl.max = factores.length;
+
+// Activar modo edición (Nuevo)
+function activarModoEdicion() {
+    modoEdicion = true;
+    factorActual = null;
+
+    // Cambiar estilo
+    const form = document.getElementById('factoresForm');
+    if (form) {
+        form.style.border = '3px solid #4169E1';
+        form.style.backgroundColor = '#E6F2FF';
     }
 
-    console.log(`Mostrando factor ${index + 1} de ${factores.length}`);
+    // Limpiar y habilitar campos
+    limpiarFormulario();
+    
+    document.getElementById('maestro').disabled = false;
+    document.getElementById('curso').disabled = false;
+    document.getElementById('factor').disabled = false;
+
+    // Cambiar botón
+    const btn = document.getElementById('nuevoBtn');
+    if (btn) {
+        btn.textContent = 'Guardar';
+        btn.onclick = guardarFactor;
+    }
+
+    document.getElementById('maestro').focus();
+}
+
+// Desactivar modo edición
+function desactivarModoEdicion() {
+    modoEdicion = false;
+
+    const form = document.getElementById('factoresForm');
+    if (form) {
+        form.style.border = '';
+        form.style.backgroundColor = '';
+    }
+
+    const btn = document.getElementById('nuevoBtn');
+    if (btn) {
+        btn.textContent = 'Nuevo';
+        btn.onclick = activarModoEdicion;
+    }
+
+    // Los campos de selección se mantienen habilitados para navegación
+    // pero el factor se deshabilita
+    document.getElementById('factor').disabled = true;
+}
+
+// Guardar factor
+async function guardarFactor() {
+    const maestroId = document.getElementById('maestro').value;
+    const cursoId = document.getElementById('curso').value;
+    const factor = parseInt(document.getElementById('factor').value) || 0;
+
+    if (!maestroId) {
+        alert('Debe seleccionar un maestro');
+        return;
+    }
+    if (!cursoId) {
+        alert('Debe seleccionar un curso');
+        return;
+    }
+    if (factor <= 0) {
+        alert('El factor debe ser mayor a 0');
+        return;
+    }
+
+    try {
+        // Verificar si ya existe
+        const { data: existente } = await supabase
+            .from('factores')
+            .select('id')
+            .eq('maestro_id', maestroId)
+            .eq('curso_id', cursoId)
+            .single();
+
+        if (existente) {
+            if (!confirm('Ya existe un factor para este maestro y curso. ¿Desea actualizarlo?')) {
+                return;
+            }
+            await supabase.from('factores').update({ factor }).eq('id', existente.id);
+            alert('Factor actualizado correctamente');
+        } else {
+            await supabase.from('factores').insert([{ maestro_id: maestroId, curso_id: cursoId, factor }]);
+            alert('Factor guardado correctamente');
+        }
+
+        await loadFactores();
+        desactivarModoEdicion();
+        
+        if (factores.length > 0) {
+            mostrarFactor(factores.length - 1);
+        }
+    } catch (error) {
+        console.error('Error guardando factor:', error);
+        alert('Error al guardar: ' + error.message);
+    }
+}
+
+// Borrar factor
+async function borrarFactor() {
+    if (!factorActual || !factorActual.id) {
+        alert('No hay un factor seleccionado para borrar.\nUse "Buscar X Maestro" para cargar un factor existente.');
+        return;
+    }
+
+    const maestroNombre = document.getElementById('nombreMaestro').value;
+    const cursoSelect = document.getElementById('curso');
+    const cursoNombre = cursoSelect.options[cursoSelect.selectedIndex]?.text || '';
+
+    if (!confirm(`¿Está seguro de eliminar el factor?\n\nMaestro: ${maestroNombre}\nCurso: ${cursoNombre}`)) {
+        return;
+    }
+
+    try {
+        await supabase.from('factores').delete().eq('id', factorActual.id);
+        alert('Factor eliminado correctamente');
+        
+        await loadFactores();
+        limpiarFormulario();
+        factorActual = null;
+        
+        if (factores.length > 0) {
+            mostrarFactor(0);
+        }
+    } catch (error) {
+        console.error('Error eliminando factor:', error);
+        alert('Error al eliminar: ' + error.message);
+    }
 }
 
 // Abrir modal de búsqueda
@@ -651,10 +417,10 @@ function abrirModalBusqueda() {
     const modal = document.getElementById('searchModal');
     if (modal) {
         modal.style.display = 'block';
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.value = '';
-            searchInput.focus();
+        const input = document.getElementById('searchInput');
+        if (input) {
+            input.value = '';
+            input.focus();
         }
     }
 }
@@ -662,15 +428,13 @@ function abrirModalBusqueda() {
 // Cerrar modal de búsqueda
 function cerrarModalBusqueda() {
     const modal = document.getElementById('searchModal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
+    if (modal) modal.style.display = 'none';
+    if (typeof habilitarInputs === 'function') habilitarInputs();
 }
 
 // Buscar por maestro
-async function buscarPorMaestro() {
+function buscarPorMaestro() {
     const searchValue = document.getElementById('searchInput').value.trim().toUpperCase();
-
     cerrarModalBusqueda();
 
     if (!searchValue) {
@@ -678,105 +442,64 @@ async function buscarPorMaestro() {
         return;
     }
 
-    // Buscar en factores existentes
     const resultados = factores.filter(f =>
-        f.maestros?.nombre.toUpperCase().includes(searchValue) ||
-        f.maestros?.nombre.toUpperCase().startsWith(searchValue)
+        f.maestros?.nombre?.toUpperCase().includes(searchValue)
     );
 
     if (resultados.length === 0) {
-        alert('No se encontraron factores para el maestro: ' + searchValue);
+        alert('No se encontraron factores para: ' + searchValue);
         return;
     }
 
-    if (resultados.length === 1) {
-        // Mostrar directamente
-        const index = factores.findIndex(f => f.id === resultados[0].id);
-        if (index !== -1) {
-            mostrarFactor(index);
-        }
-    } else {
-        // Mostrar lista de resultados
-        let mensaje = `Se encontraron ${resultados.length} factores:\n\n`;
-        resultados.forEach((f, i) => {
-            mensaje += `${i + 1}. ${f.maestros?.nombre} - ${f.cursos?.curso} (Factor: ${f.factor})\n`;
-        });
-        mensaje += '\nMostrando el primero...';
+    const index = factores.findIndex(f => f.id === resultados[0].id);
+    if (index !== -1) {
+        mostrarFactor(index);
+    }
+}
 
-        alert(mensaje);
+// Terminar
+function terminarFactores() {
+    if (confirm('¿Desea salir del módulo de Factores?')) {
+        window.location.href = 'archivos.html';
+    }
+}
 
-        // Mostrar el primero
-        const index = factores.findIndex(f => f.id === resultados[0].id);
-        if (index !== -1) {
-            mostrarFactor(index);
+// Navegación de maestros
+let registroActualMaestro = 0;
+
+function navegarMaestroPrimero() { if (maestros.length > 0) { registroActualMaestro = 0; mostrarMaestroEnPanel(0); } }
+function navegarMaestroAnterior() { if (registroActualMaestro > 0) { registroActualMaestro--; mostrarMaestroEnPanel(registroActualMaestro); } }
+function navegarMaestroSiguiente() { if (registroActualMaestro < maestros.length - 1) { registroActualMaestro++; mostrarMaestroEnPanel(registroActualMaestro); } }
+function navegarMaestroUltimo() { if (maestros.length > 0) { registroActualMaestro = maestros.length - 1; mostrarMaestroEnPanel(registroActualMaestro); } }
+function navegarMaestroRegistro() {
+    const input = document.getElementById('inputRegistroMaestro');
+    if (input) {
+        const num = parseInt(input.value);
+        if (num > 0 && num <= maestros.length) {
+            registroActualMaestro = num - 1;
+            mostrarMaestroEnPanel(registroActualMaestro);
         }
     }
 }
 
-// Borrar factor
-async function borrarFactor() {
-    if (!supabase) {
-        alert('Error: Base de datos no conectada');
-        return;
-    }
+function mostrarMaestroEnPanel(index) {
+    if (index < 0 || index >= maestros.length) return;
+    const m = maestros[index];
+    document.getElementById('nombreMaestro').value = m.nombre || '';
+    document.getElementById('grado').value = m.grado || '';
+    document.getElementById('detallesGrado').value = m.detalles_grado || '';
+    document.getElementById('fechaIngreso').value = m.fecha_ingreso || '';
+    document.getElementById('inputRegistroMaestro').value = index + 1;
+    document.getElementById('totalMaestros').textContent = maestros.length;
+    document.getElementById('maestro').value = m.id;
+}
 
-    // Validación estricta: todos los campos deben estar llenos
-    const maestroId = document.getElementById('maestro').value;
-    const cursoId = document.getElementById('curso').value;
-    const factor = parseInt(document.getElementById('factor').value) || 0;
-
-    if (!maestroId || !cursoId || factor <= 0) {
-        alert('Para borrar un factor, debe tener todos los campos completos.\n\nUse "Buscar X Maestro" para cargar un factor existente.');
-        return;
-    }
-
-    // Verificar que el factor existe
-    if (!factorActual || !factorActual.id) {
-        alert('No hay un factor seleccionado para borrar.\n\nUse "Buscar X Maestro" para cargar un factor existente.');
-        return;
-    }
-
-    // Confirmación
-    const maestroNombre = document.getElementById('nombreMaestro').value;
-    const cursoNombre = document.getElementById('curso').options[document.getElementById('curso').selectedIndex].text;
-
-    if (!confirm(`¿Está seguro de eliminar el factor?\n\nMaestro: ${maestroNombre}\nCurso: ${cursoNombre}\nFactor: ${factor}`)) {
-        return;
-    }
-
-    try {
-        console.log('Eliminando factor:', factorActual.id);
-
-        const { error } = await supabase
-            .from('factores')
-            .delete()
-            .eq('id', factorActual.id);
-
-        if (error) throw error;
-
-        alert('Factor eliminado correctamente');
-
-        // Recargar factores
-        await loadFactores();
-
-        // Limpiar formulario
-        document.getElementById('maestro').value = '';
-        document.getElementById('curso').value = '';
-        document.getElementById('factor').value = '0';
-        document.getElementById('porcentaje').value = '0.00%';
-        document.getElementById('nombreMaestro').value = '';
-        document.getElementById('grado').value = '';
-        document.getElementById('detallesGrado').value = '';
-        document.getElementById('fechaIngreso').value = '';
-
-        factorActual = null;
-
-        // Mostrar primer factor si existe
-        if (factores.length > 0) {
-            mostrarFactor(0);
+function navegarFactorRegistro() {
+    const input = document.getElementById('inputRegistro');
+    if (input) {
+        const num = parseInt(input.value);
+        if (num > 0 && num <= factores.length) {
+            mostrarFactor(num - 1);
         }
-    } catch (error) {
-        console.error('Error eliminando factor:', error);
-        alert('Error al eliminar el factor: ' + error.message);
     }
 }

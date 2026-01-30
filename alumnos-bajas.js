@@ -1,5 +1,5 @@
 // Inicializar Supabase
-
+let supabase = null;
 let bajas = [];
 let instrumentos = [];
 let medios = [];
@@ -11,27 +11,26 @@ let bajaSeleccionada = null;
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando módulo de bajas...');
 
-    // Inicializar Supabase
-    if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
-            supabase = window.supabase;
+    // Esperar a que Supabase esté listo
+    try {
+        await new Promise(r => setTimeout(r, 500));
+        if (typeof waitForSupabase === 'function') {
+            supabase = await waitForSupabase(10000);
             console.log('✓ Supabase conectado');
-
-            // Cargar catálogos y bajas
             await cargarCatalogos();
             await cargarBajas();
-        } else {
-            console.error('✗ Error al conectar con Supabase');
-            alert('Error: No se pudo conectar a la base de datos');
         }
-    } else {
-        console.error('✗ initSupabase no está disponible');
-        alert('Error: initSupabase no está disponible');
+    } catch (e) {
+        console.error('Error conectando a Supabase:', e);
     }
 
     // Setup event listeners
     setupEventListeners();
+    
+    // Habilitar inputs
+    if (typeof habilitarInputs === 'function') {
+        habilitarInputs();
+    }
 
     console.log('Inicialización completa');
 });

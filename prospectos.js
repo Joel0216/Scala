@@ -1,30 +1,27 @@
 // Inicializar Supabase
-
+let supabase = null;
 let prospectos = [];
 let currentIndex = 0;
 
 // Esperar a que se cargue la libreria de Supabase
-window.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando prospectos...');
 
-    // Inicializar Supabase
-    if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
-            supabase = window.supabase;
-        } else {
-            alert('Error: No se pudo conectar a la base de datos');
-            return;
+    // Esperar a que Supabase esté listo
+    try {
+        await new Promise(r => setTimeout(r, 500));
+        if (typeof waitForSupabase === 'function') {
+            supabase = await waitForSupabase(10000);
+            console.log('✓ Supabase conectado');
         }
-    } else {
-        alert('Error: initSupabase no está disponible');
-        return;
+    } catch (e) {
+        console.error('Error conectando a Supabase:', e);
     }
 
     // Inicializar datos
-    await loadCursos();
+    if (supabase) await loadCursos();
     const idProspectoInput = document.getElementById('idProspecto');
-    if (idProspectoInput) {
+    if (idProspectoInput && supabase) {
         idProspectoInput.value = await generateProspectoId();
     }
     const fechaAtencionInput = document.getElementById('fechaAtencion');
@@ -274,15 +271,22 @@ async function buscarProspecto() {
 
 // Borrar prospecto
 async function deleteProspecto() {
-    if (!supabase) return;
+    if (!supabase) {
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
+        return;
+    }
     const id = document.getElementById('idProspecto').value;
 
     if (!id) {
         alert('Seleccione un prospecto primero');
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
-    if (!confirm('¿Está seguro de eliminar este prospecto?')) return;
+    if (!confirm('¿Está seguro de eliminar este prospecto?')) {
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
+        return;
+    }
 
     try {
         const { error } = await supabase
@@ -299,4 +303,7 @@ async function deleteProspecto() {
         console.error('Error eliminando prospecto:', error);
         alert('Error al eliminar el prospecto: ' + error.message);
     }
+    
+    // Habilitar inputs después de la operación
+    setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
 }

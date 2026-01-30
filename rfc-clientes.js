@@ -1,24 +1,20 @@
 // Inicializar Supabase
-
+let supabase = null;
 let clientes = [];
 let currentCliente = null;
 
 // Esperar a que se cargue la libreria de Supabase
-window.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando rfc-clientes...');
 
-    // Inicializar Supabase
-    if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
-            supabase = window.supabase;
-        } else {
-            alert('Error: No se pudo conectar a la base de datos');
-            return;
+    try {
+        await new Promise(r => setTimeout(r, 500));
+        if (typeof waitForSupabase === 'function') {
+            supabase = await waitForSupabase(10000);
+            console.log('✓ Supabase conectado');
         }
-    } else {
-        alert('Error: initSupabase no está disponible');
-        return;
+    } catch (e) {
+        console.error('Error conectando a Supabase:', e);
     }
 
     updateDateTime();
@@ -217,6 +213,7 @@ function nuevoCliente() {
 async function guardarCliente() {
     if (!supabase) {
         alert('Error: Base de datos no conectada');
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
     const clienteData = {
@@ -228,6 +225,7 @@ async function guardarCliente() {
 
     if (!clienteData.rfc || !clienteData.nombre) {
         alert('Complete los campos requeridos');
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
@@ -273,6 +271,9 @@ async function guardarCliente() {
         console.error('Error guardando cliente:', error);
         alert('Error al guardar el cliente: ' + error.message);
     }
+    
+    // Habilitar inputs después de la operación
+    setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
 }
 
 // Buscar cliente
@@ -318,13 +319,20 @@ async function buscarCliente() {
 
 // Borrar cliente
 async function deleteCliente() {
-    if (!supabase) return;
+    if (!supabase) {
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
+        return;
+    }
     if (!currentCliente) {
         alert('Seleccione un cliente primero');
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
-    if (!confirm(`¿Está seguro de eliminar el cliente con RFC ${currentCliente.rfc}?`)) return;
+    if (!confirm(`¿Está seguro de eliminar el cliente con RFC ${currentCliente.rfc}?`)) {
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
+        return;
+    }
 
     try {
         const { error } = await supabase
@@ -342,4 +350,7 @@ async function deleteCliente() {
         console.error('Error eliminando cliente:', error);
         alert('Error al eliminar el cliente: ' + error.message);
     }
+    
+    // Habilitar inputs después de la operación
+    setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
 }

@@ -1,24 +1,21 @@
 // Inicializar Supabase
-
+let supabase = null;
 let grupos = [];
 let currentIndex = 0;
 
 // Esperar a que se cargue la libreria de Supabase y el DOM
-window.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando grupos...');
 
-    // Inicializar Supabase
-    if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
-            supabase = window.supabase;
-        } else {
-            alert('Error: No se pudo conectar a la base de datos');
-            return;
+    // Esperar a que Supabase esté listo
+    try {
+        await new Promise(r => setTimeout(r, 500));
+        if (typeof waitForSupabase === 'function') {
+            supabase = await waitForSupabase(10000);
+            console.log('✓ Supabase conectado');
         }
-    } else {
-        alert('Error: initSupabase no está disponible');
-        return;
+    } catch (e) {
+        console.error('Error conectando a Supabase:', e);
     }
 
     // Inicializar fecha/hora
@@ -26,10 +23,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     setInterval(updateDateTime, 1000);
 
     // Cargar datos
-    await loadCursos();
-    await loadMaestros();
-    await loadSalones();
-    await loadGrupos();
+    if (supabase) {
+        await loadCursos();
+        await loadMaestros();
+        await loadSalones();
+        await loadGrupos();
+    }
 
     // Configurar event listeners
     setupEventListeners();

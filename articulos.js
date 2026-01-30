@@ -1,5 +1,5 @@
 // Inicializar Supabase
-
+let supabase = null;
 let articulos = [];
 let gruposArticulos = [];
 let registroActual = 0;
@@ -9,26 +9,18 @@ let articuloSeleccionado = null;
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando módulo de artículos...');
 
-    // Inicializar Supabase
-    if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
-            supabase = window.supabase;
+    // Esperar a que Supabase esté listo
+    try {
+        await new Promise(r => setTimeout(r, 500));
+        if (typeof waitForSupabase === 'function') {
+            supabase = await waitForSupabase(10000);
             console.log('✓ Supabase conectado');
-
-            // Cargar datos desde la base de datos
             await cargarGruposArticulos();
             await cargarArticulos();
-        } else {
-            console.error('✗ Error al conectar con Supabase');
-            alert('Error: No se pudo conectar a la base de datos');
         }
-    } else {
-        console.error('✗ initSupabase no está disponible');
-        alert('Error: initSupabase no está disponible');
-    }
-
-    // Actualizar fecha y hora
+    } catch (e) {
+        console.error('Error conectando a Supabase:', e);
+    }    // Actualizar fecha y hora
     actualizarFechaHora();
     setInterval(actualizarFechaHora, 1000);
 
@@ -375,11 +367,13 @@ function cerrarModal() {
 async function borrarArticulo() {
     if (!articuloSeleccionado) {
         alert('Primero debe seleccionar un artículo');
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
     if (!supabase) {
         alert('Error: Base de datos no conectada');
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
@@ -401,6 +395,9 @@ async function borrarArticulo() {
             alert('Error al eliminar artículo: ' + error.message);
         }
     }
+    
+    // Habilitar inputs después de la operación
+    setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
 }
 
 // Botón Terminar

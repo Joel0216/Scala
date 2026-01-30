@@ -1,26 +1,23 @@
 // Inicializar Supabase
-
+let supabase = null;
 let todosLosGrupos = [];
 let gruposFiltrados = [];
 let currentPage = 0;
 const ITEMS_PER_PAGE = 20;
 
 // Esperar a que se cargue la libreria de Supabase
-window.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando horarios...');
 
-    // Inicializar Supabase
-    if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
-            supabase = window.supabase;
-        } else {
-            alert('Error: No se pudo conectar a la base de datos');
-            return;
+    // Esperar a que Supabase esté listo
+    try {
+        await new Promise(r => setTimeout(r, 500));
+        if (typeof waitForSupabase === 'function') {
+            supabase = await waitForSupabase(10000);
+            console.log('✓ Supabase conectado');
         }
-    } else {
-        alert('Error: initSupabase no está disponible');
-        return;
+    } catch (e) {
+        console.error('Error conectando a Supabase:', e);
     }
 
     updateDateTime();

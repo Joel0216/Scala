@@ -1,5 +1,5 @@
 // Inicializar Supabase
-
+let supabase = null;
 let grupos = [];
 let grupoSeleccionado = null;
 
@@ -7,22 +7,15 @@ let grupoSeleccionado = null;
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando módulo de grupos de artículos...');
 
-    // Inicializar Supabase
-    if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
-            supabase = window.supabase;
+    try {
+        await new Promise(r => setTimeout(r, 500));
+        if (typeof waitForSupabase === 'function') {
+            supabase = await waitForSupabase(10000);
             console.log('✓ Supabase conectado');
-
-            // Cargar grupos desde la base de datos
             await cargarGrupos();
-        } else {
-            console.error('✗ Error al conectar con Supabase');
-            alert('Error: No se pudo conectar a la base de datos');
         }
-    } else {
-        console.error('✗ initSupabase no está disponible');
-        alert('Error: initSupabase no está disponible');
+    } catch (e) {
+        console.error('Error conectando a Supabase:', e);
     }
 
     // Actualizar fecha y hora
@@ -136,6 +129,7 @@ function nuevoGrupo() {
 async function guardarGrupo() {
     if (!supabase) {
         alert('Error: Base de datos no conectada');
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
@@ -145,6 +139,7 @@ async function guardarGrupo() {
     if (!nombre) {
         alert('Por favor ingrese el nombre del grupo');
         document.getElementById('nombre').focus();
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
@@ -188,17 +183,22 @@ async function guardarGrupo() {
             alert('Error al guardar grupo: ' + error.message);
         }
     }
+    
+    // Habilitar inputs después de la operación
+    setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
 }
 
 // Borrar grupo
 async function borrarGrupo() {
     if (!grupoSeleccionado) {
         alert('Primero debe seleccionar un grupo');
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
     if (!supabase) {
         alert('Error: Base de datos no conectada');
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
@@ -207,6 +207,7 @@ async function borrarGrupo() {
 
     if (cantidadArticulos > 0) {
         alert(`No se puede eliminar el grupo "${grupoSeleccionado.nombre}" porque tiene ${cantidadArticulos} artículo(s) asociado(s).\n\nPrimero debe eliminar o reasignar los artículos.`);
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
@@ -229,6 +230,9 @@ async function borrarGrupo() {
             alert('Error al eliminar grupo: ' + error.message);
         }
     }
+    
+    // Habilitar inputs después de la operación
+    setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
 }
 
 // Terminar

@@ -1,5 +1,5 @@
 // Inicializar Supabase
-
+let supabase = null;
 let cursos = [];
 let registroActual = 0;
 let cursoSeleccionado = null;
@@ -8,27 +8,26 @@ let cursoSeleccionado = null;
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM cargado, inicializando módulo de cursos...');
 
-    // Inicializar Supabase
-    if (typeof initSupabase === 'function') {
-        const success = initSupabase();
-        if (success) {
-            supabase = window.supabase;
+    // Esperar a que Supabase esté listo
+    try {
+        await new Promise(r => setTimeout(r, 500)); // Esperar a que cargue el CDN
+        if (typeof waitForSupabase === 'function') {
+            supabase = await waitForSupabase(10000);
             console.log('✓ Supabase conectado');
-
-            // Cargar cursos desde la base de datos
             await cargarCursos();
-        } else {
-            console.error('✗ Error al conectar con Supabase');
-            alert('Error: No se pudo conectar a la base de datos');
         }
-    } else {
-        console.error('✗ initSupabase no está disponible');
-        alert('Error: initSupabase no está disponible');
+    } catch (e) {
+        console.error('Error conectando a Supabase:', e);
     }
 
     // Actualizar fecha y hora
     actualizarFechaHora();
     setInterval(actualizarFechaHora, 1000);
+
+    // Habilitar inputs
+    if (typeof habilitarInputs === 'function') {
+        habilitarInputs();
+    }
 
     console.log('Inicialización completa');
 });
@@ -51,12 +50,6 @@ async function cargarCursos() {
         // Cargar dropdown de curso siguiente
         await cargarDropdownCursoSiguiente();
 
-        // Actualizar total de registros
-        const totalRegistros = document.getElementById('totalRegistros');
-        if (totalRegistros) {
-            // El total se actualiza en mostrarRegistro
-        }
-
         // Mostrar primer registro si hay cursos
         if (cursos.length > 0) {
             mostrarRegistro(0);
@@ -65,7 +58,6 @@ async function cargarCursos() {
         }
     } catch (error) {
         console.error('Error cargando cursos:', error);
-        alert('Error al cargar cursos: ' + error.message);
     }
 }
 
@@ -105,18 +97,20 @@ function actualizarFechaHora() {
 
 // Función para limpiar formulario
 function limpiarFormulario() {
-    document.getElementById('curso').value = '';
-    document.getElementById('costo').value = '';
-    document.getElementById('clave').value = '';
-    document.getElementById('iva').value = '0.16';
-    document.getElementById('recargo').value = '';
-    document.getElementById('cursoSiguiente').value = '';
+    const campos = ['curso', 'costo', 'clave', 'recargo', 'cursoSiguiente'];
+    campos.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    const ivaEl = document.getElementById('iva');
+    if (ivaEl) ivaEl.value = '0.16';
     cursoSeleccionado = null;
 }
 
 // Función para cargar datos del curso
 function cargarDatosCurso(curso) {
     cursoSeleccionado = curso;
+    
     const cursoInput = document.getElementById('curso');
     const costoInput = document.getElementById('costo');
     const claveInput = document.getElementById('clave');
@@ -125,10 +119,10 @@ function cargarDatosCurso(curso) {
     const cursoSiguienteSelect = document.getElementById('cursoSiguiente');
 
     if (cursoInput) cursoInput.value = curso.curso || '';
-    if (costoInput) costoInput.value = curso.precio_mensual ? '$' + curso.precio_mensual.toFixed(2) : '';
+    if (costoInput) costoInput.value = curso.precio_mensual ? curso.precio_mensual.toFixed(2) : '';
     if (claveInput) claveInput.value = curso.clave || '';
-    if (ivaInput) ivaInput.value = '0.16'; // IVA fijo
-    if (recargoInput) recargoInput.value = curso.precio_inscripcion ? '$' + curso.precio_inscripcion.toFixed(2) : '';
+    if (ivaInput) ivaInput.value = '0.16';
+    if (recargoInput) recargoInput.value = curso.precio_inscripcion ? curso.precio_inscripcion.toFixed(2) : '';
     if (cursoSiguienteSelect) cursoSiguienteSelect.value = curso.curso_siguiente_id || '';
 }
 
@@ -159,56 +153,55 @@ function nuevoCurso() {
 // Botón Buscar
 function buscarCurso() {
     const modal = document.getElementById('modalBusqueda');
-    modal.style.display = 'block';
-    document.getElementById('inputBusqueda').value = '';
-    document.getElementById('inputBusqueda').focus();
+    if (modal) {
+        modal.style.display = 'block';
+        const inputBusqueda = document.getElementById('inputBusqueda');
+        if (inputBusqueda) {
+            inputBusqueda.value = '';
+            inputBusqueda.focus();
+        }
+    }
 }
 
 // Aceptar búsqueda
 async function aceptarBusqueda() {
-    const termino = document.getElementById('inputBusqueda').value.trim().toUpperCase();
+    const inputBusqueda = document.getElementById('inputBusqueda');
+    const termino = inputBusqueda ? inputBusqueda.value.trim().toUpperCase() : '';
+
+    cerrarModal();
 
     if (!termino) {
         alert('Por favor ingrese un nombre');
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
-    if (!supabase) {
-        alert('Error: Base de datos no conectada');
-        return;
-    }
+    // Buscar en datos locales primero
+    const resultados = cursos.filter(c => 
+        (c.curso && c.curso.toUpperCase().includes(termino)) ||
+        (c.clave && c.clave.toUpperCase().includes(termino))
+    );
 
-    try {
-        const { data, error } = await supabase
-            .from('cursos')
-            .select('*')
-            .or(`curso.ilike.%${termino}%,clave.ilike.%${termino}%`)
-            .order('curso', { ascending: true });
-
-        if (error) throw error;
-
-        cerrarModal();
-
-        if (!data || data.length === 0) {
-            alert('No se encontraron cursos con ese nombre o clave');
-        } else if (data.length === 1) {
-            const index = cursos.findIndex(c => c.id === data[0].id);
-            if (index !== -1) {
-                mostrarRegistro(index);
-            }
-        } else {
-            mostrarListaCursos(data);
+    if (resultados.length === 0) {
+        alert('No se encontraron cursos con ese nombre o clave');
+    } else if (resultados.length === 1) {
+        const index = cursos.findIndex(c => c.id === resultados[0].id);
+        if (index !== -1) {
+            mostrarRegistro(index);
         }
-    } catch (error) {
-        console.error('Error buscando cursos:', error);
-        alert('Error al buscar cursos: ' + error.message);
+    } else {
+        mostrarListaCursos(resultados);
     }
+
+    setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
 }
 
 // Mostrar lista de cursos
 function mostrarListaCursos(resultados) {
     const modal = document.getElementById('modalLista');
     const tbody = document.getElementById('bodyResultados');
+    if (!modal || !tbody) return;
+
     tbody.innerHTML = '';
 
     resultados.forEach((curso) => {
@@ -221,9 +214,9 @@ function mostrarListaCursos(resultados) {
             cerrarModal();
         };
         tr.innerHTML = `
-            <td>${curso.curso}</td>
+            <td>${curso.curso || ''}</td>
             <td>${curso.clave || 'N/A'}</td>
-            <td>$${curso.precio_mensual ? curso.precio_mensual.toFixed(2) : '0.00'}</td>
+            <td>${curso.precio_mensual ? curso.precio_mensual.toFixed(2) : '0.00'}</td>
             <td>16%</td>
         `;
         tbody.appendChild(tr);
@@ -234,19 +227,26 @@ function mostrarListaCursos(resultados) {
 
 // Cerrar modal
 function cerrarModal() {
-    document.getElementById('modalBusqueda').style.display = 'none';
-    document.getElementById('modalLista').style.display = 'none';
+    const modalBusqueda = document.getElementById('modalBusqueda');
+    const modalLista = document.getElementById('modalLista');
+    if (modalBusqueda) modalBusqueda.style.display = 'none';
+    if (modalLista) modalLista.style.display = 'none';
+    
+    // Habilitar inputs después de cerrar modal
+    setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
 }
 
 // Botón Borrar
 async function borrarCurso() {
     if (!cursoSeleccionado) {
         alert('Primero debe seleccionar un curso');
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
     if (!supabase) {
         alert('Error: Base de datos no conectada');
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
         return;
     }
 
@@ -260,14 +260,14 @@ async function borrarCurso() {
             if (error) throw error;
 
             alert('Curso eliminado correctamente');
-
-            // Recargar cursos
             await cargarCursos();
         } catch (error) {
             console.error('Error eliminando curso:', error);
             alert('Error al eliminar curso: ' + error.message);
         }
     }
+
+    setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
 }
 
 // Generar reporte
@@ -279,6 +279,8 @@ function generarReporte() {
 function terminar() {
     if (confirm('¿Desea salir del módulo de cursos?')) {
         window.location.href = 'archivos.html';
+    } else {
+        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
     }
 }
 
@@ -300,8 +302,11 @@ function navegarUltimo() {
 }
 
 function navegarRegistro() {
-    const num = parseInt(document.getElementById('inputRegistro').value);
-    if (num > 0 && num <= cursos.length) {
-        mostrarRegistro(num - 1);
+    const input = document.getElementById('inputRegistro');
+    if (input) {
+        const num = parseInt(input.value);
+        if (num > 0 && num <= cursos.length) {
+            mostrarRegistro(num - 1);
+        }
     }
 }
