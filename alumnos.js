@@ -1,469 +1,502 @@
-// Módulo de Alumnos
-let db = null;
-let alumnosCache = [];
-let gruposDisponibles = [];
-let alumnoSeleccionado = null;
+// =====================================================
+// MÓDULO DE ALUMNOS - SCALA
+// =====================================================
 
-// Inicializar cuando se carga la página
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log('=== INICIALIZANDO MÓDULO ALUMNOS ===');
+var db = null;
+var alumnosCache = [];
+var gruposCache = [];
+var salonesCache = [];
+var alumnoSeleccionado = null;
+var alumnoEditando = null;
+
+// =====================================================
+// INICIALIZACIÓN
+// =====================================================
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('Inicializando módulo de alumnos...');
     
-    // Esperar a que Supabase esté listo
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise(function(r) { setTimeout(r, 500); });
     
-    // Obtener cliente de Supabase
-    db = window.supabaseClient || window.supabase || (typeof getSupabase === 'function' ? getSupabase() : null);
-    
-    if (db) {
-        console.log('✓ Supabase disponible en alumnos');
-        
-        // Cargar datos según la página
-        const url = window.location.href.toLowerCase();
-        
-        if (url.includes('alumnos-alta')) {
-            await cargarSelectsAlta();
-        } else if (url.includes('alumnos-lista')) {
-            await cargarListaAlumnos();
-        } else if (url.includes('alumnos.html')) {
-            await cargarSelectsAlta();
-            await cargarAlumnosCache();
-        }
-    } else {
-        console.error('✗ Supabase NO disponible');
+    db = window.supabaseClient || window.supabase;
+    if (!db && typeof getSupabase === 'function') {
+        db = getSupabase();
     }
     
-    // Habilitar inputs
+    if (db) {
+        console.log('Supabase conectado');
+        await cargarGrupos();
+        await cargarInstrumentos();
+        await cargarMedios();
+        await cargarSalones();
+    } else {
+        console.error('Supabase NO disponible');
+    }
+    
     if (typeof habilitarInputs === 'function') {
         habilitarInputs();
     }
 });
 
-// Cargar alumnos en caché para búsquedas
-async function cargarAlumnosCache() {
+// =====================================================
+// FUNCIONES DE CARGA DE DATOS
+// =====================================================
+async function cargarGrupos() {
     if (!db) return;
     
     try {
-        const { data, error } = await db
-            .from('alumnos')
-            .select('*')
-            .eq('activo', true)
-            .order('nombre');
-        
-        if (error) {
-            console.error('Error cargando alumnos:', error);
-        } else {
-            alumnosCache = data || [];
-            console.log(`✓ ${alumnosCache.length} alumnos en caché`);
-        }
-    } catch (e) {
-        console.error('Error:', e);
-    }
-}
-
-// Cargar selects para alta de alumnos
-async function cargarSelectsAlta() {
-    if (!db) {
-        console.warn('No hay conexión a Supabase');
-        return;
-    }
-
-    console.log('Cargando selects...');
-
-    try {
-        // Cargar grupos
-        const selectGrupo = document.getElementById('grupo');
-        if (selectGrupo) {
-            const { data: grupos, error } = await db
-                .from('grupos')
-                .select('id, clave, curso_id, cursos(curso)')
-                .order('clave');
-
-            if (error) {
-                console.error('Error grupos:', error);
-            } else if (grupos && grupos.length > 0) {
-                selectGrupo.innerHTML = '<option value="">-- Seleccione --</option>';
-                grupos.forEach(g => {
-                    const opt = document.createElement('option');
-                    opt.value = g.id;
-                    opt.textContent = g.clave + (g.cursos?.curso ? ' - ' + g.cursos.curso : '');
-                    selectGrupo.appendChild(opt);
-                });
-                gruposDisponibles = grupos;
-                console.log(`✓ ${grupos.length} grupos cargados`);
-            } else {
-                console.log('No hay grupos en la BD');
-            }
-        }
-
-        // Cargar instrumentos
-        const selectInst = document.getElementById('instrumento');
-        if (selectInst) {
-            const { data: inst, error } = await db
-                .from('instrumentos')
-                .select('id, clave, descripcion')
-                .eq('activo', true)
-                .order('clave');
-
-            if (error) {
-                console.error('Error instrumentos:', error);
-            } else if (inst && inst.length > 0) {
-                selectInst.innerHTML = '<option value="">-- Seleccione --</option>';
-                inst.forEach(i => {
-                    const opt = document.createElement('option');
-                    opt.value = i.id;
-                    opt.textContent = i.clave + ' - ' + i.descripcion;
-                    selectInst.appendChild(opt);
-                });
-                console.log(`✓ ${inst.length} instrumentos cargados`);
-            }
-        }
-
-        // Cargar medios de contacto
-        const selectMedio = document.getElementById('medio');
-        if (selectMedio) {
-            const { data: medios, error } = await db
-                .from('medios_contacto')
-                .select('id, clave, descripcion')
-                .eq('activo', true)
-                .order('clave');
-
-            if (error) {
-                console.error('Error medios:', error);
-            } else if (medios && medios.length > 0) {
-                selectMedio.innerHTML = '<option value="">-- Seleccione --</option>';
-                medios.forEach(m => {
-                    const opt = document.createElement('option');
-                    opt.value = m.id;
-                    opt.textContent = m.clave + ' - ' + m.descripcion;
-                    selectMedio.appendChild(opt);
-                });
-                console.log(`✓ ${medios.length} medios cargados`);
-            }
-        }
-    } catch (e) {
-        console.error('Error cargando selects:', e);
-    }
-}
-
-// Cargar lista de alumnos (para alumnos-lista.html)
-async function cargarListaAlumnos() {
-    if (!db) return;
-    
-    const tbody = document.getElementById('tablaAlumnos') || document.querySelector('tbody');
-    if (!tbody) return;
-    
-    try {
-        const { data, error } = await db
-            .from('alumnos')
-            .select('*')
-            .eq('activo', true)
-            .order('nombre');
-        
-        if (error) {
-            console.error('Error:', error);
+        var result = await db.from('grupos').select('id, clave, curso_id, cursos(curso)').order('clave');
+        if (result.error) {
+            console.error('Error cargando grupos:', result.error);
             return;
         }
         
-        tbody.innerHTML = '';
+        gruposCache = result.data || [];
+        console.log(gruposCache.length + ' grupos cargados');
         
-        if (data && data.length > 0) {
-            data.forEach(alumno => {
-                const tr = document.createElement('tr');
-                tr.style.cursor = 'pointer';
-                tr.onclick = () => seleccionarAlumnoLista(alumno);
-                tr.innerHTML = `
-                    <td>${alumno.credencial || alumno.id}</td>
-                    <td>${alumno.nombre || ''}</td>
-                    <td>${alumno.grupo_clave || ''}</td>
-                    <td>${alumno.telefono || ''}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-            console.log(`✓ ${data.length} alumnos mostrados`);
-        } else {
-            tbody.innerHTML = '<tr><td colspan="4">No hay alumnos registrados</td></tr>';
+        // Llenar selects de grupo
+        var selectGrupo = document.getElementById('grupo');
+        var selectNuevoGrupo = document.getElementById('selectNuevoGrupo');
+        
+        if (selectGrupo) {
+            selectGrupo.innerHTML = '<option value="">-- Seleccione Grupo --</option>';
+            for (var i = 0; i < gruposCache.length; i++) {
+                var g = gruposCache[i];
+                var opt = document.createElement('option');
+                opt.value = g.clave;
+                opt.textContent = g.clave + ' - ' + (g.cursos ? g.cursos.curso : '');
+                selectGrupo.appendChild(opt);
+            }
+        }
+        
+        if (selectNuevoGrupo) {
+            selectNuevoGrupo.innerHTML = '<option value="">-- Seleccione nuevo grupo --</option>';
+            for (var j = 0; j < gruposCache.length; j++) {
+                var gr = gruposCache[j];
+                var opt2 = document.createElement('option');
+                opt2.value = gr.clave;
+                opt2.textContent = gr.clave + ' - ' + (gr.cursos ? gr.cursos.curso : '');
+                selectNuevoGrupo.appendChild(opt2);
+            }
         }
     } catch (e) {
         console.error('Error:', e);
     }
 }
 
-function seleccionarAlumnoLista(alumno) {
-    if (window.opener && window.opener.cargarAlumnoDesdeVentana) {
-        window.opener.cargarAlumnoDesdeVentana(alumno);
-        window.close();
-    } else {
-        cargarDatosAlumno(alumno);
-    }
-}
-
-// Función de búsqueda de alumnos
-function buscarAlumno() {
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.id = 'modalBusqueda';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <h2>Buscar Alumno</h2>
-            <p>Ingrese credencial o nombre (puede ser parcial):</p>
-            <input type="text" id="inputBusqueda" placeholder="Ej: J, Joel, 5086..." style="width: 100%; padding: 10px; font-size: 16px;">
-            <div class="modal-buttons" style="margin-top: 15px;">
-                <button class="btn" onclick="ejecutarBusqueda()">Buscar</button>
-                <button class="btn" onclick="cerrarModal()">Cancelar</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    modal.style.display = 'block';
+async function cargarInstrumentos() {
+    if (!db) return;
+    var select = document.getElementById('instrumento');
+    if (!select) return;
     
-    const input = document.getElementById('inputBusqueda');
-    input.focus();
-    
-    // Buscar al presionar Enter
-    input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') ejecutarBusqueda();
-    });
-}
-
-async function ejecutarBusqueda() {
-    const termino = document.getElementById('inputBusqueda').value.trim().toUpperCase();
-    
-    if (!termino) {
-        await mostrarAlerta('Ingrese un término de búsqueda');
-        return;
-    }
-    
-    cerrarModal();
-    
-    // Buscar en la base de datos
-    if (db) {
-        try {
-            const { data, error } = await db
-                .from('alumnos')
-                .select('*')
-                .eq('activo', true)
-                .or(`nombre.ilike.%${termino}%,credencial.ilike.%${termino}%`)
-                .order('nombre')
-                .limit(50);
-            
-            if (error) {
-                console.error('Error en búsqueda:', error);
-                // Intentar búsqueda alternativa
-                buscarEnCache(termino);
-                return;
-            }
-            
-            if (data && data.length > 0) {
-                if (data.length === 1) {
-                    cargarDatosAlumno(data[0]);
-                } else {
-                    mostrarResultadosBusqueda(data);
-                }
-            } else {
-                await mostrarAlerta('No se encontraron alumnos con ese criterio');
-            }
-        } catch (e) {
-            console.error('Error:', e);
-            buscarEnCache(termino);
+    try {
+        var result = await db.from('instrumentos').select('id, clave, descripcion').eq('activo', true).order('clave');
+        if (result.error) return;
+        
+        select.innerHTML = '<option value="">-- Seleccione --</option>';
+        for (var i = 0; i < result.data.length; i++) {
+            var inst = result.data[i];
+            var opt = document.createElement('option');
+            opt.value = inst.clave;
+            opt.textContent = inst.clave + ' - ' + inst.descripcion;
+            select.appendChild(opt);
         }
-    } else {
-        buscarEnCache(termino);
+    } catch (e) {
+        console.error('Error:', e);
     }
 }
 
-function buscarEnCache(termino) {
-    const resultados = alumnosCache.filter(a => {
-        const nombre = (a.nombre || '').toUpperCase();
-        const cred = (a.credencial || String(a.id)).toUpperCase();
-        return nombre.includes(termino) || nombre.startsWith(termino) || cred.includes(termino);
-    });
+async function cargarMedios() {
+    if (!db) return;
+    var select = document.getElementById('medio');
+    if (!select) return;
     
-    if (resultados.length === 0) {
-        mostrarAlerta('No se encontraron alumnos');
-    } else if (resultados.length === 1) {
-        cargarDatosAlumno(resultados[0]);
-    } else {
-        mostrarResultadosBusqueda(resultados);
+    try {
+        var result = await db.from('medios_contacto').select('id, clave, descripcion').eq('activo', true).order('clave');
+        if (result.error) return;
+        
+        select.innerHTML = '<option value="">-- Seleccione --</option>';
+        for (var i = 0; i < result.data.length; i++) {
+            var m = result.data[i];
+            var opt = document.createElement('option');
+            opt.value = m.clave;
+            opt.textContent = m.clave + ' - ' + m.descripcion;
+            select.appendChild(opt);
+        }
+    } catch (e) {
+        console.error('Error:', e);
     }
 }
 
-function mostrarResultadosBusqueda(resultados) {
-    const modal = document.createElement('div');
+async function cargarSalones() {
+    if (!db) return;
+    
+    try {
+        var result = await db.from('salones').select('*').order('numero');
+        if (result.error) {
+            console.error('Error cargando salones:', result.error);
+            // Usar datos de ejemplo si no hay tabla
+            salonesCache = [
+                { numero: '1', ubicacion: 'Planta Baja' },
+                { numero: '2', ubicacion: 'Planta Baja' },
+                { numero: '3', ubicacion: 'Primer Piso' },
+                { numero: '4', ubicacion: 'Primer Piso' },
+                { numero: '5', ubicacion: 'Segundo Piso' }
+            ];
+            return;
+        }
+        salonesCache = result.data || [];
+        console.log(salonesCache.length + ' salones cargados');
+    } catch (e) {
+        console.error('Error:', e);
+        // Datos de ejemplo
+        salonesCache = [
+            { numero: '1', ubicacion: 'Planta Baja' },
+            { numero: '2', ubicacion: 'Planta Baja' },
+            { numero: '3', ubicacion: 'Primer Piso' }
+        ];
+    }
+}
+
+// =====================================================
+// SELECTOR DE SALÓN
+// =====================================================
+function abrirSelectorSalon() {
+    var modal = document.createElement('div');
     modal.className = 'modal';
-    modal.id = 'modalResultados';
+    modal.id = 'modalSalon';
     
-    let html = `
-        <div class="modal-content" style="max-width: 800px;">
-            <h2>Seleccione un alumno (${resultados.length} encontrados)</h2>
-            <div style="max-height: 400px; overflow-y: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="background: #333;">
-                            <th style="padding: 8px; text-align: left;">Credencial</th>
-                            <th style="padding: 8px; text-align: left;">Nombre</th>
-                            <th style="padding: 8px; text-align: left;">Teléfono</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-    `;
+    var html = '<div class="modal-content" style="max-width:500px;">' +
+        '<h2>Seleccionar Salón</h2>' +
+        '<div style="max-height:350px;overflow-y:auto;">' +
+        '<table style="width:100%;border-collapse:collapse;">' +
+        '<thead><tr style="background:#008B8B;color:#fff;">' +
+        '<th style="padding:10px;">Salón</th>' +
+        '<th style="padding:10px;">Ubicación</th>' +
+        '</tr></thead><tbody>';
     
-    resultados.forEach((alumno, i) => {
-        html += `
-            <tr onclick="seleccionarResultado(${i})" style="cursor: pointer; border-bottom: 1px solid #444;">
-                <td style="padding: 8px;">${alumno.credencial || alumno.id}</td>
-                <td style="padding: 8px;">${alumno.nombre || ''}</td>
-                <td style="padding: 8px;">${alumno.telefono || alumno.celular || ''}</td>
-            </tr>
-        `;
-    });
+    for (var i = 0; i < salonesCache.length; i++) {
+        var s = salonesCache[i];
+        html += '<tr onclick="seleccionarSalon(\'' + s.numero + '\', \'' + (s.ubicacion || '') + '\')" ' +
+            'style="cursor:pointer;border-bottom:1px solid #ddd;" ' +
+            'onmouseover="this.style.background=\'#e0f7fa\'" onmouseout="this.style.background=\'#fff\'">' +
+            '<td style="padding:10px;text-align:center;font-weight:bold;">' + s.numero + '</td>' +
+            '<td style="padding:10px;">' + (s.ubicacion || '') + '</td>' +
+            '</tr>';
+    }
     
-    html += `
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-buttons" style="margin-top: 15px;">
-                <button class="btn" onclick="cerrarModal()">Cancelar</button>
-            </div>
-        </div>
-    `;
+    html += '</tbody></table></div>' +
+        '<div class="modal-buttons" style="margin-top:15px;">' +
+        '<button class="btn" onclick="cerrarModal()">Cancelar</button>' +
+        '</div></div>';
     
     modal.innerHTML = html;
     document.body.appendChild(modal);
     modal.style.display = 'block';
-    
-    // Guardar resultados para selección
-    window._resultadosBusqueda = resultados;
 }
 
-function seleccionarResultado(index) {
-    const alumno = window._resultadosBusqueda[index];
+function seleccionarSalon(numero, ubicacion) {
+    var salonInput = document.getElementById('salon');
+    var ubicacionInput = document.getElementById('salonUbicacion');
+    
+    if (salonInput) salonInput.value = numero;
+    if (ubicacionInput) ubicacionInput.value = ubicacion;
+    
     cerrarModal();
-    cargarDatosAlumno(alumno);
 }
 
-function cargarDatosAlumno(alumno) {
-    alumnoSeleccionado = alumno;
+// =====================================================
+// VALIDACIONES
+// =====================================================
+function soloNumeros(input) {
+    input.value = input.value.replace(/[^0-9]/g, '');
+}
+
+function validarPorcentaje(input) {
+    var valor = input.value.replace(/[^0-9.]/g, '');
+    var partes = valor.split('.');
     
-    // Mapeo de campos
-    const campos = {
-        'credencial': alumno.credencial || alumno.id,
-        'digito': alumno.digito || '0',
-        'nombre': alumno.nombre,
-        'direccion': alumno.direccion,
-        'direccion1': alumno.direccion,
-        'email': alumno.email,
-        'celular': alumno.celular,
-        'telefono': alumno.telefono,
-        'fechaNacimiento': alumno.fecha_nacimiento,
-        'fechaIngreso': alumno.fecha_ingreso,
-        'nombrePadre': alumno.nombre_padre,
-        'celularPadre': alumno.celular_padre,
-        'nombreMadre': alumno.nombre_madre,
-        'celularMadre': alumno.celular_madre,
-        'grupo': alumno.grupo_id || alumno.grupo_clave,
-        'grado': alumno.grado,
-        'porcentaje': alumno.porcentaje_beca || '0',
-        'comentario': alumno.comentario
-    };
-    
-    for (let id in campos) {
-        const el = document.getElementById(id);
-        if (el && campos[id] !== undefined) {
-            el.value = campos[id] || '';
-        }
+    if (partes.length > 2) {
+        valor = partes[0] + '.' + partes.slice(1).join('');
     }
     
-    // Checkboxes
-    const beca = document.getElementById('beca');
-    if (beca) beca.checked = alumno.beca || false;
+    if (partes[1] && partes[1].length > 2) {
+        valor = partes[0] + '.' + partes[1].substring(0, 2);
+    }
     
-    const reingreso = document.getElementById('reingreso');
-    if (reingreso) reingreso.checked = alumno.reingreso || false;
+    var num = parseFloat(valor);
+    if (num > 100) {
+        valor = '100';
+    }
     
-    console.log('Alumno cargado:', alumno.nombre);
+    input.value = valor;
 }
 
-function cerrarModal() {
-    document.querySelectorAll('.modal').forEach(m => m.remove());
-    if (typeof habilitarInputs === 'function') habilitarInputs();
+function togglePorcentaje() {
+    var beca = document.getElementById('beca');
+    var porcentaje = document.getElementById('porcentaje');
+    if (beca && porcentaje) {
+        porcentaje.disabled = !beca.checked;
+        if (!beca.checked) {
+            porcentaje.value = '0.00%';
+        }
+    }
 }
 
-// Función para abrir lista de alumnos
-function listaAlumnos() {
-    // Crear ventana modal con lista
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.id = 'modalLista';
-    modal.innerHTML = `
-        <div class="modal-content" style="max-width: 900px;">
-            <h2>Lista de Alumnos</h2>
-            <div id="contenedorLista" style="max-height: 500px; overflow-y: auto;">
-                <p>Cargando...</p>
-            </div>
-            <div class="modal-buttons" style="margin-top: 15px;">
-                <button class="btn" onclick="cerrarModal()">Cerrar</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    modal.style.display = 'block';
+function calcularEdad() {
+    var fechaNac = document.getElementById('fechaNacimiento');
+    var edadInput = document.getElementById('edad');
+    if (fechaNac && fechaNac.value && edadInput) {
+        var hoy = new Date();
+        var nacimiento = new Date(fechaNac.value);
+        var edad = hoy.getFullYear() - nacimiento.getFullYear();
+        var m = hoy.getMonth() - nacimiento.getMonth();
+        if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+            edad--;
+        }
+        edadInput.value = edad;
+    }
+}
+
+// =====================================================
+// BÚSQUEDA DE ALUMNOS (ESTILO WINDOWS)
+// =====================================================
+function buscarAlumno() {
+    document.getElementById('inputBusquedaAlumno').value = '';
+    document.getElementById('modalBusquedaAlumno').style.display = 'block';
+    document.getElementById('inputBusquedaAlumno').focus();
     
-    cargarListaEnModal();
+    // Agregar evento Enter
+    document.getElementById('inputBusquedaAlumno').onkeypress = function(e) {
+        if (e.key === 'Enter') ejecutarBusquedaAlumno();
+    };
 }
 
-async function cargarListaEnModal() {
-    const contenedor = document.getElementById('contenedorLista');
+function cerrarModalBusquedaAlumno() {
+    document.getElementById('modalBusquedaAlumno').style.display = 'none';
+}
+
+function cerrarModalResultadosAlumno() {
+    document.getElementById('modalResultadosAlumno').style.display = 'none';
+}
+
+async function ejecutarBusquedaAlumno() {
+    var termino = document.getElementById('inputBusquedaAlumno').value.trim().toUpperCase();
+    
+    if (!termino) {
+        await mostrarAlerta('Ingrese un nombre o credencial para buscar');
+        return;
+    }
+    
+    cerrarModalBusquedaAlumno();
     
     if (!db) {
-        contenedor.innerHTML = '<p>Error: No hay conexión a la base de datos</p>';
+        await mostrarAlerta('No hay conexión a la base de datos');
         return;
     }
     
     try {
-        const { data, error } = await db
-            .from('alumnos')
+        var result = await db.from('alumnos')
             .select('*')
             .eq('activo', true)
-            .order('nombre');
+            .or('nombre.ilike.%' + termino + '%,credencial::text.ilike.%' + termino + '%')
+            .order('nombre')
+            .limit(50);
         
-        if (error) {
-            contenedor.innerHTML = '<p>Error: ' + error.message + '</p>';
+        if (result.error) {
+            await mostrarAlerta('Error en búsqueda: ' + result.error.message);
             return;
         }
         
-        if (!data || data.length === 0) {
+        if (!result.data || result.data.length === 0) {
+            await mostrarAlerta('No se encontraron alumnos con ese criterio');
+            return;
+        }
+        
+        if (result.data.length === 1) {
+            mostrarAlumno(result.data[0]);
+        } else {
+            mostrarResultadosAlumnoWindows(result.data, termino);
+        }
+    } catch (e) {
+        await mostrarAlerta('Error: ' + e.message);
+    }
+}
+
+function mostrarResultadosAlumnoWindows(resultados, termino) {
+    var tbody = document.getElementById('bodyResultadosAlumno');
+    tbody.innerHTML = '';
+    
+    document.getElementById('tituloResultadosAlumno').textContent = "Resultados de Búsqueda ('" + termino + "')";
+    
+    window._resultadosBusquedaAlumno = resultados;
+    
+    for (var i = 0; i < resultados.length; i++) {
+        var alumno = resultados[i];
+        var tr = document.createElement('tr');
+        tr.setAttribute('data-index', i);
+        tr.onclick = function() {
+            // Quitar selección anterior
+            var rows = tbody.querySelectorAll('tr');
+            for (var j = 0; j < rows.length; j++) {
+                rows[j].classList.remove('selected');
+            }
+            this.classList.add('selected');
+        };
+        tr.ondblclick = function() {
+            var idx = parseInt(this.getAttribute('data-index'));
+            var alumnoSel = window._resultadosBusquedaAlumno[idx];
+            cerrarModalResultadosAlumno();
+            mostrarAlumno(alumnoSel);
+        };
+        tr.innerHTML = '<td>' + (alumno.nombre || '') + '</td><td>' + alumno.credencial + '</td>';
+        tbody.appendChild(tr);
+    }
+    
+    document.getElementById('modalResultadosAlumno').style.display = 'block';
+}
+
+function mostrarAlumno(alumno) {
+    alumnoSeleccionado = alumno;
+    
+    setVal('credencial', alumno.credencial);
+    setVal('digito', alumno.dig_ver || 0);
+    setVal('nombre', alumno.nombre);
+    setVal('direccion1', alumno.direccion1);
+    setVal('direccion2', alumno.direccion2);
+    setVal('celular', alumno.celular);
+    setVal('telefono', alumno.telefono);
+    setVal('email', alumno.email);
+    setVal('fechaNacimiento', formatearFecha(alumno.fecha_nacimiento));
+    setVal('fechaIngreso', formatearFecha(alumno.fecha_ingreso));
+    setVal('edad', alumno.edad);
+    setVal('nombrePadre', alumno.nombre_padre);
+    setVal('celularPadre', alumno.telefono_padre);
+    setVal('nombreMadre', alumno.nombre_madre);
+    setVal('celularMadre', alumno.telefono_madre);
+    setVal('grupoClave', alumno.grupo_clave);
+    setVal('grupoNombre', obtenerNombreGrupo(alumno.grupo_clave));
+    setVal('salon', alumno.salon);
+    setVal('salonUbicacion', obtenerUbicacionSalon(alumno.salon));
+    setVal('grado', alumno.grado);
+    setVal('porcentaje', (alumno.porcentaje_beca || 0).toFixed(2) + '%');
+    setVal('comentario', alumno.comentario);
+    setVal('instrumento', alumno.instrumento_clave);
+    setVal('medio', alumno.medio_clave);
+    
+    setCheck('beca', alumno.beca);
+    setCheck('reingreso', alumno.reingreso);
+    
+    console.log('Alumno mostrado:', alumno.nombre);
+}
+
+function obtenerUbicacionSalon(numero) {
+    if (!numero) return '';
+    for (var i = 0; i < salonesCache.length; i++) {
+        if (salonesCache[i].numero == numero) {
+            return salonesCache[i].ubicacion || '';
+        }
+    }
+    return '';
+}
+
+function setVal(id, valor) {
+    var el = document.getElementById(id);
+    if (el) el.value = valor || '';
+}
+
+function setCheck(id, valor) {
+    var el = document.getElementById(id);
+    if (el) el.checked = valor || false;
+}
+
+function formatearFecha(fecha) {
+    if (!fecha) return '';
+    var d = new Date(fecha);
+    var dia = String(d.getDate()).padStart(2, '0');
+    var mes = String(d.getMonth() + 1).padStart(2, '0');
+    var anio = d.getFullYear();
+    return dia + '/' + mes + '/' + anio;
+}
+
+function obtenerNombreGrupo(clave) {
+    for (var i = 0; i < gruposCache.length; i++) {
+        if (gruposCache[i].clave === clave) {
+            return gruposCache[i].cursos ? gruposCache[i].cursos.curso : '';
+        }
+    }
+    return '';
+}
+
+function cerrarModal() {
+    var modales = document.querySelectorAll('.modal');
+    for (var i = 0; i < modales.length; i++) {
+        modales[i].remove();
+    }
+    if (typeof habilitarInputs === 'function') habilitarInputs();
+}
+
+// =====================================================
+// LISTA DE ALUMNOS
+// =====================================================
+function listaAlumnos() {
+    var modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'modalLista';
+    modal.innerHTML = '<div class="modal-content" style="max-width:900px;">' +
+        '<h2>Lista de Alumnos</h2>' +
+        '<div id="contenedorLista" style="max-height:500px;overflow-y:auto;"><p>Cargando...</p></div>' +
+        '<div class="modal-buttons" style="margin-top:15px;">' +
+        '<button class="btn" onclick="cerrarModal()">Cerrar</button>' +
+        '</div></div>';
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+    
+    cargarListaCompleta();
+}
+
+async function cargarListaCompleta() {
+    var contenedor = document.getElementById('contenedorLista');
+    
+    if (!db) {
+        contenedor.innerHTML = '<p>No hay conexión a la base de datos</p>';
+        return;
+    }
+    
+    try {
+        var result = await db.from('alumnos').select('*').eq('activo', true).order('nombre');
+        
+        if (result.error) {
+            contenedor.innerHTML = '<p>Error: ' + result.error.message + '</p>';
+            return;
+        }
+        
+        if (!result.data || result.data.length === 0) {
             contenedor.innerHTML = '<p>No hay alumnos registrados</p>';
             return;
         }
         
-        let html = `
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="background: #333; position: sticky; top: 0;">
-                        <th style="padding: 8px;">Cred.</th>
-                        <th style="padding: 8px;">Nombre</th>
-                        <th style="padding: 8px;">Celular</th>
-                        <th style="padding: 8px;">Email</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
+        window._listaAlumnos = result.data;
         
-        data.forEach((a, i) => {
-            html += `
-                <tr onclick="seleccionarDeLista(${i})" style="cursor: pointer; border-bottom: 1px solid #444;">
-                    <td style="padding: 6px;">${a.credencial || a.id}</td>
-                    <td style="padding: 6px;">${a.nombre || ''}</td>
-                    <td style="padding: 6px;">${a.celular || ''}</td>
-                    <td style="padding: 6px;">${a.email || ''}</td>
-                </tr>
-            `;
-        });
+        var html = '<table style="width:100%;border-collapse:collapse;">' +
+            '<thead><tr style="background:#333;color:#fff;position:sticky;top:0;">' +
+            '<th style="padding:8px;">Cred.</th>' +
+            '<th style="padding:8px;">Nombre</th>' +
+            '<th style="padding:8px;">Grupo</th>' +
+            '<th style="padding:8px;">Celular</th>' +
+            '</tr></thead><tbody>';
+        
+        for (var i = 0; i < result.data.length; i++) {
+            var a = result.data[i];
+            html += '<tr onclick="seleccionarDeLista(' + i + ')" style="cursor:pointer;border-bottom:1px solid #ddd;">' +
+                '<td style="padding:6px;">' + a.credencial + '</td>' +
+                '<td style="padding:6px;">' + (a.nombre || '') + '</td>' +
+                '<td style="padding:6px;">' + (a.grupo_clave || '') + '</td>' +
+                '<td style="padding:6px;">' + (a.celular || '') + '</td>' +
+                '</tr>';
+        }
         
         html += '</tbody></table>';
         contenedor.innerHTML = html;
-        
-        window._listaAlumnos = data;
         
     } catch (e) {
         contenedor.innerHTML = '<p>Error: ' + e.message + '</p>';
@@ -471,172 +504,316 @@ async function cargarListaEnModal() {
 }
 
 function seleccionarDeLista(index) {
-    const alumno = window._listaAlumnos[index];
+    var alumno = window._listaAlumnos[index];
     cerrarModal();
-    cargarDatosAlumno(alumno);
+    mostrarAlumno(alumno);
 }
 
-// Otras funciones
-async function darBaja() {
-    if (!alumnoSeleccionado) {
-        await mostrarAlerta('Primero seleccione un alumno');
-        return;
-    }
-    const confirma = await mostrarConfirm('¿Dar de baja a ' + alumnoSeleccionado.nombre + '?');
-    if (confirma) {
-        await mostrarAlerta('Alumno dado de baja');
-    }
-}
-
-async function cambiarGrupo() {
-    if (!alumnoSeleccionado) {
-        await mostrarAlerta('Primero seleccione un alumno');
-        return;
-    }
-    await mostrarAlerta('Función de cambio de grupo - En desarrollo');
-}
-
-async function guardar() {
-    await mostrarAlerta('Datos guardados');
-}
-
-async function noGuardarSalir() {
-    const confirma = await mostrarConfirm('¿Salir sin guardar?');
-    if (confirma) {
-        window.location.href = 'alumnos.html';
-    }
-}
-
+// =====================================================
+// ALTA DE ALUMNOS
+// =====================================================
 async function guardarAlta() {
-    const nombre = document.getElementById('nombre')?.value?.trim();
-    if (!nombre) {
+    var nombre = document.getElementById('nombre');
+    if (!nombre || !nombre.value.trim()) {
         await mostrarAlerta('El nombre es obligatorio');
         return;
     }
     
     if (!db) {
-        await mostrarAlerta('Error: No hay conexión a la base de datos');
+        await mostrarAlerta('No hay conexión a la base de datos');
         return;
     }
     
-    const datos = {
-        nombre: nombre.toUpperCase(),
-        celular: document.getElementById('celular')?.value || null,
-        telefono: document.getElementById('telefono')?.value || null,
-        direccion: document.getElementById('direccion')?.value || null,
-        email: document.getElementById('email')?.value || null,
-        fecha_nacimiento: document.getElementById('fechaNacimiento')?.value || null,
-        nombre_padre: document.getElementById('nombrePadre')?.value || null,
-        celular_padre: document.getElementById('celularPadre')?.value || null,
-        nombre_madre: document.getElementById('nombreMadre')?.value || null,
-        celular_madre: document.getElementById('celularMadre')?.value || null,
-        grupo_id: document.getElementById('grupo')?.value || null,
-        instrumento_id: document.getElementById('instrumento')?.value || null,
-        medio_contacto_id: document.getElementById('medio')?.value || null,
-        beca: document.getElementById('beca')?.checked || false,
-        porcentaje_beca: parseFloat(document.getElementById('porcentaje')?.value) || 0,
-        activo: true,
-        fecha_ingreso: new Date().toISOString().split('T')[0]
+    // Obtener siguiente credencial
+    var maxResult = await db.from('alumnos').select('credencial').order('credencial', { ascending: false }).limit(1);
+    var nuevaCredencial = 3779;
+    if (maxResult.data && maxResult.data.length > 0) {
+        nuevaCredencial = maxResult.data[0].credencial + 1;
+    }
+    
+    var porcentajeVal = document.getElementById('porcentaje') ? document.getElementById('porcentaje').value.replace('%', '') : '0';
+    
+    var datos = {
+        credencial: nuevaCredencial,
+        dig_ver: 0,
+        nombre: nombre.value.trim().toUpperCase(),
+        direccion1: getVal('direccion1'),
+        direccion2: getVal('direccion2'),
+        celular: getVal('celular'),
+        telefono: getVal('telefono'),
+        email: getVal('email'),
+        fecha_nacimiento: getVal('fechaNacimiento') || null,
+        edad: parseInt(getVal('edad')) || null,
+        fecha_ingreso: getVal('fechaIngreso') || new Date().toISOString().split('T')[0],
+        nombre_padre: getVal('nombrePadre'),
+        telefono_padre: getVal('celularPadre'),
+        nombre_madre: getVal('nombreMadre'),
+        telefono_madre: getVal('celularMadre'),
+        grupo_clave: getVal('grupo'),
+        salon: getVal('salon'),
+        grado: getVal('grado'),
+        beca: document.getElementById('beca') ? document.getElementById('beca').checked : false,
+        porcentaje_beca: parseFloat(porcentajeVal) || 0,
+        comentario: getVal('comentario'),
+        reingreso: document.getElementById('reingreso') ? document.getElementById('reingreso').checked : false,
+        instrumento_clave: getVal('instrumento'),
+        medio_clave: getVal('medio'),
+        activo: true
     };
     
     try {
-        const { data, error } = await db.from('alumnos').insert([datos]).select();
+        var result = await db.from('alumnos').insert([datos]).select();
         
-        if (error) {
-            await mostrarAlerta('Error al guardar: ' + error.message);
+        if (result.error) {
+            await mostrarAlerta('Error al guardar: ' + result.error.message);
             return;
         }
         
-        await mostrarAlerta('Alumno registrado correctamente');
+        await mostrarAlerta('Alumno registrado con credencial: ' + nuevaCredencial);
         window.location.href = 'alumnos.html';
     } catch (e) {
         await mostrarAlerta('Error: ' + e.message);
     }
 }
 
+function getVal(id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+}
+
 async function cancelarAlta() {
-    const confirma = await mostrarConfirm('¿Cancelar el alta?');
+    var confirma = await mostrarConfirm('¿Cancelar el alta del alumno?');
     if (confirma) {
         window.location.href = 'alumnos.html';
     }
 }
 
-function nuevoAlumno() {
-    // Limpiar campos
-    document.querySelectorAll('input:not([readonly]), textarea, select').forEach(el => {
-        if (el.type === 'checkbox') {
-            el.checked = false;
-        } else {
-            el.value = '';
+// =====================================================
+// EDICIÓN DE ALUMNOS
+// =====================================================
+function irAEdicion() {
+    if (!alumnoSeleccionado) {
+        mostrarAlerta('Primero busque y seleccione un alumno');
+        return;
+    }
+    sessionStorage.setItem('alumnoEditar', JSON.stringify(alumnoSeleccionado));
+    window.location.href = 'alumnos-edicion.html';
+}
+
+function buscarParaEditar() {
+    buscarAlumno();
+}
+
+async function guardarEdicion() {
+    if (!alumnoEditando) {
+        await mostrarAlerta('No hay alumno seleccionado para editar');
+        return;
+    }
+    
+    if (!db) {
+        await mostrarAlerta('No hay conexión a la base de datos');
+        return;
+    }
+    
+    var porcentajeVal = document.getElementById('porcentaje') ? document.getElementById('porcentaje').value.replace('%', '') : '0';
+    
+    var datos = {
+        nombre: getVal('nombre').toUpperCase(),
+        direccion1: getVal('direccion1'),
+        direccion2: getVal('direccion2'),
+        celular: getVal('celular'),
+        telefono: getVal('telefono'),
+        email: getVal('email'),
+        fecha_nacimiento: getVal('fechaNacimiento') || null,
+        nombre_padre: getVal('nombrePadre'),
+        telefono_padre: getVal('celularPadre'),
+        nombre_madre: getVal('nombreMadre'),
+        telefono_madre: getVal('celularMadre'),
+        grado: getVal('grado'),
+        beca: document.getElementById('beca') ? document.getElementById('beca').checked : false,
+        porcentaje_beca: parseFloat(porcentajeVal) || 0,
+        comentario: getVal('comentario'),
+        reingreso: document.getElementById('reingreso') ? document.getElementById('reingreso').checked : false,
+        instrumento_clave: getVal('instrumento'),
+        medio_clave: getVal('medio')
+    };
+    
+    try {
+        var result = await db.from('alumnos').update(datos).eq('id', alumnoEditando.id);
+        
+        if (result.error) {
+            await mostrarAlerta('Error al guardar: ' + result.error.message);
+            return;
         }
-        el.disabled = false;
+        
+        await mostrarAlerta('Datos actualizados correctamente');
+        window.location.href = 'alumnos.html';
+    } catch (e) {
+        await mostrarAlerta('Error: ' + e.message);
+    }
+}
+
+async function cancelarEdicion() {
+    var confirma = await mostrarConfirm('¿Cancelar la edición?');
+    if (confirma) {
+        window.location.href = 'alumnos.html';
+    }
+}
+
+// =====================================================
+// BAJA DE ALUMNOS
+// =====================================================
+async function confirmarBaja() {
+    if (!alumnoSeleccionado) {
+        await mostrarAlerta('Primero busque y seleccione un alumno');
+        return;
+    }
+    
+    var confirma = await mostrarConfirm('¿Dar de BAJA al alumno ' + alumnoSeleccionado.nombre + '?');
+    if (!confirma) return;
+    
+    if (!db) {
+        await mostrarAlerta('No hay conexión a la base de datos');
+        return;
+    }
+    
+    try {
+        var result = await db.from('alumnos').update({
+            activo: false,
+            fecha_baja: new Date().toISOString().split('T')[0]
+        }).eq('id', alumnoSeleccionado.id);
+        
+        if (result.error) {
+            await mostrarAlerta('Error: ' + result.error.message);
+            return;
+        }
+        
+        await mostrarAlerta('Alumno dado de baja correctamente');
+        limpiarFormulario();
+        alumnoSeleccionado = null;
+    } catch (e) {
+        await mostrarAlerta('Error: ' + e.message);
+    }
+}
+
+function limpiarFormulario() {
+    var inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="date"]');
+    for (var i = 0; i < inputs.length; i++) {
+        inputs[i].value = '';
+    }
+    var checks = document.querySelectorAll('input[type="checkbox"]');
+    for (var j = 0; j < checks.length; j++) {
+        checks[j].checked = false;
+    }
+}
+
+// =====================================================
+// CAMBIO DE GRUPO
+// =====================================================
+async function abrirCambioGrupo() {
+    if (!alumnoSeleccionado) {
+        await mostrarAlerta('Primero busque y seleccione un alumno');
+        return;
+    }
+    
+    document.getElementById('cambioAlumnoNombre').textContent = alumnoSeleccionado.nombre;
+    document.getElementById('cambioAlumnoCred').textContent = alumnoSeleccionado.credencial;
+    document.getElementById('cambioGrupoActual').textContent = alumnoSeleccionado.grupo_clave || 'Sin grupo';
+    
+    document.getElementById('modalCambioGrupo').style.display = 'block';
+}
+
+function cerrarModalCambio() {
+    document.getElementById('modalCambioGrupo').style.display = 'none';
+}
+
+async function guardarCambioGrupo() {
+    var nuevoGrupo = document.getElementById('selectNuevoGrupo').value;
+    
+    if (!nuevoGrupo) {
+        await mostrarAlerta('Seleccione un nuevo grupo');
+        return;
+    }
+    
+    if (!db) {
+        await mostrarAlerta('No hay conexión a la base de datos');
+        return;
+    }
+    
+    try {
+        var result = await db.from('alumnos').update({
+            grupo_clave: nuevoGrupo
+        }).eq('id', alumnoSeleccionado.id);
+        
+        if (result.error) {
+            await mostrarAlerta('Error: ' + result.error.message);
+            return;
+        }
+        
+        await mostrarAlerta('Grupo cambiado correctamente');
+        cerrarModalCambio();
+        
+        // Actualizar vista
+        alumnoSeleccionado.grupo_clave = nuevoGrupo;
+        setVal('grupoClave', nuevoGrupo);
+        setVal('grupoNombre', obtenerNombreGrupo(nuevoGrupo));
+        
+    } catch (e) {
+        await mostrarAlerta('Error: ' + e.message);
+    }
+}
+
+// =====================================================
+// CARGAR ALUMNO PARA EDICIÓN
+// =====================================================
+if (window.location.href.indexOf('alumnos-edicion') >= 0) {
+    document.addEventListener('DOMContentLoaded', function() {
+        var alumnoStr = sessionStorage.getItem('alumnoEditar');
+        if (alumnoStr) {
+            alumnoEditando = JSON.parse(alumnoStr);
+            sessionStorage.removeItem('alumnoEditar');
+            
+            setTimeout(function() {
+                setVal('credencial', alumnoEditando.credencial);
+                setVal('digito', alumnoEditando.dig_ver || 0);
+                setVal('nombre', alumnoEditando.nombre);
+                setVal('direccion1', alumnoEditando.direccion1);
+                setVal('direccion2', alumnoEditando.direccion2);
+                setVal('celular', alumnoEditando.celular);
+                setVal('telefono', alumnoEditando.telefono);
+                setVal('email', alumnoEditando.email);
+                setVal('fechaNacimiento', alumnoEditando.fecha_nacimiento);
+                setVal('fechaIngreso', formatearFecha(alumnoEditando.fecha_ingreso));
+                setVal('edad', alumnoEditando.edad);
+                setVal('nombrePadre', alumnoEditando.nombre_padre);
+                setVal('celularPadre', alumnoEditando.telefono_padre);
+                setVal('nombreMadre', alumnoEditando.nombre_madre);
+                setVal('celularMadre', alumnoEditando.telefono_madre);
+                setVal('grupoClave', alumnoEditando.grupo_clave);
+                setVal('grupoNombre', obtenerNombreGrupo(alumnoEditando.grupo_clave));
+                setVal('salon', alumnoEditando.salon);
+                setVal('grado', alumnoEditando.grado);
+                setVal('porcentaje', (alumnoEditando.porcentaje_beca || 0).toFixed(2) + '%');
+                setVal('comentario', alumnoEditando.comentario);
+                
+                var instSelect = document.getElementById('instrumento');
+                if (instSelect) instSelect.value = alumnoEditando.instrumento_clave || '';
+                
+                var medioSelect = document.getElementById('medio');
+                if (medioSelect) medioSelect.value = alumnoEditando.medio_clave || '';
+                
+                setCheck('beca', alumnoEditando.beca);
+                setCheck('reingreso', alumnoEditando.reingreso);
+                
+                var info = document.getElementById('infoAlumno');
+                var editandoNombre = document.getElementById('editandoNombre');
+                if (info && editandoNombre) {
+                    editandoNombre.textContent = alumnoEditando.nombre;
+                    info.style.display = 'block';
+                }
+                
+                calcularEdad();
+            }, 600);
+        }
     });
-    
-    alumnoSeleccionado = null;
-    document.getElementById('nombre')?.focus();
 }
-
-// Navegación de grupos
-let registroActualGrupo = 0;
-
-function navegarPrimeroGrupo() {
-    if (gruposDisponibles.length > 0) {
-        registroActualGrupo = 0;
-        actualizarGrupoSeleccionado();
-    }
-}
-
-function navegarAnteriorGrupo() {
-    if (registroActualGrupo > 0) {
-        registroActualGrupo--;
-        actualizarGrupoSeleccionado();
-    }
-}
-
-function navegarSiguienteGrupo() {
-    if (registroActualGrupo < gruposDisponibles.length - 1) {
-        registroActualGrupo++;
-        actualizarGrupoSeleccionado();
-    }
-}
-
-function navegarUltimoGrupo() {
-    if (gruposDisponibles.length > 0) {
-        registroActualGrupo = gruposDisponibles.length - 1;
-        actualizarGrupoSeleccionado();
-    }
-}
-
-function navegarRegistroGrupo() {
-    const input = document.getElementById('inputRegistroGrupo');
-    if (input) {
-        const num = parseInt(input.value);
-        if (num > 0 && num <= gruposDisponibles.length) {
-            registroActualGrupo = num - 1;
-            actualizarGrupoSeleccionado();
-        }
-    }
-}
-
-function actualizarGrupoSeleccionado() {
-    const input = document.getElementById('inputRegistroGrupo');
-    if (input) input.value = registroActualGrupo + 1;
-    
-    if (gruposDisponibles[registroActualGrupo]) {
-        const grupo = gruposDisponibles[registroActualGrupo];
-        const select = document.getElementById('grupo');
-        if (select) select.value = grupo.id;
-    }
-}
-
-// Funciones de navegación para pagos y exámenes (placeholders)
-function navegarPrimeroPagos() {}
-function navegarAnteriorPagos() {}
-function navegarSiguientePagos() {}
-function navegarUltimoPagos() {}
-function navegarRegistroPagos() {}
-function navegarPrimeroExamenes() {}
-function navegarAnteriorExamenes() {}
-function navegarSiguienteExamenes() {}
-function navegarUltimoExamenes() {}
-function navegarRegistroExamenes() {}

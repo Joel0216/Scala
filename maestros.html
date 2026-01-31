@@ -16,90 +16,156 @@
         <main>
             <div class="form-section">
                 <div class="form-row">
-                    <label>Nombre:</label>
-                    <input type="text" id="nombre" class="input-xlarge">
+                    <label>Nombre: <span class="required">*</span></label>
+                    <input type="text" id="nombre" class="input-xlarge" placeholder="Nombre completo del maestro">
                 </div>
 
                 <div class="form-row">
-                    <label>Direccion 1:</label>
-                    <input type="text" id="direccion1" class="input-xlarge">
+                    <label>Dirección: <span class="required">*</span></label>
+                    <input type="text" id="direccion1" class="input-xlarge" placeholder="Calle y número">
                 </div>
 
                 <div class="form-row">
                     <label></label>
-                    <input type="text" id="direccion2" class="input-xlarge">
+                    <input type="text" id="direccion2" class="input-xlarge" placeholder="Colonia, ciudad">
                 </div>
 
                 <div class="form-row">
-                    <label>Telefono:</label>
-                    <input type="text" id="telefono" class="input-medium">
+                    <label>Teléfono: <span class="required">*</span></label>
+                    <input type="text" id="telefono" class="input-medium" placeholder="Solo números" maxlength="15">
                 </div>
 
                 <div class="form-row">
-                    <label>Clave:</label>
-                    <input type="text" id="clave" class="input-small">
-                    
-                    <label class="label-inline">RFC:</label>
-                    <input type="text" id="rfc" class="input-medium">
+                    <label>Clave: <span class="required">*</span></label>
+                    <input type="text" id="clave" class="input-small" readonly style="background: #e0e0e0;">
+                    <span class="info-text">Se genera automáticamente</span>
+                </div>
+
+                <div class="form-row">
+                    <label>RFC:</label>
+                    <input type="text" id="rfc" class="input-medium" maxlength="13" placeholder="Opcional">
                 </div>
 
                 <div class="form-row">
                     <label>Grado:</label>
-                    <input type="text" id="grado" class="input-medium">
+                    <input type="text" id="grado" class="input-medium" placeholder="Opcional">
                 </div>
 
                 <div class="form-row">
-                    <label>Detalles Grado:</label>
-                    <input type="text" id="detallesGrado" class="input-large">
+                    <label>Detalles Grado: <span class="required">*</span></label>
+                    <input type="text" id="detallesGrado" class="input-large" placeholder="Ej: GUITARRA ELECTRICA">
                 </div>
 
                 <div class="form-row">
-                    <label>Fecha de ingreso:</label>
-                    <input type="text" id="fechaIngreso" class="input-medium">
+                    <label>Fecha de Ingreso: <span class="required">*</span></label>
+                    <input type="text" id="fechaIngreso" class="input-medium" readonly style="background: #e0e0e0;">
+                    <span class="info-text">Se establece al dar Nuevo</span>
                 </div>
             </div>
 
             <div class="button-group">
-                <button class="action-btn" onclick="nuevoMaestro()">Nuevo</button>
-                <button class="action-btn" onclick="guardarMaestro()">Guardar</button>
-                <button class="action-btn" onclick="buscarMaestro()">Buscar</button>
-                <button class="action-btn" onclick="borrarMaestro()">Borrar</button>
+                <button class="action-btn" id="btnNuevo" onclick="nuevoMaestro()">Nuevo</button>
+                <button class="action-btn btn-cancelar-nuevo" id="btnCancelarNuevo" onclick="cancelarNuevo()" style="display: none;">Cancelar</button>
+                <button class="action-btn" id="btnEditar" onclick="editarMaestro()" disabled>Editar</button>
+                <button class="action-btn" id="btnBuscar" onclick="buscarMaestro()">Buscar</button>
+                <button class="action-btn" id="btnBorrar" onclick="borrarMaestro()" disabled>Borrar</button>
                 <button class="btn-terminar" onclick="terminar()">Terminar</button>
             </div>
         </main>
     </div>
 
-    <!-- Modal de búsqueda -->
+    <!-- Modal de búsqueda estilo Windows -->
     <div id="modalBusqueda" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Proporcione el Nombre del Maestro o Inicio del Nombre</h2>
-            <input type="text" id="inputBusqueda" placeholder="Nombre del maestro">
-            <div class="modal-buttons">
-                <button class="btn" onclick="aceptarBusqueda()">Aceptar</button>
-                <button class="btn" onclick="cerrarModal()">Cancelar</button>
+        <div class="modal-busqueda-content">
+            <div class="modal-busqueda-header">
+                <span class="modal-icon">🔍</span>
+                <span>PC</span>
+                <div class="modal-header-buttons">
+                    <button class="modal-header-btn" onclick="cerrarModalBusqueda()">✕</button>
+                </div>
+            </div>
+            <div class="modal-busqueda-body">
+                <h2>Proporcione el Nombre del Maestro o Inicio del Nombre</h2>
+                <div class="busqueda-input-row">
+                    <input type="text" id="inputBusqueda" placeholder="Escriba nombre o clave...">
+                    <button class="btn-busqueda" onclick="aceptarBusqueda()">Aceptar</button>
+                    <button class="btn-busqueda" onclick="cerrarModalBusqueda()">Cancelar</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal de lista de resultados -->
-    <div id="modalLista" class="modal" style="display: none;">
-        <div class="modal-content modal-lista">
-            <h2>Seleccione un maestro</h2>
-            <div class="lista-container">
+    <!-- Modal de resultados de búsqueda -->
+    <div id="modalResultados" class="modal" style="display: none;">
+        <div class="modal-resultados-content">
+            <div class="modal-resultados-header">
+                <span class="modal-icon">📋</span>
+                <span id="tituloResultados">Resultados de Búsqueda</span>
+                <div class="modal-header-buttons">
+                    <button class="modal-header-btn" onclick="cerrarModalResultados()">✕</button>
+                </div>
+            </div>
+            <div class="modal-resultados-body">
                 <table id="tablaResultados">
                     <thead>
                         <tr>
                             <th>Nombre</th>
                             <th>Clave</th>
-                            <th>Teléfono</th>
-                            <th>Grado</th>
                         </tr>
                     </thead>
                     <tbody id="bodyResultados"></tbody>
                 </table>
             </div>
-            <div class="modal-buttons">
-                <button class="btn" onclick="cerrarModal()">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Modal de edición (azul) -->
+    <div id="modalEdicion" class="modal" style="display: none;">
+        <div class="modal-edicion-content">
+            <div class="modal-edicion-header">
+                <h2>Editar Maestro</h2>
+            </div>
+            <div class="modal-edicion-body">
+                <div class="form-row-edit">
+                    <label>Nombre:</label>
+                    <input type="text" id="editNombre" class="input-edit-xlarge">
+                </div>
+                <div class="form-row-edit">
+                    <label>Dirección:</label>
+                    <input type="text" id="editDireccion1" class="input-edit-xlarge" placeholder="Calle y número">
+                </div>
+                <div class="form-row-edit">
+                    <label></label>
+                    <input type="text" id="editDireccion2" class="input-edit-xlarge" placeholder="Colonia, ciudad">
+                </div>
+                <div class="form-row-edit">
+                    <label>Teléfono:</label>
+                    <input type="text" id="editTelefono" class="input-edit-medium" maxlength="15">
+                </div>
+            </div>
+            <div class="modal-edicion-footer">
+                <button class="btn-edicion-cancelar" onclick="cancelarEdicion()">Cancelar</button>
+                <button class="btn-edicion-guardar" onclick="guardarEdicion()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación de borrado -->
+    <div id="modalBorrar" class="modal" style="display: none;">
+        <div class="modal-borrar-content">
+            <div class="modal-borrar-header">
+                <h2>¿Borrar Maestro?</h2>
+            </div>
+            <div class="modal-borrar-body">
+                <p id="mensajeBorrar">¿Está seguro de que desea borrar a este maestro?</p>
+                <div class="form-row-borrar">
+                    <label>Razón del borrado:</label>
+                    <textarea id="razonBorrado" rows="3" placeholder="Describa la razón por la cual se borra al maestro..."></textarea>
+                </div>
+            </div>
+            <div class="modal-borrar-footer">
+                <button class="btn-borrar-no" onclick="cancelarBorrado()">No</button>
+                <button class="btn-borrar-si" onclick="confirmarBorrado()">Sí - Confirmar</button>
             </div>
         </div>
     </div>

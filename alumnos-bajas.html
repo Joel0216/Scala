@@ -13,242 +13,49 @@
             <div class="datetime" id="datetime"></div>
         </div>
 
-        <form id="bajasForm">
+        <div class="form-section">
             <div class="form-row">
-                <div class="form-group">
-                    <label for="credencial1">Credencial:</label>
-                    <input type="text" id="credencial1" name="credencial1" style="width: 50px;">
-                </div>
-                <div class="form-group">
-                    <input type="text" id="credencial2" name="credencial2" style="width: 50px;">
-                </div>
-                <div class="form-group">
-                    <label for="celular">Celular:</label>
-                    <input type="text" id="celular" name="celular">
-                </div>
+                <label>Credencial:</label>
+                <input type="text" id="credencial" class="input-small" readonly>
+                <input type="text" id="digito" class="input-tiny" readonly>
+                
+                <label class="label-right">Celular:</label>
+                <input type="text" id="celular" class="input-medium" readonly>
             </div>
 
             <div class="form-row">
-                <div class="form-group full-width">
-                    <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" name="nombre" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="telefono">Telefono:</label>
-                    <input type="text" id="telefono" name="telefono" readonly>
-                </div>
+                <label>Nombre:</label>
+                <input type="text" id="nombre" class="input-large" readonly>
+                
+                <label class="label-right">Fecha Baja:</label>
+                <input type="text" id="fechaBaja" class="input-medium" readonly>
             </div>
 
             <div class="form-row">
-                <div class="form-group full-width">
-                    <label for="direccion">Direccion:</label>
-                    <input type="text" id="direccion" name="direccion" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="fechaIngreso">Fecha Ingreso:</label>
-                    <input type="text" id="fechaIngreso" name="fechaIngreso" readonly>
-                </div>
-            </div>
-
-            <div class="form-group full-width">
-                <input type="text" id="direccion2" name="direccion2" readonly>
+                <label>Direccion:</label>
+                <input type="text" id="direccion1" class="input-large" readonly>
             </div>
 
             <div class="form-row">
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="text" id="email" name="email" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="edad">Edad:</label>
-                    <input type="text" id="edad" name="edad" readonly>
-                </div>
+                <label>Grupo:</label>
+                <input type="text" id="grupo" class="input-small" readonly>
+                <input type="text" id="grupoNombre" class="input-large" readonly>
             </div>
 
             <div class="form-row">
-                <div class="form-group">
-                    <label for="nombrePadre">Nombre del padre:</label>
-                    <input type="text" id="nombrePadre" name="nombrePadre" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="celularPadre">Celular padre:</label>
-                    <input type="text" id="celularPadre" name="celularPadre" readonly>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="nombreMadre">Nombre de la madre:</label>
-                    <input type="text" id="nombreMadre" name="nombreMadre" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="celularMadre">Celular madre:</label>
-                    <input type="text" id="celularMadre" name="celularMadre" readonly>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="grupo">Grupo:</label>
-                    <input type="text" id="grupo" name="grupo" readonly>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="curso" name="curso" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="grado">Grado:</label>
-                    <input type="text" id="grado" name="grado" readonly>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="beca">Beca:</label>
-                    <input type="checkbox" id="beca" name="beca" disabled>
-                </div>
-                <div class="form-group">
-                    <label for="porcentaje">Porcentaje:</label>
-                    <input type="text" id="porcentaje" name="porcentaje" readonly>
-                </div>
-                <div class="form-group full-width">
-                    <label for="comentario">Comentario:</label>
-                    <input type="text" id="comentario" name="comentario" readonly>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="instrumento">Instrumento:</label>
-                    <select id="instrumento" name="instrumento" disabled>
-                        <option value=""></option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="metodo">Metodo:</label>
-                    <select id="metodo" name="metodo" disabled>
-                        <option value=""></option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="motivo">Motivo:</label>
-                    <select id="motivo" name="motivo" disabled>
-                        <option value="NOV">NOV</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="fechaBaja">F. Baja:</label>
-                    <input type="text" id="fechaBaja" name="fechaBaja" readonly>
-                </div>
-                <div class="form-group full-width">
-                    <label for="observaciones">Observ.:</label>
-                    <input type="text" id="observaciones" name="observaciones" readonly>
-                </div>
-            </div>
-
-            <!-- Tabla de pagos -->
-            <div class="table-section">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Año</th>
-                            <th>Mes</th>
-                            <th>Descuento</th>
-                            <th>Precio</th>
-                            <th>Recibo</th>
-                            <th>Fecha</th>
-                            <th>Grupo</th>
-                            <th>Curso</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pagosTableBody">
-                    </tbody>
-                </table>
-                <div class="table-nav">
-                    <span>Registro: </span>
-                    <button type="button" class="nav-btn-small" onclick="navegarPrimero()">|&lt;</button>
-                    <button type="button" class="nav-btn-small" onclick="navegarAnterior()">&lt;</button>
-                    <input type="text" value="1" class="record-input" id="inputRegistroPagos" readonly>
-                    <button type="button" class="nav-btn-small" onclick="navegarSiguiente()">&gt;</button>
-                    <button type="button" class="nav-btn-small" onclick="navegarUltimo()">&gt;|</button>
-                    <button type="button" class="nav-btn-small" onclick="navegarRegistro()">|&gt;*</button>
-                </div>
-            </div>
-
-            <!-- Tabla de exámenes -->
-            <div class="table-section">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Cred</th>
-                            <th>Clave Examen</th>
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Maestro Baja</th>
-                            <th>G/N</th>
-                            <th># certificado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="examenesTableBody">
-                    </tbody>
-                </table>
-                <div class="table-nav">
-                    <span>Registro: </span>
-                    <button type="button" class="nav-btn-small" onclick="navegarPrimeroExamenes()">|&lt;</button>
-                    <button type="button" class="nav-btn-small" onclick="navegarAnteriorExamenes()">&lt;</button>
-                    <input type="text" value="1" class="record-input" id="inputRegistroExamenes" readonly>
-                    <button type="button" class="nav-btn-small" onclick="navegarSiguienteExamenes()">&gt;</button>
-                    <button type="button" class="nav-btn-small" onclick="navegarUltimoExamenes()">&gt;|</button>
-                    <button type="button" class="nav-btn-small" onclick="navegarRegistroExamenes()">&gt;*</button>
-                </div>
-            </div>
-
-            <div class="button-group">
-                <button type="button" class="btn" onclick="buscar()">Buscar</button>
-                <button type="button" class="btn" onclick="mostrarListado()">Listado</button>
-                <button type="button" class="btn" onclick="irAReingreso()">Reingreso</button>
-                <button type="button" class="btn btn-terminar" onclick="terminar()">TERMINAR</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Modal de búsqueda -->
-    <div id="searchModal" class="modal">
-        <div class="modal-content">
-            <h2 id="modalTitle">Proporcione el numero de Credencial</h2>
-            <input type="text" id="searchInput" class="modal-input">
-            <div class="modal-buttons">
-                <button class="btn" id="aceptarBtn">Aceptar</button>
-                <button class="btn" id="cancelarBtn">Cancelar</button>
+                <label>Motivo:</label>
+                <input type="text" id="motivoBaja" class="input-medium" readonly>
+                
+                <label class="label-inline">Observaciones:</label>
+                <input type="text" id="observaciones" class="input-xlarge" readonly>
             </div>
         </div>
-    </div>
 
-    <!-- Modal de selección de alumnos -->
-    <div id="selectModal" class="modal">
-        <div class="modal-content-large">
-            <h2>Seleccione un alumno</h2>
-            <div id="alumnosList"></div>
-            <div class="modal-buttons">
-                <button class="btn" id="cerrarSelectBtn">Cerrar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de búsqueda inteligente -->
-    <div id="modalBusqueda" class="modal">
-        <div class="modal-content">
-            <h2>Buscar Alumno Dado de Baja</h2>
-            <p style="font-size: 13px; color: #666; margin-bottom: 10px;">
-                Escriba el nombre o número de credencial
-            </p>
-            <input type="text" id="inputBusqueda" class="modal-input" placeholder="Ej: Joel o 123">
-            <div id="sugerenciasBusqueda" class="sugerencias-container"></div>
-            <div class="modal-buttons">
-                <button class="btn" onclick="cerrarModalBusqueda()">Cancelar</button>
-            </div>
+        <div class="button-group">
+            <button class="btn" onclick="buscarAlumnoBaja()">Buscar</button>
+            <button class="btn" onclick="listarBajas()">Listado</button>
+            <button class="btn" onclick="reingresarAlumno()">Reingreso</button>
+            <button class="btn btn-terminar" onclick="window.location.href='archivos.html'">TERMINAR</button>
         </div>
     </div>
 

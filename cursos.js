@@ -1,82 +1,52 @@
-// Inicializar Supabase
-let supabase = null;
+// Módulo de Cursos
+let db = null;
 let cursos = [];
-let registroActual = 0;
 let cursoSeleccionado = null;
+let modoNuevo = false;
 
-// Inicializar cuando el DOM esté listo
+// Inicializar
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOM cargado, inicializando módulo de cursos...');
-
-    // Esperar a que Supabase esté listo
-    try {
-        await new Promise(r => setTimeout(r, 500)); // Esperar a que cargue el CDN
-        if (typeof waitForSupabase === 'function') {
-            supabase = await waitForSupabase(10000);
-            console.log('✓ Supabase conectado');
-            await cargarCursos();
-        }
-    } catch (e) {
-        console.error('Error conectando a Supabase:', e);
+    console.log('=== INICIALIZANDO MÓDULO CURSOS ===');
+    
+    await new Promise(r => setTimeout(r, 500));
+    
+    db = window.supabaseClient || window.supabase || (typeof getSupabase === 'function' ? getSupabase() : null);
+    
+    if (db) {
+        console.log('✓ Supabase disponible en cursos');
+        await cargarCursos();
+    } else {
+        console.error('✗ Supabase NO disponible');
     }
-
-    // Actualizar fecha y hora
+    
     actualizarFechaHora();
     setInterval(actualizarFechaHora, 1000);
-
-    // Habilitar inputs
-    if (typeof habilitarInputs === 'function') {
-        habilitarInputs();
+    
+    configurarValidaciones();
+    
+    const cursoInput = document.getElementById('curso');
+    if (cursoInput) {
+        cursoInput.addEventListener('input', generarClaveAutomatica);
     }
-
-    console.log('Inicialización completa');
+    
+    if (typeof habilitarInputs === 'function') habilitarInputs();
 });
 
-// Cargar cursos desde Supabase
 async function cargarCursos() {
-    if (!supabase) return;
-
+    if (!db) return;
     try {
-        const { data, error } = await supabase
-            .from('cursos')
-            .select('*')
-            .order('curso', { ascending: true });
-
-        if (error) throw error;
-
-        cursos = data || [];
-        console.log(`✓ ${cursos.length} cursos cargados`);
-
-        // Cargar dropdown de curso siguiente
-        await cargarDropdownCursoSiguiente();
-
-        // Mostrar primer registro si hay cursos
-        if (cursos.length > 0) {
-            mostrarRegistro(0);
+        const { data, error } = await db.from('cursos').select('*').order('curso');
+        if (error) {
+            console.error('Error cargando cursos:', error);
         } else {
-            limpiarFormulario();
+            cursos = data || [];
+            console.log(`✓ ${cursos.length} cursos cargados`);
         }
-    } catch (error) {
-        console.error('Error cargando cursos:', error);
+    } catch (e) {
+        console.error('Error:', e);
     }
 }
 
-// Cargar dropdown de curso siguiente
-async function cargarDropdownCursoSiguiente() {
-    const select = document.getElementById('cursoSiguiente');
-    if (!select) return;
-
-    select.innerHTML = '<option value="">-- Ninguno (Fin de cadena) --</option>';
-
-    cursos.forEach(curso => {
-        const option = document.createElement('option');
-        option.value = curso.id;
-        option.textContent = curso.curso;
-        select.appendChild(option);
-    });
-}
-
-// Actualizar fecha y hora
 function actualizarFechaHora() {
     const ahora = new Date();
     const dia = String(ahora.getDate()).padStart(2, '0');
@@ -87,226 +57,266 @@ function actualizarFechaHora() {
     const segundos = String(ahora.getSeconds()).padStart(2, '0');
     const ampm = horas >= 12 ? 'p. m.' : 'a. m.';
     horas = horas % 12 || 12;
-    const horasStr = String(horas).padStart(2, '0');
-
     const datetime = document.getElementById('datetime');
     if (datetime) {
-        datetime.textContent = `${dia}/${mes}/${anio} ${horasStr}:${minutos}:${segundos} ${ampm}`;
+        datetime.textContent = `${dia}/${mes}/${anio} ${String(horas).padStart(2, '0')}:${minutos}:${segundos} ${ampm}`;
     }
 }
 
-// Función para limpiar formulario
+function configurarValidaciones() {
+    const costoInput = document.getElementById('costo');
+    if (costoInput) {
+        costoInput.addEventListener('input', function() { validarCampoMoneda(this); });
+        costoInput.addEventListener('keypress', function(e) {
+            if (!/[0-9.]/.test(e.key)) e.preventDefault();
+        });
+    }
+    const recargoInput = document.getElementById('recargo');
+    if (recargoInput) {
+        recargoInput.addEventListener('input', function() { validarCampoMoneda(this); });
+        recargoInput.addEventListener('keypress', function(e) {
+            if (!/[0-9.]/.test(e.key)) e.preventDefault();
+        });
+    }
+}
+
+function validarCampoMoneda(input) {
+    let valor = input.value.replace(/[^0-9.]/g, '');
+    const partes = valor.split('.');
+    if (partes.length > 2) valor = partes[0] + '.' + partes.slice(1).join('');
+    if (partes.length === 2 && partes[1].length > 2) valor = partes[0] + '.' + partes[1].substring(0, 2);
+    input.value = valor;
+}
+
+function generarClaveAutomatica() {
+    const cursoInput = document.getElementById('curso');
+    const claveInput = document.getElementById('clave');
+    if (!cursoInput || !claveInput) return;
+    const curso = cursoInput.value.trim().toUpperCase();
+    if (!curso) { claveInput.value = ''; return; }
+    const palabras = curso.split(' ').filter(p => p.length > 0 && isNaN(p));
+    let clave = '';
+    if (palabras.length === 1) {
+        clave = palabras[0].substring(0, 2);
+    } else if (palabras.length >= 2) {
+        clave = palabras[0].charAt(0) + palabras[1].charAt(0);
+    }
+    claveInput.value = clave;
+}
+
+
 function limpiarFormulario() {
-    const campos = ['curso', 'costo', 'clave', 'recargo', 'cursoSiguiente'];
-    campos.forEach(id => {
+    ['curso', 'cursoSiguiente', 'costo', 'clave', 'recargo'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
-    const ivaEl = document.getElementById('iva');
-    if (ivaEl) ivaEl.value = '0.16';
+    document.getElementById('iva').value = '0.16';
     cursoSeleccionado = null;
+    modoNuevo = false;
+    document.getElementById('btnBorrar').disabled = true;
 }
 
-// Función para cargar datos del curso
+function deshabilitarCampos() {
+    ['curso', 'cursoSiguiente', 'costo', 'recargo'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = true;
+    });
+}
+
+function habilitarCamposFormulario() {
+    ['curso', 'cursoSiguiente', 'costo', 'recargo'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = false;
+    });
+}
+
 function cargarDatosCurso(curso) {
     cursoSeleccionado = curso;
-    
-    const cursoInput = document.getElementById('curso');
-    const costoInput = document.getElementById('costo');
-    const claveInput = document.getElementById('clave');
-    const ivaInput = document.getElementById('iva');
-    const recargoInput = document.getElementById('recargo');
-    const cursoSiguienteSelect = document.getElementById('cursoSiguiente');
-
-    if (cursoInput) cursoInput.value = curso.curso || '';
-    if (costoInput) costoInput.value = curso.precio_mensual ? curso.precio_mensual.toFixed(2) : '';
-    if (claveInput) claveInput.value = curso.clave || '';
-    if (ivaInput) ivaInput.value = '0.16';
-    if (recargoInput) recargoInput.value = curso.precio_inscripcion ? curso.precio_inscripcion.toFixed(2) : '';
-    if (cursoSiguienteSelect) cursoSiguienteSelect.value = curso.curso_siguiente_id || '';
+    modoNuevo = false;
+    document.getElementById('curso').value = curso.curso || '';
+    document.getElementById('cursoSiguiente').value = curso.curso_siguiente || '';
+    document.getElementById('costo').value = curso.precio_mensual ? curso.precio_mensual.toFixed(2) : '';
+    document.getElementById('clave').value = curso.clave || '';
+    document.getElementById('iva').value = '0.16';
+    document.getElementById('recargo').value = curso.precio_inscripcion ? curso.precio_inscripcion.toFixed(2) : '';
+    deshabilitarCampos();
+    document.getElementById('btnBorrar').disabled = false;
 }
 
-// Mostrar registro actual
-function mostrarRegistro(index) {
-    if (index >= 0 && index < cursos.length) {
-        registroActual = index;
-        cargarDatosCurso(cursos[index]);
-
-        const registroActualEl = document.getElementById('registroActual');
-        const inputRegistroEl = document.getElementById('inputRegistro');
-        const totalRegistrosEl = document.getElementById('totalRegistros');
-
-        if (registroActualEl) registroActualEl.textContent = index + 1;
-        if (inputRegistroEl) {
-            inputRegistroEl.value = index + 1;
-            inputRegistroEl.max = cursos.length;
-        }
-        if (totalRegistrosEl) totalRegistrosEl.textContent = cursos.length;
-    }
-}
-
-// Botón Nuevo - Redirigir a página de alta
 function nuevoCurso() {
-    window.location.href = 'cursos-alta.html';
+    limpiarFormulario();
+    modoNuevo = true;
+    habilitarCamposFormulario();
+    document.getElementById('curso').focus();
+    const btnNuevo = document.getElementById('btnNuevo');
+    btnNuevo.textContent = 'Guardar';
+    btnNuevo.onclick = guardarNuevoCurso;
+    document.getElementById('btnCancelarNuevo').style.display = 'inline-block';
+    document.getElementById('btnBorrar').disabled = true;
+    document.getElementById('btnBuscar').disabled = true;
+    document.getElementById('btnReporte').disabled = true;
 }
 
-// Botón Buscar
-function buscarCurso() {
-    const modal = document.getElementById('modalBusqueda');
-    if (modal) {
-        modal.style.display = 'block';
-        const inputBusqueda = document.getElementById('inputBusqueda');
-        if (inputBusqueda) {
-            inputBusqueda.value = '';
-            inputBusqueda.focus();
-        }
-    }
+function cancelarNuevo() {
+    const btnNuevo = document.getElementById('btnNuevo');
+    btnNuevo.textContent = 'Nuevo';
+    btnNuevo.onclick = nuevoCurso;
+    document.getElementById('btnCancelarNuevo').style.display = 'none';
+    limpiarFormulario();
+    deshabilitarCampos();
+    document.getElementById('btnBuscar').disabled = false;
+    document.getElementById('btnReporte').disabled = false;
+    modoNuevo = false;
 }
 
-// Aceptar búsqueda
-async function aceptarBusqueda() {
-    const inputBusqueda = document.getElementById('inputBusqueda');
-    const termino = inputBusqueda ? inputBusqueda.value.trim().toUpperCase() : '';
-
-    cerrarModal();
-
-    if (!termino) {
-        alert('Por favor ingrese un nombre');
-        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
+async function guardarNuevoCurso() {
+    if (!db) { await mostrarAlerta('Error: Base de datos no conectada'); return; }
+    const curso = document.getElementById('curso').value.trim();
+    const costo = document.getElementById('costo').value.trim();
+    const clave = document.getElementById('clave').value.trim();
+    const errores = [];
+    if (!curso) errores.push('- Curso');
+    if (!costo) errores.push('- Costo');
+    if (!clave) errores.push('- Clave');
+    if (errores.length > 0) {
+        await mostrarAlerta('Complete los campos obligatorios:\n\n' + errores.join('\n'));
         return;
     }
+    const datos = {
+        curso: curso.toUpperCase(),
+        curso_siguiente: document.getElementById('cursoSiguiente').value.trim().toUpperCase() || null,
+        precio_mensual: parseFloat(costo) || 0,
+        clave: clave.toUpperCase(),
+        iva: 0.16,
+        precio_inscripcion: parseFloat(document.getElementById('recargo').value) || 0
+    };
+    try {
+        const { error } = await db.from('cursos').insert([datos]);
+        if (error) throw error;
+        await mostrarAlerta(`Curso guardado\n\nCurso: ${datos.curso}\nClave: ${datos.clave}`);
+        await cargarCursos();
+        cancelarNuevo();
+    } catch (error) {
+        await mostrarAlerta('Error al guardar: ' + error.message);
+    }
+}
 
-    // Buscar en datos locales primero
+
+function buscarCurso() {
+    if (modoNuevo) cancelarNuevo();
+    document.getElementById('inputBusqueda').value = '';
+    document.getElementById('modalBusqueda').style.display = 'block';
+    document.getElementById('inputBusqueda').focus();
+}
+
+function cerrarModalBusqueda() {
+    document.getElementById('modalBusqueda').style.display = 'none';
+}
+
+function cerrarModalResultados() {
+    document.getElementById('modalResultados').style.display = 'none';
+}
+
+async function aceptarBusqueda() {
+    const termino = document.getElementById('inputBusqueda').value.trim().toUpperCase();
+    if (!termino) {
+        await mostrarAlerta('Ingrese un nombre de curso o clave para buscar');
+        return;
+    }
     const resultados = cursos.filter(c => 
         (c.curso && c.curso.toUpperCase().includes(termino)) ||
         (c.clave && c.clave.toUpperCase().includes(termino))
     );
-
+    cerrarModalBusqueda();
     if (resultados.length === 0) {
-        alert('No se encontraron cursos con ese nombre o clave');
+        await mostrarAlerta('No se encontraron cursos con ese criterio');
     } else if (resultados.length === 1) {
-        const index = cursos.findIndex(c => c.id === resultados[0].id);
-        if (index !== -1) {
-            mostrarRegistro(index);
-        }
+        cargarDatosCurso(resultados[0]);
     } else {
-        mostrarListaCursos(resultados);
+        mostrarResultadosBusqueda(resultados, termino);
     }
-
-    setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
 }
 
-// Mostrar lista de cursos
-function mostrarListaCursos(resultados) {
-    const modal = document.getElementById('modalLista');
+function mostrarResultadosBusqueda(resultados, termino) {
     const tbody = document.getElementById('bodyResultados');
-    if (!modal || !tbody) return;
-
     tbody.innerHTML = '';
-
-    resultados.forEach((curso) => {
+    document.getElementById('tituloResultados').textContent = `Resultados de Búsqueda ('${termino}')`;
+    resultados.forEach(curso => {
         const tr = document.createElement('tr');
-        tr.onclick = function () {
-            const index = cursos.findIndex(c => c.id === curso.id);
-            if (index !== -1) {
-                mostrarRegistro(index);
-            }
-            cerrarModal();
+        tr.onclick = () => {
+            tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+            tr.classList.add('selected');
         };
-        tr.innerHTML = `
-            <td>${curso.curso || ''}</td>
-            <td>${curso.clave || 'N/A'}</td>
-            <td>${curso.precio_mensual ? curso.precio_mensual.toFixed(2) : '0.00'}</td>
-            <td>16%</td>
-        `;
+        tr.ondblclick = () => {
+            cargarDatosCurso(curso);
+            cerrarModalResultados();
+        };
+        tr.innerHTML = `<td>${curso.curso || ''}</td><td>${curso.clave || ''}</td>`;
         tbody.appendChild(tr);
     });
-
-    modal.style.display = 'block';
+    document.getElementById('modalResultados').style.display = 'block';
 }
 
-// Cerrar modal
-function cerrarModal() {
-    const modalBusqueda = document.getElementById('modalBusqueda');
-    const modalLista = document.getElementById('modalLista');
-    if (modalBusqueda) modalBusqueda.style.display = 'none';
-    if (modalLista) modalLista.style.display = 'none';
-    
-    // Habilitar inputs después de cerrar modal
-    setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
-}
-
-// Botón Borrar
 async function borrarCurso() {
     if (!cursoSeleccionado) {
-        alert('Primero debe seleccionar un curso');
-        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
+        await mostrarAlerta('Primero busque y seleccione un curso para borrar');
         return;
     }
-
-    if (!supabase) {
-        alert('Error: Base de datos no conectada');
-        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
-        return;
-    }
-
-    if (confirm('¿Está seguro de eliminar este curso?\n\nEsta acción no se puede deshacer.')) {
-        try {
-            const { error } = await supabase
-                .from('cursos')
-                .delete()
-                .eq('id', cursoSeleccionado.id);
-
-            if (error) throw error;
-
-            alert('Curso eliminado correctamente');
-            await cargarCursos();
-        } catch (error) {
-            console.error('Error eliminando curso:', error);
-            alert('Error al eliminar curso: ' + error.message);
-        }
-    }
-
-    setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
+    document.getElementById('mensajeBorrar').textContent = 
+        `¿Está seguro de que desea borrar el curso "${cursoSeleccionado.curso}"?`;
+    document.getElementById('razonBorrado').value = '';
+    document.getElementById('modalBorrar').style.display = 'block';
+    document.getElementById('razonBorrado').focus();
 }
 
-// Generar reporte
+function cancelarBorrado() {
+    document.getElementById('modalBorrar').style.display = 'none';
+}
+
+async function confirmarBorrado() {
+    const razon = document.getElementById('razonBorrado').value.trim();
+    if (!razon) {
+        await mostrarAlerta('Debe proporcionar una razón para el borrado');
+        return;
+    }
+    if (!db || !cursoSeleccionado) {
+        await mostrarAlerta('Error: No hay curso seleccionado');
+        return;
+    }
+    try {
+        const { error } = await db.from('cursos').delete().eq('id', cursoSeleccionado.id);
+        if (error) throw error;
+        await mostrarAlerta('Curso eliminado correctamente');
+        document.getElementById('modalBorrar').style.display = 'none';
+        await cargarCursos();
+        limpiarFormulario();
+        deshabilitarCampos();
+    } catch (error) {
+        await mostrarAlerta('Error al eliminar: ' + error.message);
+    }
+}
+
 function generarReporte() {
-    window.open('reportes-cursos.html', 'Reporte de Cursos', 'width=900,height=700');
+    window.location.href = 'reportes-cursos.html';
 }
 
-// Botón Terminar
 function terminar() {
-    if (confirm('¿Desea salir del módulo de cursos?')) {
-        window.location.href = 'archivos.html';
-    } else {
-        setTimeout(() => { if (typeof habilitarInputs === 'function') habilitarInputs(); }, 100);
+    window.location.href = 'archivos.html';
+}
+
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
     }
-}
+};
 
-// Navegación
-function navegarPrimero() {
-    if (cursos.length > 0) mostrarRegistro(0);
-}
-
-function navegarAnterior() {
-    if (registroActual > 0) mostrarRegistro(registroActual - 1);
-}
-
-function navegarSiguiente() {
-    if (registroActual < cursos.length - 1) mostrarRegistro(registroActual + 1);
-}
-
-function navegarUltimo() {
-    if (cursos.length > 0) mostrarRegistro(cursos.length - 1);
-}
-
-function navegarRegistro() {
-    const input = document.getElementById('inputRegistro');
-    if (input) {
-        const num = parseInt(input.value);
-        if (num > 0 && num <= cursos.length) {
-            mostrarRegistro(num - 1);
-        }
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.getElementById('modalBusqueda').style.display === 'block') {
+        aceptarBusqueda();
     }
-}
+    if (e.key === 'Escape') {
+        cerrarModalBusqueda();
+        cerrarModalResultados();
+        cancelarBorrado();
+    }
+});

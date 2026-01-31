@@ -16,113 +16,107 @@
             <div class="form-section">
                 <div class="form-row">
                     <label>Credencial:</label>
-                    <input type="text" id="credencial" value="(autonumérico)" class="input-medium" readonly>
-                    
-                    <label class="label-inline">Dígito:</label>
-                    <input type="text" id="digito" value="0" class="input-tiny">
-                    
+                    <input type="text" id="credencial" value="(automático)" class="input-small" readonly style="background:#ddd;">
+                    <input type="text" id="digito" value="0" class="input-tiny" readonly style="background:#ddd;">
+
                     <label class="label-right">Celular:</label>
-                    <input type="text" id="celular" class="input-medium">
+                    <input type="text" id="celular" class="input-medium" maxlength="15" oninput="soloNumeros(this)">
+
+                    <label class="label-right">Telefono:</label>
+                    <input type="text" id="telefono" class="input-medium" maxlength="15" oninput="soloNumeros(this)">
                 </div>
 
                 <div class="form-row">
                     <label>Nombre:</label>
-                    <input type="text" id="nombre" class="input-large">
-                    
-                    <label class="label-right">Telefono:</label>
-                    <input type="text" id="telefono" class="input-medium">
+                    <input type="text" id="nombre" class="input-large" required>
+
+                    <label class="label-right">Fecha Ingreso:</label>
+                    <input type="date" id="fechaIngreso" class="input-medium">
                 </div>
 
                 <div class="form-row">
                     <label>Direccion:</label>
-                    <textarea id="direccion" class="input-textarea"></textarea>
-                    
+                    <input type="text" id="direccion1" class="input-large">
+
                     <label class="label-right">F. Nac.:</label>
-                    <input type="date" id="fechaNacimiento" class="input-medium">
+                    <input type="date" id="fechaNacimiento" class="input-medium" onchange="calcularEdad()">
                 </div>
 
                 <div class="form-row">
-                    <label>Email:</label>
-                    <input type="text" id="email" class="input-medium">
-                </div>
+                    <label></label>
+                    <input type="text" id="direccion2" class="input-large">
 
-                <div class="form-row">
-                    <label>Nombre Padre:</label>
-                    <input type="text" id="nombrePadre" class="input-large">
-                    
-                    <label class="label-right">Celular Padre:</label>
-                    <input type="text" id="celularPadre" class="input-medium">
-                </div>
+                    <label class="label-right">Edad:</label>
+                    <input type="text" id="edad" class="input-small" readonly style="background:#ddd;">
 
-                <div class="form-row">
-                    <label>Nombre Madre:</label>
-                    <input type="text" id="nombreMadre" class="input-large">
-                    
-                    <label class="label-right">Celular Madre:</label>
-                    <input type="text" id="celularMadre" class="input-medium">
-                </div>
-
-                <div class="form-row">
-                    <label>Grupo:</label>
-                    <select id="grupo" class="input-medium">
-                        <option value=""></option>
-                    </select>
-                    
-                    <label class="label-inline">Grado:</label>
-                    <input type="text" id="grado" class="input-small">
-                    
-                    <label class="label-inline">Fecha Ingreso:</label>
-                    <input type="text" id="fechaIngreso" value="22-ene-2026" class="input-medium">
-                    
                     <label class="label-inline">Reingreso:</label>
                     <input type="checkbox" id="reingreso">
                 </div>
 
                 <div class="form-row">
+                    <label>Email:</label>
+                    <input type="email" id="email" class="input-medium">
+                </div>
+
+                <div class="form-row">
+                    <label>Nombre Padre:</label>
+                    <input type="text" id="nombrePadre" class="input-large">
+
+                    <label class="label-right">Celular Padre:</label>
+                    <input type="text" id="celularPadre" class="input-medium" maxlength="15" oninput="soloNumeros(this)">
+                </div>
+
+                <div class="form-row">
+                    <label>Nombre Madre:</label>
+                    <input type="text" id="nombreMadre" class="input-large">
+
+                    <label class="label-right">Celular Madre:</label>
+                    <input type="text" id="celularMadre" class="input-medium" maxlength="15" oninput="soloNumeros(this)">
+                </div>
+
+                <div class="form-row">
+                    <label>Grupo:</label>
+                    <select id="grupo" class="input-large">
+                        <option value="">-- Seleccione Grupo --</option>
+                    </select>
+
+                    <label class="label-right">Salón:</label>
+                    <input type="text" id="salon" class="input-small" readonly style="background:#eee; cursor:pointer;" onclick="abrirSelectorSalon()">
+                    <input type="text" id="salonUbicacion" class="input-medium" readonly style="background:#eee;">
+                    <button type="button" onclick="abrirSelectorSalon()" style="padding:5px 10px;">...</button>
+                </div>
+
+                <div class="form-row">
                     <label>Beca:</label>
-                    <input type="checkbox" id="beca">
-                    
+                    <input type="checkbox" id="beca" onchange="togglePorcentaje()">
+
                     <label class="label-inline">%:</label>
-                    <input type="text" id="porcentaje" value="0.00%" class="input-small">
-                    
+                    <input type="text" id="porcentaje" value="0.00%" class="input-small" oninput="validarPorcentaje(this)" disabled>
+
                     <label class="label-inline">Comentario:</label>
                     <input type="text" id="comentario" class="input-xlarge">
                 </div>
 
                 <div class="form-row">
-                    <label>Instrumento:</label>
+                    <label>Grado:</label>
+                    <input type="text" id="grado" class="input-small">
+
+                    <label class="label-inline">Instrumento:</label>
                     <select id="instrumento" class="input-medium">
-                        <option value=""></option>
+                        <option value="">-- Seleccione --</option>
                     </select>
-                    
+
                     <label class="label-inline">Medio enteró:</label>
                     <select id="medio" class="input-medium">
-                        <option value=""></option>
+                        <option value="">-- Seleccione --</option>
                     </select>
-                </div>
-            </div>
-
-            <!-- Área de información -->
-            <div class="table-section">
-                <div style="background: #008B8B; padding: 80px; text-align: center; color: white; font-size: 18px;">
-                    <!-- Área vacía para información del grupo -->
-                </div>
-                <div class="table-nav">
-                    <span>Registro:</span>
-                    <button onclick="navegarPrimeroGrupo()">|◄</button>
-                    <button onclick="navegarAnteriorGrupo()">◄</button>
-                    <input type="text" value="1" class="nav-input" id="inputRegistroGrupo">
-                    <button onclick="navegarSiguienteGrupo()">►</button>
-                    <button onclick="navegarUltimoGrupo()">►|</button>
-                    <button onclick="navegarRegistroGrupo()">►*</button>
                 </div>
             </div>
         </main>
 
         <footer>
-            <button class="action-btn" onclick="nuevoAlumno()">Nuevo</button>
             <button class="action-btn" onclick="cancelarAlta()">Cancelar Alta</button>
-            <button class="save-btn" onclick="guardarAlta()">GUARDA Y TERMINA</button>
+            <button class="save-btn" onclick="guardarAlta()">Guardar</button>
         </footer>
     </div>
 
@@ -130,5 +124,12 @@
     <script src="utils-inputs.js"></script>
     <script src="common.js"></script>
     <script src="alumnos.js"></script>
+    <script>
+        // Establecer fecha de ingreso actual
+        document.addEventListener('DOMContentLoaded', function() {
+            var hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaIngreso').value = hoy;
+        });
+    </script>
 </body>
 </html>

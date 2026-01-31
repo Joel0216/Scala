@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scala - Consulta de Alumnos</title>
     <link rel="stylesheet" href="alumnos.css">
 </head>
-
 <body>
     <div class="container">
         <header>
@@ -19,97 +17,94 @@
             <div class="form-section">
                 <div class="form-row">
                     <label>Credencial:</label>
-                    <input type="text" id="credencial" class="input-small">
-                    <input type="text" id="digito" class="input-tiny">
+                    <input type="text" id="credencial" class="input-small" readonly>
+                    <input type="text" id="digito" class="input-tiny" readonly>
 
                     <label class="label-right">Celular:</label>
-                    <input type="text" id="celular" class="input-medium">
+                    <input type="text" id="celular" class="input-medium" readonly>
 
                     <label class="label-right">Telefono:</label>
-                    <input type="text" id="telefono" class="input-medium">
+                    <input type="text" id="telefono" class="input-medium" readonly>
                 </div>
 
                 <div class="form-row">
                     <label>Nombre:</label>
-                    <input type="text" id="nombre" class="input-large">
+                    <input type="text" id="nombre" class="input-large" readonly>
 
                     <label class="label-right">Fecha Ingreso:</label>
-                    <input type="text" id="fechaIngreso" class="input-medium">
+                    <input type="text" id="fechaIngreso" class="input-medium" readonly>
                 </div>
 
                 <div class="form-row">
                     <label>Direccion:</label>
-                    <input type="text" id="direccion1" class="input-large">
+                    <input type="text" id="direccion1" class="input-large" readonly>
 
                     <label class="label-right">F. de Nacimiento:</label>
-                    <input type="date" id="fechaNacimiento" class="input-medium">
+                    <input type="text" id="fechaNacimiento" class="input-medium" readonly>
                 </div>
 
                 <div class="form-row">
                     <label></label>
-                    <input type="text" id="direccion2" class="input-large">
+                    <input type="text" id="direccion2" class="input-large" readonly>
 
                     <label class="label-right">Edad:</label>
-                    <input type="text" id="edad" class="input-small">
+                    <input type="text" id="edad" class="input-small" readonly>
 
                     <label class="label-inline">Reingreso:</label>
-                    <input type="checkbox" id="reingreso">
+                    <input type="checkbox" id="reingreso" disabled>
                 </div>
 
                 <div class="form-row">
                     <label>Email:</label>
-                    <input type="text" id="email" class="input-medium">
+                    <input type="text" id="email" class="input-medium" readonly>
                 </div>
 
                 <div class="form-row">
                     <label>Nombre del padre:</label>
-                    <input type="text" id="nombrePadre" class="input-large">
+                    <input type="text" id="nombrePadre" class="input-large" readonly>
 
                     <label class="label-right">Celular padre:</label>
-                    <input type="text" id="celularPadre" class="input-medium">
+                    <input type="text" id="celularPadre" class="input-medium" readonly>
                 </div>
 
                 <div class="form-row">
                     <label>Nombre de la madre:</label>
-                    <input type="text" id="nombreMadre" class="input-large">
+                    <input type="text" id="nombreMadre" class="input-large" readonly>
 
                     <label class="label-right">Celular madre:</label>
-                    <input type="text" id="celularMadre" class="input-medium">
+                    <input type="text" id="celularMadre" class="input-medium" readonly>
                 </div>
 
                 <div class="form-row">
                     <label>Grupo:</label>
-                    <input type="text" id="grupo" class="input-small">
-                    <input type="text" id="cursoNombre" class="input-xlarge">
+                    <input type="text" id="grupoClave" class="input-small" readonly>
+                    <input type="text" id="grupoNombre" class="input-xlarge" readonly>
 
                     <label class="label-right">Salón:</label>
-                    <input type="text" id="salon" class="input-tiny">
+                    <input type="text" id="salon" class="input-small" readonly>
+                    <input type="text" id="salonUbicacion" class="input-medium" readonly>
                 </div>
 
                 <div class="form-row">
                     <label>Beca:</label>
-                    <input type="checkbox" id="beca">
+                    <input type="checkbox" id="beca" disabled>
 
                     <label class="label-inline">Porcentaje:</label>
-                    <input type="text" id="porcentaje" class="input-small">
+                    <input type="text" id="porcentaje" class="input-small" readonly>
 
                     <label class="label-inline">Comentario:</label>
-                    <input type="text" id="comentario" class="input-xlarge">
+                    <input type="text" id="comentario" class="input-xlarge" readonly>
                 </div>
 
                 <div class="form-row">
                     <label>Grado:</label>
-                    <input type="text" id="grado" class="input-small">
+                    <input type="text" id="grado" class="input-small" readonly>
 
                     <label class="label-inline">Instrumento:</label>
-                    <select id="instrumento" class="input-medium">
-                        <option>NOTI</option>
-                    </select>
+                    <input type="text" id="instrumento" class="input-medium" readonly>
 
                     <label class="label-inline">Medio que se enteró:</label>
-                    <select id="medio" class="input-medium">
-                        <option>ANUN</option>
-                    </select>
+                    <input type="text" id="medio" class="input-medium" readonly>
                 </div>
             </div>
 
@@ -118,39 +113,20 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th></th>
                             <th>Año</th>
                             <th>Mes</th>
                             <th>Descuento</th>
                             <th>Precio</th>
                             <th>Recibo</th>
-                            <th>Fecha:</th>
-                            <th>Grupo:</th>
-                            <th>Curso:</th>
+                            <th>Fecha</th>
+                            <th>Grupo</th>
+                            <th>Curso</th>
                         </tr>
                     </thead>
                     <tbody id="tablaPagos">
-                        <tr>
-                            <td colspan="9"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="9"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="9"></td>
-                        </tr>
+                        <tr><td colspan="8" style="text-align:center;">Sin pagos registrados</td></tr>
                     </tbody>
                 </table>
-                <div class="table-nav">
-                    <span>Registro:</span>
-                    <button onclick="navegarPrimeroPagos()">|◄</button>
-                    <button onclick="navegarAnteriorPagos()">◄</button>
-                    <input type="text" value="1" class="nav-input" id="inputRegistroPagos">
-                    <button onclick="navegarSiguientePagos()">►</button>
-                    <button onclick="navegarUltimoPagos()">►|</button>
-                    <button onclick="navegarRegistroPagos()">►*</button>
-                    <span>de <span id="totalPagos">0</span></span>
-                </div>
             </div>
 
             <!-- Tabla de Examenes -->
@@ -158,47 +134,97 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th></th>
-                            <th>Credencial</th>
                             <th>Clave Examen</th>
                             <th>Fecha</th>
                             <th>Hora</th>
-                            <th>Maestro Base</th>
+                            <th>Maestro</th>
                             <th>G/N</th>
-                            <th># certificado</th>
+                            <th># Certificado</th>
                         </tr>
                     </thead>
                     <tbody id="tablaExamenes">
-                        <tr>
-                            <td colspan="8"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="8"></td>
-                        </tr>
+                        <tr><td colspan="6" style="text-align:center;">Sin exámenes registrados</td></tr>
                     </tbody>
                 </table>
-                <div class="table-nav">
-                    <span>Registro:</span>
-                    <button onclick="navegarPrimeroExamenes()">|◄</button>
-                    <button onclick="navegarAnteriorExamenes()">◄</button>
-                    <input type="text" value="1" class="nav-input" id="inputRegistroExamenes">
-                    <button onclick="navegarSiguienteExamenes()">►</button>
-                    <button onclick="navegarUltimoExamenes()">►|</button>
-                    <button onclick="navegarRegistroExamenes()">►*</button>
-                    <span>de <span id="totalExamenes">0</span></span>
-                </div>
             </div>
         </main>
 
         <footer>
             <button class="action-btn" onclick="buscarAlumno()">Buscar</button>
-            <button class="action-btn" onclick="window.location.href='alumnos-edicion.html'">Edición</button>
+            <button class="action-btn" onclick="irAEdicion()">Edición</button>
             <button class="action-btn" onclick="window.location.href='alumnos-alta.html'">Alta</button>
-            <button class="action-btn" onclick="darBaja()">Baja</button>
-            <button class="action-btn" onclick="cambiarGrupo()">Cambio</button>
+            <button class="action-btn" onclick="confirmarBaja()">Baja</button>
+            <button class="action-btn" onclick="abrirCambioGrupo()">Cambio</button>
             <button class="action-btn" onclick="listaAlumnos()">Listas</button>
             <button class="exit-btn" onclick="window.location.href='archivos.html'">TERMINAR</button>
         </footer>
+    </div>
+
+    <!-- Modal de Cambio de Grupo -->
+    <div id="modalCambioGrupo" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <h2>Cambio de Grupo</h2>
+            <div style="margin: 15px 0;">
+                <p><strong>Alumno:</strong> <span id="cambioAlumnoNombre"></span></p>
+                <p><strong>Credencial:</strong> <span id="cambioAlumnoCred"></span></p>
+                <p><strong>Grupo Actual:</strong> <span id="cambioGrupoActual"></span></p>
+            </div>
+            <div style="margin: 15px 0;">
+                <label><strong>Nuevo Grupo:</strong></label>
+                <select id="selectNuevoGrupo" style="width: 100%; padding: 10px; margin-top: 5px;">
+                    <option value="">-- Seleccione nuevo grupo --</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" onclick="guardarCambioGrupo()">Guardar</button>
+                <button class="btn" onclick="cerrarModalCambio()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de búsqueda estilo Windows -->
+    <div id="modalBusquedaAlumno" class="modal-windows" style="display: none;">
+        <div class="modal-busqueda-content">
+            <div class="modal-busqueda-header">
+                <span class="modal-icon">🔍</span>
+                <span>PC</span>
+                <div class="modal-header-buttons">
+                    <button class="modal-header-btn" onclick="cerrarModalBusquedaAlumno()">✕</button>
+                </div>
+            </div>
+            <div class="modal-busqueda-body">
+                <h2>Proporcione el Nombre del Alumno o Inicio del Nombre</h2>
+                <div class="busqueda-input-row">
+                    <input type="text" id="inputBusquedaAlumno" placeholder="Escriba nombre o credencial...">
+                    <button class="btn-busqueda" onclick="ejecutarBusquedaAlumno()">Aceptar</button>
+                    <button class="btn-busqueda" onclick="cerrarModalBusquedaAlumno()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de resultados de búsqueda estilo Windows -->
+    <div id="modalResultadosAlumno" class="modal-windows" style="display: none;">
+        <div class="modal-resultados-content">
+            <div class="modal-resultados-header">
+                <span class="modal-icon">📋</span>
+                <span id="tituloResultadosAlumno">Resultados de Búsqueda</span>
+                <div class="modal-header-buttons">
+                    <button class="modal-header-btn" onclick="cerrarModalResultadosAlumno()">✕</button>
+                </div>
+            </div>
+            <div class="modal-resultados-body">
+                <table id="tablaResultadosAlumno">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Credencial</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyResultadosAlumno"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script src="supabase-config.js"></script>
@@ -206,5 +232,4 @@
     <script src="common.js"></script>
     <script src="alumnos.js"></script>
 </body>
-
 </html>

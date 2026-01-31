@@ -16,88 +16,110 @@
         <main>
             <div class="form-section">
                 <div class="form-row">
-                    <label>Curso:</label>
-                    <input type="text" id="curso" class="input-large">
-                    
-                    <label class="label-right">Curso Siguiente:</label>
-                    <select id="cursoSiguiente" class="input-medium">
-                        <option value="">Seleccione...</option>
-                        <option value="INSCRIPCION">INSCRIPCION</option>
-                    </select>
+                    <label>Curso: <span class="required">*</span></label>
+                    <input type="text" id="curso" class="input-large" disabled>
                 </div>
 
                 <div class="form-row">
-                    <label>Costo:</label>
-                    <input type="text" id="costo" class="input-medium" value="$300.00">
+                    <label>Curso Siguiente:</label>
+                    <input type="text" id="cursoSiguiente" class="input-large" disabled>
+                </div>
+
+                <div class="form-row">
+                    <label>Costo: <span class="required">*</span></label>
+                    <input type="text" id="costo" class="input-medium" disabled placeholder="$0.00">
                 </div>
 
                 <div class="form-row">
                     <label>Clave:</label>
-                    <input type="text" id="clave" class="input-small" readonly>
+                    <input type="text" id="clave" class="input-small" readonly style="background: #e0e0e0;">
+                    <span class="info-text">Se genera automáticamente</span>
                 </div>
 
                 <div class="form-row">
                     <label>IVA:</label>
-                    <input type="text" id="iva" class="input-medium" value="0.16">
+                    <input type="text" id="iva" class="input-small" value="0.16" readonly style="background: #e0e0e0;">
+                    <span class="info-text">Siempre 16%</span>
                 </div>
 
                 <div class="form-row">
                     <label>Recargo:</label>
-                    <input type="text" id="recargo" class="input-medium" value="$0.00">
+                    <input type="text" id="recargo" class="input-medium" disabled placeholder="$0.00">
                 </div>
             </div>
 
             <div class="button-group">
-                <button class="action-btn" onclick="nuevoCurso()">Nuevo</button>
-                <button class="action-btn" onclick="buscarCurso()">Buscar</button>
-                <button class="action-btn" onclick="borrarCurso()">Borrar</button>
-                <button class="action-btn" onclick="generarReporte()">Reporte</button>
+                <button class="action-btn" id="btnNuevo" onclick="nuevoCurso()">Nuevo</button>
+                <button class="action-btn btn-cancelar-nuevo" id="btnCancelarNuevo" onclick="cancelarNuevo()" style="display: none;">Cancelar</button>
+                <button class="action-btn" id="btnBuscar" onclick="buscarCurso()">Buscar</button>
+                <button class="action-btn" id="btnBorrar" onclick="borrarCurso()" disabled>Borrar</button>
+                <button class="action-btn" id="btnReporte" onclick="generarReporte()">Reportes</button>
                 <button class="btn-terminar" onclick="terminar()">Terminar</button>
-            </div>
-
-            <div class="navigation">
-                <span>Registro: <span id="registroActual">1</span> de <span id="totalRegistros">0</span></span>
-                <button onclick="navegarPrimero()">|◄</button>
-                <button onclick="navegarAnterior()">◄</button>
-                <input type="number" id="inputRegistro" value="1" min="1" class="nav-input">
-                <button onclick="navegarSiguiente()">►</button>
-                <button onclick="navegarUltimo()">►|</button>
-                <button onclick="navegarRegistro()">►*</button>
             </div>
         </main>
     </div>
 
-    <!-- Modal de búsqueda -->
+    <!-- Modal de búsqueda estilo Windows -->
     <div id="modalBusqueda" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Proporcione Nombre del curso O inicio del nombre</h2>
-            <input type="text" id="inputBusqueda" placeholder="Nombre del curso">
-            <div class="modal-buttons">
-                <button class="btn" onclick="aceptarBusqueda()">Aceptar</button>
-                <button class="btn" onclick="cerrarModal()">Cancelar</button>
+        <div class="modal-busqueda-content">
+            <div class="modal-busqueda-header">
+                <span class="modal-icon">🔍</span>
+                <span>PC</span>
+                <div class="modal-header-buttons">
+                    <button class="modal-header-btn" onclick="cerrarModalBusqueda()">✕</button>
+                </div>
+            </div>
+            <div class="modal-busqueda-body">
+                <h2>Proporcione el Nombre del Curso o Clave</h2>
+                <div class="busqueda-input-row">
+                    <input type="text" id="inputBusqueda" placeholder="Escriba curso o clave...">
+                    <button class="btn-busqueda" onclick="aceptarBusqueda()">Aceptar</button>
+                    <button class="btn-busqueda" onclick="cerrarModalBusqueda()">Cancelar</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal de lista de resultados -->
-    <div id="modalLista" class="modal" style="display: none;">
-        <div class="modal-content modal-lista">
-            <h2>Seleccione un curso</h2>
-            <div class="lista-container">
+    <!-- Modal de resultados de búsqueda -->
+    <div id="modalResultados" class="modal" style="display: none;">
+        <div class="modal-resultados-content">
+            <div class="modal-resultados-header">
+                <span class="modal-icon">📋</span>
+                <span id="tituloResultados">Resultados de Búsqueda</span>
+                <div class="modal-header-buttons">
+                    <button class="modal-header-btn" onclick="cerrarModalResultados()">✕</button>
+                </div>
+            </div>
+            <div class="modal-resultados-body">
                 <table id="tablaResultados">
                     <thead>
                         <tr>
                             <th>Curso</th>
                             <th>Clave</th>
-                            <th>Costo</th>
-                            <th>IVA</th>
                         </tr>
                     </thead>
                     <tbody id="bodyResultados"></tbody>
                 </table>
             </div>
-            <div class="modal-buttons">
-                <button class="btn" onclick="cerrarModal()">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación de borrado -->
+    <div id="modalBorrar" class="modal" style="display: none;">
+        <div class="modal-borrar-content">
+            <div class="modal-borrar-header">
+                <h2>¿Borrar Curso?</h2>
+            </div>
+            <div class="modal-borrar-body">
+                <p id="mensajeBorrar">¿Está seguro de que desea borrar este curso?</p>
+                <div class="form-row-borrar">
+                    <label>Razón del borrado:</label>
+                    <textarea id="razonBorrado" rows="3" placeholder="Describa la razón por la cual se borra el curso..."></textarea>
+                </div>
+            </div>
+            <div class="modal-borrar-footer">
+                <button class="btn-borrar-no" onclick="cancelarBorrado()">No</button>
+                <button class="btn-borrar-si" onclick="confirmarBorrado()">Sí - Confirmar</button>
             </div>
         </div>
     </div>
