@@ -1,108 +1,149 @@
-// Listado de Bajas
-let supabase = null;
-let listadoInicializado = false;
+// =====================================================
+// LISTADO DE BAJAS - SCALA
+// =====================================================
 
-// Esperar a que Supabase esté listo
-window.addEventListener('supabaseReady', (e) => {
-    if (!listadoInicializado) {
-        supabase = e.detail?.supabase || window.supabaseClient;
-        inicializarListado();
+var db = null;
+var bajasCache = [];
+var motivosCache = [];
+
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('Inicializando listado de bajas...');
+    
+    await new Promise(function(r) { setTimeout(r, 500); });
+    
+    db = window.supabaseClient || window.supabase;
+    if (!db && typeof getSupabase === 'function') {
+        db = getSupabase();
     }
+    
+    if (db) {
+        await cargarMotivos();
+        await cargarBajas();
+    } else {
+        document.getElementById('bodyBajas').innerHTML = 
+            '<tr><td colspan="5" style="text-align:center;color:red;">Error: No hay conexión a la base de datos</td></tr>';
+    }
+    
+    actualizarFechaHora();
+    setInterval(actualizarFechaHora, 1000);
 });
 
-document.addEventListener('DOMContentLoaded', async () => {
-    setTimeout(async () => {
-        if (listadoInicializado) return;
+function actualizarFechaHora() {
+    var ahora = new Date();
+    var datetime = document.getElementById('datetime');
+    if (datetime) {
+        var dia = String(ahora.getDate()).padStart(2, '0');
+        var mes = String(ahora.getMonth() + 1).padStart(2, '0');
+        var anio = ahora.getFullYear();
+        datetime.textContent = dia + '/' + mes + '/' + anio;
+    }
+}
+
+async function cargarMotivos() {
+    try {
+        var result = await db.from('motivos_baja').select('*').order('clave');
+        if (result.error) {
+            motivosCache = [
+                { clave: 'CAC', descripcion: 'CAMBIO DE CIUDAD' },
+                { clave: 'ECO', descripcion: 'PROBLEMAS ECONOMICOS' },
+                { clave: 'SAL', descripcion: 'PROBLEMAS DE SALUD' },
+                { clave: 'TRA', descripcion: 'PROBLEMAS DE TRABAJO' }
+            ];
+        } else {
+            motivosCache = result.data || [];
+        }
         
-        if (typeof isSupabaseConnected === 'function' && isSupabaseConnected()) {
-            supabase = window.supabaseClient || getSupabase();
-            await inicializarListado();
-        } else if (typeof waitForSupabase === 'function') {
-            try {
-                supabase = await waitForSupabase(8000);
-                await inicializarListado();
-            } catch (e) {
-                console.error('Error esperando Supabase:', e);
-                alert('Error: No se pudo conectar a la base de datos');
+        // Llenar select de filtro
+        var select = document.getElementById('filtroMotivo');
+        if (select) {
+            for (var i = 0; i < motivosCache.length; i++) {
+                var m = motivosCache[i];
+                var opt = document.createElement('option');
+                opt.value = m.clave;
+                opt.textContent = m.clave + ' - ' + m.descripcion;
+                select.appendChild(opt);
             }
         }
-    }, 500);
-});
+    } catch (e) {
+        console.error('Error cargando motivos:', e);
+    }
+}
 
-async function inicializarListado() {
-    if (listadoInicializado) return;
-    listadoInicializado = true;
+async function cargarBajas() {
+    var tbody = document.getElementById('bodyBajas');
     
-    updateDate();
-    await loadAlumnosBaja();
+    try {
+        var result = await db.from('alumnos')
+            .select('*')
+            .eq('activo', false)
+            .order('fecha_baja', { ascending: false });
+        
+        if (result.error) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:red;">Error: ' + result.error.message + '</td></tr>';
+            return;
+        }
+        
+        bajasCache = result.data || [];
+        mostrarBajas(bajasCache);
+        
+    } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:red;">Error: ' + e.message + '</td></tr>';
+    }
 }
 
-function updateDate() {
-    const now = new Date();
-    const formatted = now.toLocaleDateString('es-MX', {
-        day: '2-digit', month: 'short', year: 'numeric'
-    });
-    const el = document.getElementById('date');
-    if (el) el.textContent = formatted;
-}
-
-async function loadAlumnosBaja() {
-    if (!supabase) {
-        alert('Error: Base de datos no conectada');
+function mostrarBajas(bajas) {
+    var tbody = document.getElementById('bodyBajas');
+    tbody.innerHTML = '';
+    
+    if (!bajas || bajas.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay alumnos dados de baja</td></tr>';
+        document.getElementById('totalRegistros').textContent = '0 registros';
         return;
     }
     
-    try {
-        // Primero intentar cargar de la tabla alumnos_bajas
-        let { data, error } = await supabase
-            .from('alumnos_bajas')
-            .select('*')
-            .order('nombre', { ascending: true });
-
-        // Si no hay datos o hay error, intentar con alumnos con status='baja'
-        if (error || !data || data.length === 0) {
-            const result = await supabase
-                .from('alumnos')
-                .select('*')
-                .eq('status', 'baja')
-                .order('nombre', { ascending: true });
-            
-            data = result.data || [];
-            error = result.error;
-        }
-
-        if (error) throw error;
-
-        const container = document.getElementById('alumnosList');
-        if (!container) return;
-        
-        container.innerHTML = '';
-
-        if (!data || data.length === 0) {
-            container.innerHTML = '<p style="text-align:center; padding:20px;">No hay alumnos dados de baja</p>';
-            return;
-        }
-
-        data.forEach(alumno => {
-            const card = document.createElement('div');
-            card.className = 'alumno-card';
-            card.innerHTML = `
-                <h2>Nombre: ${alumno.nombre || ''}</h2>
-                <div class="info-row"><span class="info-label">Direccion1:</span><span class="info-value">${alumno.direccion1 || ''}</span></div>
-                <div class="info-row"><span class="info-label">Telefono:</span><span class="info-value">${alumno.telefono || ''}</span></div>
-                <div class="info-row"><span class="info-label">Celular:</span><span class="info-value">${alumno.celular || ''}</span></div>
-                <div class="info-row"><span class="info-label">Email:</span><span class="info-value">${alumno.email || ''}</span></div>
-                <div class="info-row"><span class="info-label">Grupo:</span><span class="info-value">${alumno.grupo || ''}</span></div>
-                <div class="info-row"><span class="info-label">Credencial:</span><span class="info-value">${alumno.credencial1 || ''}${alumno.credencial2 || ''}</span></div>
-                <div class="info-row"><span class="info-label">Fecha Ingreso:</span><span class="info-value">${alumno.fecha_ingreso || ''}</span></div>
-                <div class="info-row"><span class="info-label">Fecha Baja:</span><span class="info-value">${alumno.fecha_baja || ''}</span></div>
-                <div class="info-row"><span class="info-label">Motivo:</span><span class="info-value">${alumno.motivo_baja || ''}</span></div>
-                <div class="info-row"><span class="info-label">Observaciones:</span><span class="info-value">${alumno.observaciones || ''}</span></div>
-            `;
-            container.appendChild(card);
-        });
-    } catch (error) {
-        console.error('Error cargando listado:', error);
-        alert('Error al cargar el listado: ' + error.message);
+    for (var i = 0; i < bajas.length; i++) {
+        var alumno = bajas[i];
+        var tr = document.createElement('tr');
+        tr.innerHTML = 
+            '<td>' + alumno.credencial + '</td>' +
+            '<td>' + (alumno.nombre || '') + '</td>' +
+            '<td>' + formatearFecha(alumno.fecha_ingreso) + '</td>' +
+            '<td>' + formatearFecha(alumno.fecha_baja) + '</td>' +
+            '<td>' + obtenerDescripcionMotivo(alumno.motivo_baja) + '</td>';
+        tbody.appendChild(tr);
     }
+    
+    document.getElementById('totalRegistros').textContent = bajas.length + ' registro(s)';
+}
+
+function filtrarPorMotivo() {
+    var motivo = document.getElementById('filtroMotivo').value;
+    
+    if (!motivo) {
+        mostrarBajas(bajasCache);
+    } else {
+        var filtrados = bajasCache.filter(function(a) {
+            return a.motivo_baja === motivo;
+        });
+        mostrarBajas(filtrados);
+    }
+}
+
+function formatearFecha(fecha) {
+    if (!fecha) return '';
+    var d = new Date(fecha);
+    var dia = String(d.getDate()).padStart(2, '0');
+    var mes = String(d.getMonth() + 1).padStart(2, '0');
+    var anio = d.getFullYear();
+    return dia + '/' + mes + '/' + anio;
+}
+
+function obtenerDescripcionMotivo(clave) {
+    if (!clave) return '';
+    for (var i = 0; i < motivosCache.length; i++) {
+        if (motivosCache[i].clave === clave) {
+            return clave + ' - ' + motivosCache[i].descripcion;
+        }
+    }
+    return clave;
 }

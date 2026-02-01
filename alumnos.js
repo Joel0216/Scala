@@ -6,6 +6,7 @@ var db = null;
 var alumnosCache = [];
 var gruposCache = [];
 var salonesCache = [];
+var motivosCache = [];
 var alumnoSeleccionado = null;
 var alumnoEditando = null;
 
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         await cargarInstrumentos();
         await cargarMedios();
         await cargarSalones();
+        await cargarMotivos();
     } else {
         console.error('Supabase NO disponible');
     }
@@ -153,6 +155,51 @@ async function cargarSalones() {
             { numero: '1', ubicacion: 'Planta Baja' },
             { numero: '2', ubicacion: 'Planta Baja' },
             { numero: '3', ubicacion: 'Primer Piso' }
+        ];
+    }
+}
+
+async function cargarMotivos() {
+    if (!db) return;
+    
+    try {
+        var result = await db.from('motivos_baja').select('*').order('clave');
+        if (result.error) {
+            console.error('Error cargando motivos:', result.error);
+            // Usar datos por defecto
+            motivosCache = [
+                { clave: 'CAC', descripcion: 'CAMBIO DE CIUDAD' },
+                { clave: 'ECO', descripcion: 'PROBLEMAS ECONOMICOS' },
+                { clave: 'SAL', descripcion: 'PROBLEMAS DE SALUD' },
+                { clave: 'TRA', descripcion: 'PROBLEMAS DE TRABAJO' },
+                { clave: 'TIE', descripcion: 'FALTA DE TIEMPO' },
+                { clave: 'INT', descripcion: 'PERDIDA DE INTERES' },
+                { clave: 'OTR', descripcion: 'OTRO MOTIVO' }
+            ];
+        } else {
+            motivosCache = result.data || [];
+        }
+        console.log(motivosCache.length + ' motivos cargados');
+        
+        // Llenar select de motivos
+        var selectMotivo = document.getElementById('selectMotivoBaja');
+        if (selectMotivo) {
+            selectMotivo.innerHTML = '<option value="">-- Seleccione el motivo --</option>';
+            for (var i = 0; i < motivosCache.length; i++) {
+                var m = motivosCache[i];
+                var opt = document.createElement('option');
+                opt.value = m.clave;
+                opt.textContent = m.clave + ' - ' + m.descripcion;
+                selectMotivo.appendChild(opt);
+            }
+        }
+    } catch (e) {
+        console.error('Error:', e);
+        motivosCache = [
+            { clave: 'CAC', descripcion: 'CAMBIO DE CIUDAD' },
+            { clave: 'ECO', descripcion: 'PROBLEMAS ECONOMICOS' },
+            { clave: 'SAL', descripcion: 'PROBLEMAS DE SALUD' },
+            { clave: 'TRA', descripcion: 'PROBLEMAS DE TRABAJO' }
         ];
     }
 }
@@ -661,7 +708,7 @@ async function cancelarEdicion() {
 }
 
 // =====================================================
-// BAJA DE ALUMNOS
+// BAJA DE ALUMNOS CON MOTIVO
 // =====================================================
 async function confirmarBaja() {
     if (!alumnoSeleccionado) {
@@ -669,7 +716,37 @@ async function confirmarBaja() {
         return;
     }
     
-    var confirma = await mostrarConfirm('¿Dar de BAJA al alumno ' + alumnoSeleccionado.nombre + '?');
+    // Mostrar información en el modal
+    document.getElementById('bajaNombreAlumno').textContent = alumnoSeleccionado.nombre;
+    document.getElementById('bajaCredencial').textContent = alumnoSeleccionado.credencial;
+    document.getElementById('bajaGrupo').textContent = 
+        alumnoSeleccionado.grupo_clave + ' - ' + obtenerNombreGrupo(alumnoSeleccionado.grupo_clave);
+    
+    document.getElementById('selectMotivoBaja').value = '';
+    document.getElementById('descripcionBaja').value = '';
+    
+    document.getElementById('modalBaja').style.display = 'block';
+}
+
+function cerrarModalBaja() {
+    document.getElementById('modalBaja').style.display = 'none';
+}
+
+async function ejecutarBaja() {
+    var motivoClave = document.getElementById('selectMotivoBaja').value;
+    
+    if (!motivoClave) {
+        await mostrarAlerta('Debe seleccionar un motivo para la baja');
+        return;
+    }
+    
+    var descripcion = document.getElementById('descripcionBaja').value.trim();
+    
+    var confirma = await mostrarConfirm(
+        '¿Confirmar la BAJA del alumno ' + alumnoSeleccionado.nombre + '?\n\n' +
+        'Esta acción moverá al alumno a la sección de Bajas.'
+    );
+    
     if (!confirma) return;
     
     if (!db) {
@@ -680,7 +757,9 @@ async function confirmarBaja() {
     try {
         var result = await db.from('alumnos').update({
             activo: false,
-            fecha_baja: new Date().toISOString().split('T')[0]
+            fecha_baja: new Date().toISOString().split('T')[0],
+            motivo_baja: motivoClave,
+            observaciones_baja: descripcion || null
         }).eq('id', alumnoSeleccionado.id);
         
         if (result.error) {
@@ -689,6 +768,7 @@ async function confirmarBaja() {
         }
         
         await mostrarAlerta('Alumno dado de baja correctamente');
+        cerrarModalBaja();
         limpiarFormulario();
         alumnoSeleccionado = null;
     } catch (e) {

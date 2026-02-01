@@ -577,3 +577,68 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     background: #000080;
     color: white;
 }
+
+
+/* ========================================
+   MODAL DE BAJA CON MOTIVO
+   ======================================== */
+.modal-baja {
+    width: 550px;
+    background-color: #f5f5f5;
+    border: 2px solid #cc0000;
+}
+
+.modal-baja h2 {
+    color: #cc0000;
+    border-bottom: 2px solid #cc0000;
+}
+
+.baja-info {
+    background-color: #fff0f0;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ffcccc;
+    border-radius: 4px;
+}
+
+.baja-info p {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-group-baja {
+    margin-bottom: 15px;
+}
+
+.form-group-baja label {
+    display: block;
+    text-align: left;
+    margin-bottom: 5px;
+    min-width: auto;
+    font-weight: bold;
+}
+
+.form-group-baja select,
+.form-group-baja textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px inset #dfdfdf;
+    font-size: 14px;
+}
+
+.form-group-baja textarea {
+    resize: vertical;
+}
+
+.required {
+    color: red;
+}
+
+.btn-confirmar-baja {
+    background-color: #cc0000 !important;
+    color: white !important;
+}
+
+.btn-confirmar-baja:hover {
+    background-color: #990000 !important;
+}

@@ -182,6 +182,32 @@
         </div>
     </div>
 
+    <!-- Modal de Baja con Motivo -->
+    <div id="modalBaja" class="modal" style="display:none;">
+        <div class="modal-content modal-baja">
+            <h2>⚠️ Dar de Baja al Alumno</h2>
+            <div class="baja-info">
+                <p><strong>Alumno:</strong> <span id="bajaNombreAlumno"></span></p>
+                <p><strong>Credencial:</strong> <span id="bajaCredencial"></span></p>
+                <p><strong>Grupo:</strong> <span id="bajaGrupo"></span></p>
+            </div>
+            <div class="form-group-baja">
+                <label>Motivo de la Baja: <span class="required">*</span></label>
+                <select id="selectMotivoBaja" class="input-xlarge">
+                    <option value="">-- Seleccione el motivo --</option>
+                </select>
+            </div>
+            <div class="form-group-baja">
+                <label>Descripción / Observaciones:</label>
+                <textarea id="descripcionBaja" rows="3" placeholder="Describa el motivo de la baja (opcional)"></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-confirmar-baja" onclick="ejecutarBaja()">Confirmar Baja</button>
+                <button class="btn" onclick="cerrarModalBaja()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de búsqueda estilo Windows -->
     <div id="modalBusquedaAlumno" class="modal-windows" style="display: none;">
         <div class="modal-busqueda-content">

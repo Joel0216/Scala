@@ -5,78 +5,177 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #c0c0c0;
     padding: 20px;
-    background-color: white;
 }
 
 .container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
+    background-color: #f0f0f0;
+    border: 2px solid #808080;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
 }
 
-h1 {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 5px;
-    text-align: center;
-    border-bottom: 2px solid #000;
-    padding-bottom: 5px;
+header {
+    background: linear-gradient(to right, #000080, #1084d0);
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.date {
+header h1 {
+    font-size: 20px;
+    font-weight: normal;
+}
+
+.datetime {
     font-size: 14px;
-    margin-bottom: 20px;
-    text-align: center;
+    background-color: white;
+    color: black;
+    padding: 5px 12px;
+    border: 1px solid #808080;
 }
 
-.alumno-card {
-    border: 1px solid #000;
+main {
+    padding: 20px;
+}
+
+.filtros {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
     padding: 15px;
-    margin-bottom: 20px;
-    page-break-inside: avoid;
+    background-color: #e8e8e8;
+    border: 1px solid #999;
 }
 
-.alumno-card h2 {
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-.info-row {
-    display: flex;
-    margin-bottom: 5px;
-}
-
-.info-label {
+.filtros label {
     font-weight: bold;
-    width: 150px;
 }
 
-.info-value {
-    flex: 1;
+.filtros select {
+    padding: 8px 15px;
+    border: 2px inset #dfdfdf;
+    font-size: 14px;
+    min-width: 250px;
 }
 
-.button-group {
+.total-registros {
+    margin-left: auto;
+    font-weight: bold;
+    color: #000080;
+}
+
+.tabla-container {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 2px solid #808080;
+    background-color: white;
+}
+
+#tablaBajas {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#tablaBajas thead {
+    background-color: #000080;
+    color: white;
+    position: sticky;
+    top: 0;
+}
+
+#tablaBajas th {
+    padding: 12px 10px;
+    text-align: left;
+    font-size: 14px;
+    border: 1px solid #000060;
+}
+
+#tablaBajas td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 13px;
+}
+
+#tablaBajas tbody tr:hover {
+    background-color: #e8f4ff;
+}
+
+#tablaBajas tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+footer {
     display: flex;
-    gap: 10px;
+    gap: 15px;
     justify-content: center;
-    margin-top: 20px;
+    padding: 15px;
+    background-color: #d0d0d0;
+    border-top: 1px solid #999;
 }
 
 .btn {
-    padding: 10px 20px;
-    border: 1px solid #ccc;
-    background-color: #f0f0f0;
+    padding: 10px 25px;
+    border: 2px outset #dfdfdf;
+    background-color: #e0e0e0;
     cursor: pointer;
     font-size: 14px;
+    font-weight: bold;
 }
 
 .btn:hover {
-    background-color: #e0e0e0;
+    background-color: #d0d0d0;
 }
 
+.btn:active {
+    border-style: inset;
+}
+
+.btn-terminar {
+    color: #cc0000;
+}
+
+/* Estilos para impresión */
 @media print {
-    .button-group {
+    body {
+        background: white;
+        padding: 0;
+    }
+    
+    .container {
+        border: none;
+        box-shadow: none;
+    }
+    
+    header {
+        background: #000080;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .filtros, footer {
         display: none;
+    }
+    
+    .tabla-container {
+        max-height: none;
+        overflow: visible;
+        border: 1px solid #000;
+    }
+    
+    #tablaBajas thead {
+        background: #000080;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    #tablaBajas th, #tablaBajas td {
+        border: 1px solid #000;
     }
 }

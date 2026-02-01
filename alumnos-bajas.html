@@ -8,54 +8,170 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <header>
             <h1>Consulta de Alumnos (BAJAS)</h1>
             <div class="datetime" id="datetime"></div>
+        </header>
+
+        <main>
+            <div class="form-section">
+                <div class="form-row">
+                    <label>Credencial:</label>
+                    <input type="text" id="credencial" class="input-small" readonly>
+                    <input type="text" id="digito" class="input-tiny" readonly>
+
+                    <label class="label-right">Teléfono:</label>
+                    <input type="text" id="telefono" class="input-medium" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Nombre:</label>
+                    <input type="text" id="nombre" class="input-xlarge" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Dirección:</label>
+                    <input type="text" id="direccion1" class="input-xlarge" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Email:</label>
+                    <input type="text" id="email" class="input-large" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Nombre del padre/madre:</label>
+                    <input type="text" id="nombrePadre" class="input-large" readonly>
+
+                    <label class="label-right">Celular padre/madre:</label>
+                    <input type="text" id="celularPadre" class="input-medium" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Fecha Ingreso:</label>
+                    <input type="text" id="fechaIngreso" class="input-medium" readonly>
+
+                    <label class="label-right">Edad:</label>
+                    <input type="text" id="edad" class="input-small" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Grupo:</label>
+                    <input type="text" id="grupoClave" class="input-small" readonly>
+                    <input type="text" id="grupoNombre" class="input-large" readonly>
+
+                    <label class="label-right">Grado:</label>
+                    <input type="text" id="grado" class="input-small" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Beca:</label>
+                    <input type="checkbox" id="beca" disabled>
+                    <label class="label-inline">Porcentaje:</label>
+                    <input type="text" id="porcentaje" class="input-small" readonly>
+
+                    <label class="label-right">Comentario:</label>
+                    <input type="text" id="comentario" class="input-large" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Instrumento:</label>
+                    <input type="text" id="instrumento" class="input-medium" readonly>
+
+                    <label class="label-right">Medio:</label>
+                    <input type="text" id="medio" class="input-medium" readonly>
+                </div>
+
+                <div class="form-row motivo-row">
+                    <label>Motivo:</label>
+                    <input type="text" id="motivoClave" class="input-small" readonly>
+                    <input type="text" id="motivoDescripcion" class="input-large" readonly>
+
+                    <label class="label-right">F. Baja:</label>
+                    <input type="text" id="fechaBaja" class="input-medium fecha-baja" readonly>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="action-btn" onclick="buscarAlumnoBaja()">Buscar</button>
+                <button class="action-btn" onclick="listarBajas()">Listado</button>
+                <button class="action-btn" onclick="reingresarAlumno()">Reingreso</button>
+                <button class="exit-btn" onclick="window.location.href='archivos.html'">TERMINAR</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de búsqueda estilo Windows -->
+    <div id="modalBusqueda" class="modal-windows" style="display: none;">
+        <div class="modal-busqueda-content">
+            <div class="modal-busqueda-header">
+                <span class="modal-icon">🔍</span>
+                <span>PC</span>
+                <div class="modal-header-buttons">
+                    <button class="modal-header-btn" onclick="cerrarModalBusqueda()">✕</button>
+                </div>
+            </div>
+            <div class="modal-busqueda-body">
+                <h2>Proporcione el Nombre o Credencial del Alumno dado de Baja</h2>
+                <div class="busqueda-input-row">
+                    <input type="text" id="inputBusqueda" placeholder="Escriba nombre o credencial...">
+                    <button class="btn-busqueda" onclick="ejecutarBusquedaBaja()">Aceptar</button>
+                    <button class="btn-busqueda" onclick="cerrarModalBusqueda()">Cancelar</button>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <div class="form-section">
-            <div class="form-row">
-                <label>Credencial:</label>
-                <input type="text" id="credencial" class="input-small" readonly>
-                <input type="text" id="digito" class="input-tiny" readonly>
-                
-                <label class="label-right">Celular:</label>
-                <input type="text" id="celular" class="input-medium" readonly>
+    <!-- Modal de resultados de búsqueda estilo Windows -->
+    <div id="modalResultados" class="modal-windows" style="display: none;">
+        <div class="modal-resultados-content">
+            <div class="modal-resultados-header">
+                <span class="modal-icon">📋</span>
+                <span id="tituloResultados">Alumnos dados de Baja</span>
+                <div class="modal-header-buttons">
+                    <button class="modal-header-btn" onclick="cerrarModalResultados()">✕</button>
+                </div>
             </div>
-
-            <div class="form-row">
-                <label>Nombre:</label>
-                <input type="text" id="nombre" class="input-large" readonly>
-                
-                <label class="label-right">Fecha Baja:</label>
-                <input type="text" id="fechaBaja" class="input-medium" readonly>
-            </div>
-
-            <div class="form-row">
-                <label>Direccion:</label>
-                <input type="text" id="direccion1" class="input-large" readonly>
-            </div>
-
-            <div class="form-row">
-                <label>Grupo:</label>
-                <input type="text" id="grupo" class="input-small" readonly>
-                <input type="text" id="grupoNombre" class="input-large" readonly>
-            </div>
-
-            <div class="form-row">
-                <label>Motivo:</label>
-                <input type="text" id="motivoBaja" class="input-medium" readonly>
-                
-                <label class="label-inline">Observaciones:</label>
-                <input type="text" id="observaciones" class="input-xlarge" readonly>
+            <div class="modal-resultados-body">
+                <table id="tablaResultados">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Credencial</th>
+                            <th>F. Ingreso</th>
+                            <th>F. Baja</th>
+                            <th>Motivo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyResultados"></tbody>
+                </table>
             </div>
         </div>
+    </div>
 
-        <div class="button-group">
-            <button class="btn" onclick="buscarAlumnoBaja()">Buscar</button>
-            <button class="btn" onclick="listarBajas()">Listado</button>
-            <button class="btn" onclick="reingresarAlumno()">Reingreso</button>
-            <button class="btn btn-terminar" onclick="window.location.href='archivos.html'">TERMINAR</button>
+    <!-- Modal de Reingreso -->
+    <div id="modalReingreso" class="modal" style="display: none;">
+        <div class="modal-content modal-reingreso">
+            <h2>Reingreso de Alumno</h2>
+            <div class="reingreso-info">
+                <p><strong>Alumno:</strong> <span id="reingresoNombre"></span></p>
+                <p><strong>Credencial:</strong> <span id="reingresoCredencial"></span></p>
+                <p><strong>Último Grupo:</strong> <span id="reingresoUltimoGrupo"></span></p>
+            </div>
+            <div class="form-group-reingreso">
+                <label>Nuevo Grupo: <span class="required">*</span></label>
+                <select id="selectNuevoGrupo" class="input-xlarge">
+                    <option value="">-- Seleccione nuevo grupo --</option>
+                </select>
+            </div>
+            <div class="form-group-reingreso">
+                <label>Observaciones:</label>
+                <textarea id="observacionesReingreso" rows="3" placeholder="Observaciones del reingreso (opcional)"></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-guardar" onclick="confirmarReingreso()">Confirmar Reingreso</button>
+                <button class="btn" onclick="cerrarModalReingreso()">Cancelar</button>
+            </div>
         </div>
     </div>
 

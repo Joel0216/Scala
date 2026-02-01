@@ -1,29 +1,53 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listado de Bajas</title>
+    <title>Listado de Alumnos Dados de Baja</title>
     <link rel="stylesheet" href="listado-bajas.css">
 </head>
-
 <body>
     <div class="container">
-        <h1>Listado de Bajas</h1>
-        <div class="date" id="date"></div>
+        <header>
+            <h1>Listado de Alumnos Dados de Baja</h1>
+            <div class="datetime" id="datetime"></div>
+        </header>
 
-        <div id="alumnosList"></div>
+        <main>
+            <div class="filtros">
+                <label>Filtrar por motivo:</label>
+                <select id="filtroMotivo" onchange="filtrarPorMotivo()">
+                    <option value="">-- Todos los motivos --</option>
+                </select>
+                <span id="totalRegistros" class="total-registros"></span>
+            </div>
 
-        <div class="button-group">
+            <div class="tabla-container">
+                <table id="tablaBajas">
+                    <thead>
+                        <tr>
+                            <th>Credencial</th>
+                            <th>Nombre Completo</th>
+                            <th>F. Ingreso</th>
+                            <th>F. Baja</th>
+                            <th>Motivo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyBajas">
+                        <tr><td colspan="5" style="text-align:center;">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <footer>
             <button class="btn" onclick="window.print()">Imprimir</button>
-            <button class="btn" onclick="window.close()">Cerrar</button>
-        </div>
+            <button class="btn btn-terminar" onclick="window.location.href='alumnos-bajas.html'">Regresar</button>
+        </footer>
     </div>
 
     <script src="supabase-config.js"></script>
     <script src="utils-inputs.js"></script>
     <script src="listado-bajas.js"></script>
 </body>
-
 </html>
